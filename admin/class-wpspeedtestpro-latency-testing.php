@@ -95,10 +95,11 @@ class Wpspeedtestpro_Latency_Testing {
      */
     public function enqueue_scripts() {
         wp_enqueue_script($this->plugin_name . '-latency-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-latency-testing.js', array('jquery'), $this->version, false);
-        wp_localize_script($this->plugin_name . '-latency-testing', 'wpspeedtestpro_ajax', array(
+        wp_localize_script($this->plugin_name . 'wpspeedtestpro', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_nonce')
-        ));
+            'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
+            'selected_region' => get_option('wp_hosting_benchmarking_selected_region') // Pass the selected region     
+        ));        
     }
 
     /**
