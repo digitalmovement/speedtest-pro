@@ -107,7 +107,7 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function display_latency_testing() {
-        include_once('partials/wpspeedtestpro-latency-testing-display.php');
+        include_once(plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/wpspeedtestpro-latency-testing-display.php');        
     }
 
     /**
