@@ -264,7 +264,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_start_latency_test',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -285,7 +285,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_stop_latency_test',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -313,7 +313,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_delete_all_results',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -333,7 +333,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_latest_results',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -353,7 +353,7 @@ jQuery(document).ready(function($) {
         var tableBody = $('#latency-results tbody');
         tableBody.empty();
         var regionData = {};
-        var selectedRegion = wpspeedtestpro.selected_region;
+        var selectedRegion = wpspeedtestpro-latency-testing.selected_region;
 
         results.forEach(function(result) {
             var region = result.region_name;
