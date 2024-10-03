@@ -30,7 +30,15 @@ class Wpspeedtestpro_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
+        // Ensure the DB class is loaded
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-db.php';
 
-	}
+        // Create an instance of the DB class
+        $db = new Wpspeedtestpro_DB();
 
+        // Call the create_table method
+        $db->create_table();
+
+        // Any other activation tasks can be added here
+    }
 }
