@@ -38,7 +38,7 @@ jQuery(document).ready(function($) {
     var $form = $('#wpspeedtestpro_settings-form');
     var $modal = $('#data-collection-modal');
 
-    $form.on('submit', function(e) {
+    $form.on('change', function(e) {
         if (!$checkbox.is(':checked') && $checkbox.data('original') !== false) {
             e.preventDefault();
             $modal.show();
