@@ -29,7 +29,7 @@ settings_errors('wpspeedtestpro_messages');
         settings_fields('wpspeedtestpro_settings');
 
         // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
-        do_settings_sections('wpspeedtestpro-settings');
+        do_settings_sections('wpspeedtestpro-section');
         
         // Submit button
         submit_button('Save Settings');
