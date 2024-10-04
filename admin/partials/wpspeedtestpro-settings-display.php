@@ -31,13 +31,20 @@ settings_errors('wpspeedtestpro_messages');
         // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
         do_settings_sections('wpspeedtestpro-settings');
         
-echo "after";
+        echo "after";
         settings_fields('wpspeedtestpro-settings');
 
         // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
         do_settings_sections('wpspeedtestpro_settings');
         
-    
+        echo "<br>after2";
+
+        settings_fields('wpspeedtestpro_settings');
+
+        // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
+        do_settings_sections('wpspeedtestpro_settings');
+
+
 
         // Submit button
         submit_button('Save Settings');
