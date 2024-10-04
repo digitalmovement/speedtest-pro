@@ -26,7 +26,7 @@ settings_errors('wpspeedtestpro_messages');
     <form method="post" action="options.php" id="wpspeedtestpro_settings-form">
         <?php
         // Output security fields for the registered setting group "wpspeedtestpro_settings"
-        settings_fields('wpspeedtestpro_settings');
+        settings_fields('wpspeedtestpro_options');
 
         // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
         do_settings_sections('wpspeedtestpro-settings');
