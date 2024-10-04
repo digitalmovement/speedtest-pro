@@ -100,8 +100,8 @@ class Wpspeedtestpro_Settings {
      */
     public function register_settings() {
         // Register settings
-        register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_option');
-        register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_region');
+        register_setting('wpspeedtestpro_section', 'wpspeedtestpro_options');
+        register_setting('wpspeedtestpro_section', 'wpspeedtestpro_selected_region');
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_provider');
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_package');
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_allow_data_collection', array(
