@@ -89,6 +89,7 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
+        $this->init_components();
         include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
