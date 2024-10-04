@@ -53,8 +53,10 @@ class Wpspeedtestpro_Settings {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
-        add_action('admin_init', array($this, 'register_settings'));
+        //add_action('admin_init', array($this, 'register_settings'));
+        add_action( 'admin_menu', array( $this, 'wpspeed_test_pro_add_plugin_page' ) );
         add_action( 'admin_init', array( $this, 'wpspeed_test_pro_page_init' ) );
+        
       //  $this->api = $this->core->get_api(); // Assuming the core has a method to get the API instance
      //   $this->init_components();
     }
