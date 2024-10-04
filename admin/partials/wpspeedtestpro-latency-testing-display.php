@@ -237,11 +237,11 @@ jQuery(document).ready(function($) {
         var timeRange = $(this).val();
 
         $.ajax({
-            url: wpspeedtestpro-latency-testing.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_results_for_time_range',
-                nonce: wpspeedtestpro-latency-testing.nonce,
+                nonce: wpspeedtestpro_ajax.nonce,
                 time_range: timeRange
             },
             success: function(response) {
@@ -264,7 +264,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_start_latency_test',
-                nonce: wpspeedtestpro-latency-testing.nonce
+                nonce: wpspeedtestpro_ajax-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -281,11 +281,11 @@ jQuery(document).ready(function($) {
 
     $('#stop-test').on('click', function() {
         $.ajax({
-            url: wpspeedtestpro.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_stop_latency_test',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -309,11 +309,11 @@ jQuery(document).ready(function($) {
 
     $('#confirmDelete').on('click', function() {
         $.ajax({
-            url: wpspeedtestpro-latency-testing.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_delete_all_results',
-                nonce: wpspeedtestpro-latency-testing.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -329,11 +329,11 @@ jQuery(document).ready(function($) {
 
     function updateResults() {
         $.ajax({
-            url: wpspeedtestpro-latency-testing.ajax_url,
+            url: wwpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_latest_results',
-                nonce: wpspeedtestpro-latency-testing.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -353,7 +353,7 @@ jQuery(document).ready(function($) {
     var tableBody = $('#latency-results tbody');
     tableBody.empty();
     var regionData = {};
-    var selectedRegion = wpspeedtestpro.selected_region;
+    var selectedRegion = wpspeedtestpro_ajax.selected_region;
 
     function isValidLatency(value) {
         var parsedValue = parseFloat(value);
