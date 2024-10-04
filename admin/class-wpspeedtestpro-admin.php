@@ -90,9 +90,7 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-settings.php';
 
         $this->latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
-        $this->$settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
-
-
+        $this->settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
     }
 
     /**
