@@ -84,6 +84,10 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-uptime-monitoring.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-page-speed-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-settings.php';
+
+        $latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
+
+        
     }
 
     /**
@@ -152,7 +156,6 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_latency_testing_page() {
-        $latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
         $latency_testing->display_latency_testing();
     }
 
