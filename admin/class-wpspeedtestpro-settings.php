@@ -102,7 +102,15 @@ class Wpspeedtestpro_Settings {
     public function register_settings() {
         // Register settings
  
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_options');
+        register_setting(
+            'wpspeedtestpro_settings_group',
+            'wpspeedtestpro_options',
+            array(
+                'type' => 'array',
+                'sanitize_callback' => array($this, 'sanitize_settings')
+            )
+        );
+
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_region');
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_provider');
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_package');
@@ -153,6 +161,30 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
     }
+
+    public function sanitize_settings($input) {
+        $sanitized_input = array();
+        
+        if (isset($input['wpspeedtestpro_selected_region'])) {
+            $sanitized_input['wpspeedtestpro_selected_region'] = sanitize_text_field($input['wpspeedtestpro_selected_region']);
+        }
+        
+        if (isset($input['wpspeedtestpro_selected_provider'])) {
+            $sanitized_input['wpspeedtestpro_selected_provider'] = sanitize_text_field($input['wpspeedtestpro_selected_provider']);
+        }
+        
+        if (isset($input['wpspeedtestpro_selected_package'])) {
+            $sanitized_input['wpspeedtestpro_selected_package'] = sanitize_text_field($input['wpspeedtestpro_selected_package']);
+        }
+        
+        if (isset($input['wpspeedtestpro_allow_data_collection'])) {
+            $sanitized_input['wpspeedtestpro_allow_data_collection'] = (bool) $input['wpspeedtestpro_allow_data_collection'];
+        }
+        
+        return $sanitized_input;
+    }
+
+
 
     // Callback to display the GCP region dropdown
     public function gcp_region_dropdown_callback() {
