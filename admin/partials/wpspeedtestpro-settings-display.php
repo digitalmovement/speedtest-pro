@@ -11,24 +11,25 @@
  * @package    Wpspeedtestpro
  * @subpackage Wpspeedtestpro/admin/partials
  */
-?><?php
+?>
+<?php
 if (!current_user_can('manage_options')) {
     return;
 }
 
 // Show error/update messages
-settings_errors('wp_hosting_benchmarking_messages');
+settings_errors('wpspeedtestpro_messages');
 
 ?>
 <div class="wrap">
-    <h1><?php echo esc_html('WP SpreedTesting Pro Settings'); ?></h1>
+    <h1><?php echo esc_html('WP SpeedTesting Pro Settings'); ?></h1>
     <form method="post" action="options.php" id="wpspeedtestpro_settings-form">
         <?php
-        // Output security fields for the registered setting group "wp_hosting_benchmarking_settings"
-        settings_fields('wpspeedtestpro_settings'); // Group name must match register_setting()
+        // Output security fields for the registered setting group "wpspeedtestpro_settings"
+        settings_fields('wpspeedtestpro_settings');
 
-        // Output setting sections and fields for the page slug 'wp-hosting-benchmarking-settings'
-        do_settings_sections('wpspeedtestpro_settings'); // Page slug must match add_settings_section()
+        // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
+        do_settings_sections('wpspeedtestpro-settings');
         
         // Submit button
         submit_button('Save Settings');
@@ -47,7 +48,3 @@ settings_errors('wp_hosting_benchmarking_messages');
         </div>
     </div>
 </div>
-
-
-<?php
-

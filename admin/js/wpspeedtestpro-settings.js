@@ -3,55 +3,42 @@ jQuery(document).ready(function($) {
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var selectedPackage = $packageSelect.val(); // Store the initially selected package
 
-    function updatePackages(provider, callback) {
-        $packageSelect.empty().append('<option value="">Select a package</option>');
-
+    function updatePackages() {
+        var provider = $providerSelect.val();
+        $packageSelect.prop('disabled', !provider);
+        $packageSelect.find('option').hide();
+        $packageSelect.find('option[value=""]').show();
+        
         if (provider) {
-            $.ajax({
-                url: wpspeedtestpro_ajax.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'get_provider_packages',
-                    provider: provider,
-                    nonce: wpspeedtestpro_ajax.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        var packages = response.data;
-                        packages.forEach(function(package) {
-                            $packageSelect.append($('<option>', {
-                                value: package.type,
-                                text: package.type
-                            }));
-                        });
-                        if (callback) callback();
-                    }
-                }
-            });
+            $packageSelect.find('option[data-provider="' + provider + '"]').show();
+        }
+        
+        // Reset package selection if the current selection is not valid for the new provider
+        if ($packageSelect.find('option:selected:hidden').length) {
+            $packageSelect.val('');
         }
     }
 
-    $providerSelect.on('change', function() {
-        var provider = $(this).val();
-        updatePackages(provider);
-    });
+    $providerSelect.on('change', updatePackages);
 
-    // If a provider is already selected on page load
-    if ($providerSelect.val()) {
-        updatePackages($providerSelect.val(), function() {
-            // After populating packages, set the previously selected package
-            if (selectedPackage) {
-                $packageSelect.val(selectedPackage);
-            }
-        });
+    // Initial update on page load
+    updatePackages();
+
+    // If a package was previously selected, try to reselect it
+    if (selectedPackage) {
+        $packageSelect.val(selectedPackage);
+        // If the previously selected package is not available, reset to default
+        if (!$packageSelect.val()) {
+            $packageSelect.val('');
+        }
     }
 
-	// Handles popup modal 
-	var $checkbox = $('#wpspeedtestpro_allow_data_collection');
-    var $form = $('#wpspeedtestpro-settings-form');
+    // Handles popup modal 
+    var $checkbox = $('#wpspeedtestpro_allow_data_collection');
+    var $form = $('#wpspeedtestpro_settings-form');
     var $modal = $('#data-collection-modal');
 
-    $form.on('change', function(e) {
+    $form.on('submit', function(e) {
         if (!$checkbox.is(':checked') && $checkbox.data('original') !== false) {
             e.preventDefault();
             $modal.show();
@@ -70,5 +57,8 @@ jQuery(document).ready(function($) {
 
     $checkbox.data('original', $checkbox.is(':checked'));
 
-
+    // Error handling
+    if ($('.wpspeedtestpro-error').length) {
+        alert('There was an error loading some options. Please refresh the page or try again later.');
+    }
 });

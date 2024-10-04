@@ -40,6 +40,7 @@ class Wpspeedtestpro_Settings {
     private $version;
 
     private $core;
+    private $api;
 
     /**
      * Initialize the class and set its properties.
@@ -48,20 +49,18 @@ class Wpspeedtestpro_Settings {
      * @param      string    $plugin_name       The name of this plugin.
      * @param      string    $version    The version of this plugin.
      */
-  public function __construct( $plugin_name, $version, $core ) {
-
+    public function __construct( $plugin_name, $version, $core ) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
+        $this->api = $this->core->get_api(); // Assuming the core has a method to get the API instance
         $this->init_components();
     }
 
     private function init_components() {
         add_action('admin_init', array($this, 'register_settings'));
-
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-
     }
 
     /**
@@ -99,36 +98,31 @@ class Wpspeedtestpro_Settings {
      * @since    1.0.0
      */
     public function register_settings() {
-        // Register a new setting for "wpspeedtestpro_settings"
-        register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_option');
+        // Register settings
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_region');
-
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_provider');
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_package');
-        // Register new setting for anonymous data collection
         register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_allow_data_collection', array(
             'type' => 'boolean',
             'default' => true,
             'sanitize_callback' => 'boolval'
         ));
 
-
-        // Add a new section in the "Settings" page
+        // Add settings section
         add_settings_section(
-            'wpspeedtestpro_section', // Section ID
-            'General Settings',                // Section title
-            null,                              // Section callback (not needed)
-            'wpspeedtestpro-settings' // Page slug
+            'wpspeedtestpro_section',
+            'General Settings',
+            null,
+            'wpspeedtestpro-settings'
         );
 
-
-        // Add a settings field (dropdown for GCP regions)
+        // Add settings fields
         add_settings_field(
-            'wpspeedtestpro_selected_region', // Field ID
-            'Select Closest GCP Region',               // Field title
-            array($this, 'gcp_region_dropdown_callback'), // Callback to display the dropdown
-            'wpspeedtestpro-settings',        // Page slug
-            'wpspeedtestpro_section'          // Section ID (fixed to match)
+            'wpspeedtestpro_selected_region',
+            'Select Closest GCP Region',
+            array($this, 'gcp_region_dropdown_callback'),
+            'wpspeedtestpro-settings',
+            'wpspeedtestpro_section'
         );
 
         add_settings_field(
@@ -147,22 +141,19 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
 
-              // Add a new field for anonymous data collection
         add_settings_field(
             'wpspeedtestpro_allow_data_collection',
             'Allow anonymous data collection',
-             array($this, 'render_data_collection_field'),
+            array($this, 'render_data_collection_field'),
             'wpspeedtestpro-settings',
             'wpspeedtestpro_section'
         );
-
     }
 
     // Callback to display the GCP region dropdown
     public function gcp_region_dropdown_callback() {
-
-        $gcp_endpoints = $this->api->get_gcp_endpoints(); // Fetch GCP endpoints
-        $selected_region = get_option('wpspeedtestpro_selected_region'); // Get selected region
+        $selected_region = get_option('wpspeedtestpro_selected_region');
+        $gcp_endpoints = $this->get_gcp_endpoints();
 
         if (!empty($gcp_endpoints)) {
             echo '<select name="wpspeedtestpro_selected_region">';
@@ -174,15 +165,14 @@ class Wpspeedtestpro_Settings {
             }
             echo '</select>';
         } else {
-            echo '<p>No GCP endpoints available.</p>';
+            echo '<p>No GCP endpoints available. Please check your internet connection or try again later.</p>';
         }
-           // Explanation text
-        echo '<p class="description">Please select the region closest to where most of your customers or visitors are based. </p>';
+        echo '<p class="description">Please select the region closest to where most of your customers or visitors are based.</p>';
     }
 
-   public function hosting_provider_dropdown_callback() {
-        $providers = $this->api->get_hosting_providers();
+    public function hosting_provider_dropdown_callback() {
         $selected_provider = get_option('wpspeedtestpro_selected_provider');
+        $providers = $this->get_hosting_providers();
 
         if (!empty($providers)) {
             echo '<select id="wpspeedtestpro_selected_provider" name="wpspeedtestpro_selected_provider">';
@@ -195,19 +185,19 @@ class Wpspeedtestpro_Settings {
             }
             echo '</select>';
         } else {
-            echo '<p>No hosting providers available.</p>';
+            echo '<p class="wpspeedtestpro-error">No hosting providers available. Please check your internet connection or try again later.</p>';
         }
     }
 
     public function hosting_package_dropdown_callback() {
         $selected_provider = get_option('wpspeedtestpro_selected_provider');
         $selected_package = get_option('wpspeedtestpro_selected_package');
+        $providers = $this->get_hosting_providers();
     
         echo '<select id="wpspeedtestpro_selected_package" name="wpspeedtestpro_selected_package">';
         echo '<option value="">Select a package</option>';
     
-        if ($selected_provider) {
-            $providers = $this->api->get_hosting_providers();
+        if ($selected_provider && !empty($providers)) {
             foreach ($providers as $provider) {
                 if ($provider['name'] === $selected_provider) {
                     foreach ($provider['packages'] as $package) {
@@ -227,24 +217,6 @@ class Wpspeedtestpro_Settings {
         }
     }
 
-
-    public function ajax_get_provider_packages() {
-        check_ajax_referer('wpspeedtestpro_settings_nonce', 'nonce');
-
-        $provider_name = sanitize_text_field($_POST['provider']);
-        $providers = $this->api->get_hosting_providers();
-
-        $packages = array();
-        foreach ($providers as $provider) {
-            if ($provider['name'] === $provider_name) {
-                $packages = $provider['packages'];
-                break;
-            }
-        }
-
-        wp_send_json_success($packages);
-    }
-
     public function render_data_collection_field() {
         $option = get_option('wpspeedtestpro_allow_data_collection', true);
         ?>
@@ -254,5 +226,38 @@ class Wpspeedtestpro_Settings {
         <?php
     }
 
-    // Add more methods as needed for settings functionality
+    private function get_gcp_endpoints() {
+        try {
+            $gcp_endpoints = $this->api->get_gcp_endpoints();
+            if (empty($gcp_endpoints)) {
+                throw new Exception('No GCP endpoints returned from API');
+            }
+            return $gcp_endpoints;
+        } catch (Exception $e) {
+            error_log('Error fetching GCP endpoints: ' . $e->getMessage());
+            // Return some default regions if API call fails
+            return array(
+                array('region_name' => 'us-central1'),
+                array('region_name' => 'europe-west1'),
+                array('region_name' => 'asia-east1')
+            );
+        }
+    }
+
+    private function get_hosting_providers() {
+        try {
+            $providers = $this->api->get_hosting_providers();
+            if (empty($providers)) {
+                throw new Exception('No hosting providers returned from API');
+            }
+            return $providers;
+        } catch (Exception $e) {
+            error_log('Error fetching hosting providers: ' . $e->getMessage());
+            // Return some default providers if API call fails
+            return array(
+                array('name' => 'Provider A', 'packages' => array(array('type' => 'Basic'), array('type' => 'Pro'))),
+                array('name' => 'Provider B', 'packages' => array(array('type' => 'Starter'), array('type' => 'Business')))
+            );
+        }
+    }
 }
