@@ -122,6 +122,7 @@ class Wpspeedtestpro_Admin {
         add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        add_action( 'admin_head', array( $this, 'change_plugin_icon ') );
     }
 
 
@@ -141,6 +142,9 @@ class Wpspeedtestpro_Admin {
         add_submenu_page( $this->plugin_name, 'Uptime Monitoring', 'Uptime Monitoring', 'manage_options', $this->plugin_name . '-uptime-monitoring', array($this, 'display_plugin_uptime_monitoring_page') );
         add_submenu_page( $this->plugin_name, 'Page Speed Testing', 'Page Speed Testing', 'manage_options', $this->plugin_name . '-page-speed-testing', array($this, 'display_plugin_page_speed_testing_page') );
         add_submenu_page( $this->plugin_name, 'Settings', 'Settings', 'manage_options', $this->plugin_name . '-settings', array($this, 'display_plugin_settings_page') );
+
+      
+     
     }
 
     /**
@@ -152,6 +156,19 @@ class Wpspeedtestpro_Admin {
         $dashboard = new Wpspeedtestpro_Dashboard( $this->plugin_name, $this->version, $this->core );
         $dashboard->display_dashboard();
     }
+
+    public function change_plugin_icon() {
+        echo '<style>
+            #adminmenu #toplevel_page_my-plugin-slug div.wp-menu-image {
+                background-image: url(' . plugins_url('/admin/assets/icon.svg', __FILE__) . ');
+                background-size: contain;
+            }
+            #adminmenu #toplevel_page_my-plugin-slug img {
+                display: none;
+            }
+        </style>';
+    }
+
 
     /**
      * Render the latency testing page for this plugin.
