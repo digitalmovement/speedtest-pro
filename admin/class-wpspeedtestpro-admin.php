@@ -59,6 +59,7 @@ class Wpspeedtestpro_Admin {
      */
 
     private $latency_testing;
+    private $settings;
 
     public function __construct( $plugin_name, $version, $core ) {
 
@@ -89,6 +90,7 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-settings.php';
 
         $this->latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
+        $this->$settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
 
 
     }
@@ -224,8 +226,6 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_settings_page() {
-        $settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
-
-        $settings->display_settings();
+       $this->$settings->display_settings();
     }
 }
