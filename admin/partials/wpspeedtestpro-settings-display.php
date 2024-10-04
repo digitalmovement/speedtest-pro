@@ -39,10 +39,10 @@ settings_errors('wpspeedtestpro_messages');
         
         echo "<br>after2";
 
-        settings_fields('wpspeedtestpro_settings');
+        settings_fields('wpspeedtestpro_section');
 
         // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
-        do_settings_sections('wpspeedtestpro_settings');
+        do_settings_sections('wpspeedtestpro_section');
 
 
 
