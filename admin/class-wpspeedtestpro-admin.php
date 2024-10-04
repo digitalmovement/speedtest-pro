@@ -159,11 +159,11 @@ class Wpspeedtestpro_Admin {
 
     public function change_plugin_icon() {
         echo '<style>
-            #adminmenu #toplevel_page_my-plugin-slug div.wp-menu-image {
+            #adminmenu #toplevel_page_wpspeedtestpro  div.wp-menu-image {
                 background-image: url(' . plugins_url('/admin/assets/icon.svg', __FILE__) . ');
                 background-size: contain;
             }
-            #adminmenu #toplevel_page_my-plugin-slug img {
+            #adminmenu #toplevel_page_wpspeedtestpro-slug img {
                 display: none;
             }
         </style>';
