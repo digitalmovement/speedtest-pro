@@ -1,0 +1,57 @@
+
+#wpspeedtestpro .latency-faster { color: green!important; } /* For negative differences (improved latency) */
+#wpspeedtestpro .latency-slower { color: red!important; }   /* For positive differences (worsened latency) */
+#latency-results th, #latency-results td { padding: 8px; }
+
+#wpspeedtestpro .delete-button {
+   background-color: #d9534f; /* Bootstrap red color */
+   color: white;
+   border: none;
+}
+
+#wpspeedtestpro .delete-button:hover {
+   background-color: #c9302c; /* Darker red on hover */
+}
+
+   /* Modal styling */
+#deleteModal.modal {
+       display: none; /* Hidden by default */
+       position: fixed;
+       z-index: 1000;
+       left: 0;
+       top: 0;
+       width: 100%;
+       height: 100%;
+       background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
+}
+
+#deleteModal .modal-content {
+       position: relative;
+       margin: 15% auto;
+       padding: 20px;
+       width: 300px;
+       background-color: white;
+       border-radius: 5px;
+}
+
+#deleteModal .modal-footer {
+       text-align: right;
+}
+
+#deleteModal .modal-footer button {
+       margin-left: 10px;
+}
+
+#deleteModal .discard-button {
+       background-color: #d9534f;
+       color: white;
+}
+
+#deleteModal .discard-button:hover {
+   background-color: #c9302c;
+}
+
+#wpspeedtestpro .highlight-row {
+   background-color: #f5f1ca; /* Light yellow background */
+   font-weight: bold;
+}
