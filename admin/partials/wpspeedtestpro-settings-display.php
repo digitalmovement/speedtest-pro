@@ -21,14 +21,14 @@ settings_errors('wp_hosting_benchmarking_messages');
 
 ?>
 <div class="wrap">
-    <h1><?php echo esc_html('WP Hosting Benchmarking Settings'); ?></h1>
+    <h1><?php echo esc_html('WP SpreedTesting Pro Settings'); ?></h1>
     <form method="post" action="options.php" id="wpspeedtestpro_settings-form">
         <?php
         // Output security fields for the registered setting group "wp_hosting_benchmarking_settings"
         settings_fields('wpspeedtestpro_settings'); // Group name must match register_setting()
 
         // Output setting sections and fields for the page slug 'wp-hosting-benchmarking-settings'
-        do_settings_sections('wpspeedtestpro-settings'); // Page slug must match add_settings_section()
+        do_settings_sections('wpspeedtestpro_settings'); // Page slug must match add_settings_section()
         
         // Submit button
         submit_button('Save Settings');
