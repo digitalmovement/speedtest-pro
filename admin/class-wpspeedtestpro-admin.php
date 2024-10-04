@@ -225,7 +225,7 @@ class Wpspeedtestpro_Admin {
      */
     public function display_plugin_settings_page() {
         $settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
-        $settings->register_settings();
+
         $settings->display_settings();
     }
 }

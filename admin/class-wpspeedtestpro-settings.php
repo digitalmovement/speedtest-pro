@@ -93,7 +93,7 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
-    
+        $this->register_settings();
         echo "register_settings2";
        include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
@@ -161,7 +161,7 @@ class Wpspeedtestpro_Settings {
     // Callback to display the GCP region dropdown
     public function gcp_region_dropdown_callback() {
         $selected_region = get_option('wpspeedtestpro_selected_region');
-        $gcp_endpoints = $this->get_gcp_endpoints();
+        $gcp_endpoints = $this->core->api->get_gcp_endpoints();
 
         if (!empty($gcp_endpoints)) {
             echo '<select name="wpspeedtestpro_selected_region">';
@@ -180,7 +180,7 @@ class Wpspeedtestpro_Settings {
 
     public function hosting_provider_dropdown_callback() {
         $selected_provider = get_option('wpspeedtestpro_selected_provider');
-        $providers = $this->get_hosting_providers();
+        $providers = $this->core->api->get_hosting_providers();
 
         if (!empty($providers)) {
             echo '<select id="wpspeedtestpro_selected_provider" name="wpspeedtestpro_selected_provider">';
@@ -200,7 +200,7 @@ class Wpspeedtestpro_Settings {
     public function hosting_package_dropdown_callback() {
         $selected_provider = get_option('wpspeedtestpro_selected_provider');
         $selected_package = get_option('wpspeedtestpro_selected_package');
-        $providers = $this->get_hosting_providers();
+        $providers = $this->core->api->get_hosting_providers();
     
         echo '<select id="wpspeedtestpro_selected_package" name="wpspeedtestpro_selected_package">';
         echo '<option value="">Select a package</option>';
@@ -236,7 +236,7 @@ class Wpspeedtestpro_Settings {
 
     private function get_gcp_endpoints() {
         try {
-            $gcp_endpoints = $this->api->get_gcp_endpoints();
+            $gcp_endpoints = $this->core->api->get_gcp_endpoints();
             if (empty($gcp_endpoints)) {
                 throw new Exception('No GCP endpoints returned from API');
             }
@@ -254,7 +254,7 @@ class Wpspeedtestpro_Settings {
 
     private function get_hosting_providers() {
         try {
-            $providers = $this->api->get_hosting_providers();
+            $providers = $this->core->api->get_hosting_providers();
             if (empty($providers)) {
                 throw new Exception('No hosting providers returned from API');
             }
