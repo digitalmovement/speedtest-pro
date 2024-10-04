@@ -53,7 +53,8 @@ class Wpspeedtestpro_Settings {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
-        $this->api = $this->core->get_api(); // Assuming the core has a method to get the API instance
+        add_action('admin_init', array($this, 'register_settings'));
+      //  $this->api = $this->core->get_api(); // Assuming the core has a method to get the API instance
         $this->init_components();
     }
 
