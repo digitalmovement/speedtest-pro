@@ -226,6 +226,6 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_settings_page() {
-       $this->$settings->display_settings();
+       $this->settings->display_settings();
     }
 }
