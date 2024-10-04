@@ -29,7 +29,7 @@ class Wpspeedtestpro_Core {
      * @access   protected
      * @var      string    $plugin_name    The string used to uniquely identify this plugin.
      */
-    protected $plugin_name;
+    public $plugin_name;
 
     /**
      * The current version of the plugin.
@@ -38,7 +38,7 @@ class Wpspeedtestpro_Core {
      * @access   protected
      * @var      string    $version    The current version of the plugin.
      */
-    protected $version;
+    public $version;
 
     /**
      * The API instance.
@@ -47,7 +47,7 @@ class Wpspeedtestpro_Core {
      * @access   protected
      * @var      Wpspeedtestpro_API    $api    The API instance.
      */
-    protected $api;
+    public $api;
 
     /**
      * The DB instance.
@@ -56,7 +56,7 @@ class Wpspeedtestpro_Core {
      * @access   protected
      * @var      Wpspeedtestpro_DB    $db    The DB instance.
      */
-    protected $db;
+    public  $db;
 
     /**
      * Initialize the class and set its properties.
