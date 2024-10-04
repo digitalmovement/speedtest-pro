@@ -54,6 +54,7 @@ class Wpspeedtestpro_Settings {
         $this->version = $version;
         $this->core = $core;
         add_action('admin_init', array($this, 'register_settings'));
+        add_action( 'admin_init', array( $this, 'wpspeed_test_pro_page_init' ) );
       //  $this->api = $this->core->get_api(); // Assuming the core has a method to get the API instance
      //   $this->init_components();
     }
@@ -92,7 +93,7 @@ class Wpspeedtestpro_Settings {
         $this->enqueue_scripts();
     
         echo "register_settings2";
-        include_once( 'partials/wpspeedtestpro-settings-display.php' );
+       // include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
     /**
@@ -265,4 +266,78 @@ class Wpspeedtestpro_Settings {
             );
         }
     }
+
+    public function wpspeed_test_pro_add_plugin_page() {
+		add_menu_page(
+			'WpSpeed Test Pro', // page_title
+			'WpSpeed Test Pro', // menu_title
+			'manage_options', // capability
+			'wpspeed-test-pro', // menu_slug
+			array( $this, 'wpspeed_test_pro_create_admin_page' ), // function
+			'dashicons-admin-generic', // icon_url
+			2 // position
+		);
+	}
+
+	public function wpspeed_test_pro_create_admin_page() {
+		$this->wpspeed_test_pro_options = get_option( 'wpspeed_test_pro_option_name' ); ?>
+
+		<div class="wrap">
+			<h2>WpSpeed Test Pro</h2>
+			<p></p>
+			<?php settings_errors(); ?>
+
+			<form method="post" action="options.php">
+				<?php
+					settings_fields( 'wpspeed_test_pro_option_group' );
+					do_settings_sections( 'wpspeed-test-pro-admin' );
+					submit_button();
+				?>
+			</form>
+		</div>
+	<?php }
+
+	public function wpspeed_test_pro_page_init() {
+		register_setting(
+			'wpspeed_test_pro_option_group', // option_group
+			'wpspeed_test_pro_option_name', // option_name
+			array( $this, 'wpspeed_test_pro_sanitize' ) // sanitize_callback
+		);
+
+		add_settings_section(
+			'wpspeed_test_pro_setting_section', // id
+			'Settings', // title
+			array( $this, 'wpspeed_test_pro_section_info' ), // callback
+			'wpspeed-test-pro-admin' // page
+		);
+
+		add_settings_field(
+			'enter_name_0', // id
+			'Enter Name', // title
+			array( $this, 'enter_name_0_callback' ), // callback
+			'wpspeed-test-pro-admin', // page
+			'wpspeed_test_pro_setting_section' // section
+		);
+	}
+
+	public function wpspeed_test_pro_sanitize($input) {
+		$sanitary_values = array();
+		if ( isset( $input['enter_name_0'] ) ) {
+			$sanitary_values['enter_name_0'] = sanitize_text_field( $input['enter_name_0'] );
+		}
+
+		return $sanitary_values;
+	}
+
+	public function wpspeed_test_pro_section_info() {
+		
+	}
+
+	public function enter_name_0_callback() {
+		printf(
+			'<input class="regular-text" type="text" name="wpspeed_test_pro_option_name[enter_name_0]" id="enter_name_0" value="%s">',
+			isset( $this->wpspeed_test_pro_options['enter_name_0'] ) ? esc_attr( $this->wpspeed_test_pro_options['enter_name_0']) : ''
+		);
+	}
+
 }
