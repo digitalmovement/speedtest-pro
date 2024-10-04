@@ -260,11 +260,11 @@ jQuery(document).ready(function($) {
         updateButtonState(true);
 
         $.ajax({
-            url: wpspeedtestpro-latency-testing.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_start_latency_test',
-                nonce: wpspeedtestpro_ajax-testing.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {

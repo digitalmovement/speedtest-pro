@@ -172,8 +172,7 @@ class Wpspeedtestpro_Latency_Testing {
      */
     public function get_latest_results() {
         check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
-        wp_send_json_error('Testing code');
-        return;
+      
         if (!$this->core->db) {
             wp_send_json_error('Database object not initialized');
             return;
