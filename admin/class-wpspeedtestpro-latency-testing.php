@@ -61,6 +61,7 @@ class Wpspeedtestpro_Latency_Testing {
         $this->version = $version;
         $this->core = $core;
         $this->add_hooks();
+        
     }
 
     /**
@@ -76,6 +77,8 @@ class Wpspeedtestpro_Latency_Testing {
         add_action('wp_ajax_wpspeedtestpro_get_results_for_time_range', array($this, 'get_results_for_time_range'));
         add_action('wp_ajax_wpspeedtestpro_delete_all_results', array($this, 'delete_all_results'));
         add_action('wpspeedtestpro_cron_hook', array($this, 'run_scheduled_test'));
+
+
     }
 
     /**
