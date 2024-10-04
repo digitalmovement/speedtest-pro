@@ -53,9 +53,9 @@ class Wpspeedtestpro_Settings {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
-        add_action('admin_init', array($this, 'register_settings'));
+       // add_action('admin_init', array($this, 'register_settings'));
       //  $this->api = $this->core->get_api(); // Assuming the core has a method to get the API instance
-        $this->init_components();
+     //   $this->init_components();
     }
 
     private function init_components() {
@@ -90,7 +90,7 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
-    
+        add_action('admin_init', array($this, 'register_settings'));
         include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
