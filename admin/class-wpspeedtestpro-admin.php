@@ -122,7 +122,6 @@ class Wpspeedtestpro_Admin {
         add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-        add_action( 'admin_head', array( $this, 'change_plugin_icon ') );
     }
 
 
@@ -226,6 +225,7 @@ class Wpspeedtestpro_Admin {
      */
     public function display_plugin_settings_page() {
         $settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
+        $settings->register_settings();
         $settings->display_settings();
     }
 }
