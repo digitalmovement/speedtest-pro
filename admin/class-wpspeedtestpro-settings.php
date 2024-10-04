@@ -60,7 +60,7 @@ class Wpspeedtestpro_Settings {
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-      //  $this->register_settings();
+
     }
 
     /**
