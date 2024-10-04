@@ -57,6 +57,9 @@ class Wpspeedtestpro_Admin {
      * @param      string    $version    The version of this plugin.
      * @param      Wpspeedtestpro_Core    $core    The core functionality instance.
      */
+
+    private $latency_testing;
+
     public function __construct( $plugin_name, $version, $core ) {
 
         $this->plugin_name = $plugin_name;
@@ -87,7 +90,7 @@ class Wpspeedtestpro_Admin {
 
         $latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
 
-        
+
     }
 
     /**
