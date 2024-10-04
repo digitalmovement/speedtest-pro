@@ -90,7 +90,7 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
-        $this->init_components();
+    
         include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
@@ -104,13 +104,13 @@ class Wpspeedtestpro_Settings {
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_options');
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_region');
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_provider');
-        register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_selected_package');
-        register_setting('wpspeedtestpro_settings', 'wpspeedtestpro_allow_data_collection', array(
+        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_package');
+        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_allow_data_collection', array(
             'type' => 'boolean',
             'default' => true,
             'sanitize_callback' => 'boolval'
         ));
-
+    
         // Add settings section
         add_settings_section(
             'wpspeedtestpro_section',
