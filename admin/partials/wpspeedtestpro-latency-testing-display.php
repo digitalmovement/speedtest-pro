@@ -329,7 +329,7 @@ jQuery(document).ready(function($) {
 
     function updateResults() {
         $.ajax({
-            url: wwpspeedtestpro_ajax.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_latest_results',
