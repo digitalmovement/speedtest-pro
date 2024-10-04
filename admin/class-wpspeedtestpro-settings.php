@@ -92,7 +92,7 @@ class Wpspeedtestpro_Settings {
         $this->enqueue_scripts();
     
         echo "register_settings2";
-      //  include_once( 'partials/wpspeedtestpro-settings-display.php' );
+        include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
     /**
