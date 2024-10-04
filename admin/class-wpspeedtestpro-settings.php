@@ -59,7 +59,7 @@ class Wpspeedtestpro_Settings {
     }
 
     private function init_components() {
-        add_action('admin_init', array($this, 'register_settings'));
+       // add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
@@ -90,7 +90,7 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
-        add_action('admin_init', array($this, 'register_settings'));
+        add_action('admin_init', array($this, 'register_settings1'));
         include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
@@ -99,7 +99,7 @@ class Wpspeedtestpro_Settings {
      *
      * @since    1.0.0
      */
-    public function register_settings() {
+    public function register_settings1() {
         // Register settings
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_options');
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_region');
