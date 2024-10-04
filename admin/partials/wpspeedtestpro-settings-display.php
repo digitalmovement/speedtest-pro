@@ -26,26 +26,11 @@ settings_errors('wpspeedtestpro_messages');
     <form method="post" action="options.php" id="wpspeedtestpro_settings-form">
         <?php
         // Output security fields for the registered setting group "wpspeedtestpro_settings"
-        settings_fields('wpspeedtestpro_options');
+        settings_fields('wpspeedtestpro_settings_group');
 
         // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
         do_settings_sections('wpspeedtestpro-settings');
-        
-        echo "after";
-        settings_fields('wpspeedtestpro-settings');
-
-        // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
-        do_settings_sections('wpspeedtestpro_settings');
-        
-        echo "<br>after2";
-
-        settings_fields('wpspeedtestpro_section');
-
-        // Output setting sections and fields for the page slug 'wpspeedtestpro-settings'
-        do_settings_sections('wpspeedtestpro_section');
-
-
-
+    
         // Submit button
         submit_button('Save Settings');
         ?>
