@@ -22,7 +22,7 @@ settings_errors('wpspeedtestpro_messages');
 
 ?>
 <div class="wrap">
-    <h1><?php echo esc_html('WP SpeedTesting Pro Settings'); ?></h1>
+    <h1><?php echo esc_html('WP SpeedTest Pro Settings'); ?></h1>
     <form method="post" action="options.php" id="wpspeedtestpro_settings-form">
         <?php
         // Output security fields for the registered setting group "wpspeedtestpro_settings_group"
