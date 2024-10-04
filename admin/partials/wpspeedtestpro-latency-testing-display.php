@@ -237,11 +237,11 @@ jQuery(document).ready(function($) {
         var timeRange = $(this).val();
 
         $.ajax({
-            url: wpspeedtestpro.ajax_url,
+            url: wpspeedtestpro-latency-testing.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_results_for_time_range',
-                nonce: wpspeedtestpro.nonce,
+                nonce: wpspeedtestpro-latency-testing.nonce,
                 time_range: timeRange
             },
             success: function(response) {
@@ -260,11 +260,11 @@ jQuery(document).ready(function($) {
         updateButtonState(true);
 
         $.ajax({
-            url: wpspeedtestpro.ajax_url,
+            url: wpspeedtestpro-latency-testing.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_start_latency_test',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -309,11 +309,11 @@ jQuery(document).ready(function($) {
 
     $('#confirmDelete').on('click', function() {
         $.ajax({
-            url: wpspeedtestpro.ajax_url,
+            url: wpspeedtestpro-latency-testing.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_delete_all_results',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -329,11 +329,11 @@ jQuery(document).ready(function($) {
 
     function updateResults() {
         $.ajax({
-            url: wpspeedtestpro.ajax_url,
+            url: wpspeedtestpro-latency-testing.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_latest_results',
-                nonce: wpspeedtestpro.nonce
+                nonce: wpspeedtestpro-latency-testing.nonce
             },
             success: function(response) {
                 if (response.success) {
