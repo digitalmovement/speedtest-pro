@@ -1,4 +1,4 @@
-<script>
+
 jQuery(document).ready(function($) {
     var countdownInterval;
     var isRunning = false;
@@ -375,4 +375,3 @@ jQuery(document).ready(function($) {
     updateResults();
     setInterval(updateResults, 60000);
 });
-</script>
