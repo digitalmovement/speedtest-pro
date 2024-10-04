@@ -61,7 +61,7 @@ class Wpspeedtestpro_Settings {
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        
+
     }
 
     /**
@@ -90,7 +90,7 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
-        include_once( 'partials/wpspeedtestpro-admin-settings-display.php' );
+        include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
     /**
