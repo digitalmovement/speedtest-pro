@@ -63,6 +63,11 @@ class Wpspeedtestpro_Settings {
 
     }
 
+    private function add_hooks() {
+        add_action('wp_ajax_wpspeedtestpro_get_provider_packages', array($this, 'ajax_get_provider_packages'));
+    }
+
+
     /**
      * Register the stylesheets for the settings area.
      *
@@ -297,5 +302,20 @@ class Wpspeedtestpro_Settings {
         }
     }
 
- 
+    public function ajax_get_provider_packages() {
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
+
+        $provider_name = sanitize_text_field($_POST['provider']);
+        $providers = $this->core->api->get_hosting_providers();
+
+        $packages = array();
+        foreach ($providers as $provider) {
+            if ($provider['name'] === $provider_name) {
+                $packages = $provider['packages'];
+                break;
+            }
+        }
+
+        wp_send_json_success($packages);
+    }
 }

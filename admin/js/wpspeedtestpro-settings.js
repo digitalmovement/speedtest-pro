@@ -3,19 +3,31 @@ jQuery(document).ready(function($) {
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var selectedPackage = $packageSelect.val(); // Store the initially selected package
 
-    function updatePackages() {
-        var provider = $providerSelect.val();
-        $packageSelect.prop('disabled', !provider);
-        $packageSelect.find('option').hide();
-        $packageSelect.find('option[value=""]').show();
-        
+    function updatePackages(provider, callback) {
+        $packageSelect.empty().append('<option value="">Select a package</option>');
+
         if (provider) {
-            $packageSelect.find('option[data-provider="' + provider + '"]').show();
-        }
-        
-        // Reset package selection if the current selection is not valid for the new provider
-        if ($packageSelect.find('option:selected:hidden').length) {
-            $packageSelect.val('');
+            $.ajax({
+                url: wpspeedtestpro_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'get_provider_packages',
+                    provider: provider,
+                    nonce: wpspeedtestpro_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var packages = response.data;
+                        packages.forEach(function(package) {
+                            $packageSelect.append($('<option>', {
+                                value: package.type,
+                                text: package.type
+                            }));
+                        });
+                        if (callback) callback();
+                    }
+                }
+            });
         }
     }
 
