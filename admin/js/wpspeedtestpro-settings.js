@@ -2,48 +2,49 @@ jQuery(document).ready(function($) {
     var $providerSelect = $('#wpspeedtestpro_selected_provider');
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var selectedPackage = $packageSelect.val(); // Store the initially selected package
+    var hostingProviders = JSON.parse(wpspeedtestpro_data.hosting_providers);
 
-    function updatePackages(provider, callback) {
+    function populateProviders() {
+        $providerSelect.empty().append('<option value="">Select a provider</option>');
+        hostingProviders.providers.forEach(function(provider) {
+            $providerSelect.append($('<option>', {
+                value: provider.name,
+                text: provider.name
+            }));
+        });
+    }
+
+    function updatePackages() {
+        var selectedProvider = $providerSelect.val();
         $packageSelect.empty().append('<option value="">Select a package</option>');
 
-        if (provider) {
-            $.ajax({
-                url: wpspeedtestpro_ajax.ajax_url,
-                type: 'POST',
-                data: {
-                    action: 'get_provider_packages',
-                    provider: provider,
-                    nonce: wpspeedtestpro_ajax.nonce
-                },
-                success: function(response) {
-                    if (response.success) {
-                        var packages = response.data;
-                        packages.forEach(function(package) {
-                            $packageSelect.append($('<option>', {
-                                value: package.type,
-                                text: package.type
-                            }));
-                        });
-                        if (callback) callback();
-                    }
-                }
-            });
+        if (selectedProvider) {
+            var provider = hostingProviders.providers.find(p => p.name === selectedProvider);
+            if (provider && provider.packages) {
+                provider.packages.forEach(function(package) {
+                    $packageSelect.append($('<option>', {
+                        value: package.type,
+                        text: package.type + ' - ' + package.description
+                    }));
+                });
+            }
+        }
+
+        // If a package was previously selected, try to reselect it
+        if (selectedPackage) {
+            $packageSelect.val(selectedPackage);
+            // If the previously selected package is not available, reset to default
+            if (!$packageSelect.val()) {
+                $packageSelect.val('');
+            }
         }
     }
 
     $providerSelect.on('change', updatePackages);
 
-    // Initial update on page load
+    // Initial population of providers and packages
+    populateProviders();
     updatePackages();
-
-    // If a package was previously selected, try to reselect it
-    if (selectedPackage) {
-        $packageSelect.val(selectedPackage);
-        // If the previously selected package is not available, reset to default
-        if (!$packageSelect.val()) {
-            $packageSelect.val('');
-        }
-    }
 
     // Handles popup modal 
     var $checkbox = $('#wpspeedtestpro_allow_data_collection');

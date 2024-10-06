@@ -84,10 +84,11 @@ class Wpspeedtestpro_Settings {
      */
     public function enqueue_scripts() {
         wp_enqueue_script( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-settings.js', array( 'jquery' ), $this->version, false );
-        wp_localize_script($this->plugin_name . '-latency-testing', 'wpspeedtestpro_ajax', array(
+        wp_localize_script($this->plugin_name . '-latency-settings', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-            'selected_region' => get_option('wp_hosting_benchmarking_selected_region') // Pass the selected region     
+            'selected_region' => get_option('wp_hosting_benchmarking_selected_region'), // Pass the selected region    
+            'hosting_providers' => $this->core->api->get_hosting_providers() 
         )); 
     }
 
