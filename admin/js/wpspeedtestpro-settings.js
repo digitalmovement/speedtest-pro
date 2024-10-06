@@ -1,10 +1,10 @@
 jQuery(document).ready(function($) {
     var $providerSelect = $('#wpspeedtestpro_selected_provider');
     var $packageSelect = $('#wpspeedtestpro_selected_package');
-    var selectedPackage = $packageSelect.val(); // Store the initially selected package
     var hostingProviders = JSON.parse(wpspeedtestpro_ajax.hosting_providers);
 
     function populateProviders() {
+        var currentProvider = $providerSelect.val();
         $providerSelect.empty().append('<option value="">Select a provider</option>');
         hostingProviders.providers.forEach(function(provider) {
             $providerSelect.append($('<option>', {
@@ -12,10 +12,14 @@ jQuery(document).ready(function($) {
                 text: provider.name
             }));
         });
+        if (currentProvider) {
+            $providerSelect.val(currentProvider);
+        }
     }
 
     function updatePackages() {
         var selectedProvider = $providerSelect.val();
+        var currentPackage = $packageSelect.val();
         $packageSelect.empty().append('<option value="">Select a package</option>');
 
         if (selectedProvider) {
@@ -30,17 +34,15 @@ jQuery(document).ready(function($) {
             }
         }
 
-        // If a package was previously selected, try to reselect it
-        if (selectedPackage) {
-            $packageSelect.val(selectedPackage);
-            // If the previously selected package is not available, reset to default
-            if (!$packageSelect.val()) {
-                $packageSelect.val('');
-            }
+        // Restore the previously selected package if it's still available
+        if (currentPackage && $packageSelect.find(`option[value="${currentPackage}"]`).length > 0) {
+            $packageSelect.val(currentPackage);
         }
     }
 
-    $providerSelect.on('change', updatePackages);
+    $providerSelect.on('change', function() {
+        updatePackages();
+    });
 
     // Initial population of providers and packages
     populateProviders();
