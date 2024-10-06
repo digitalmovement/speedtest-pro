@@ -90,8 +90,8 @@ class Wpspeedtestpro_API {
         return array('error' => 'Unexpected response from SSL Labs API');
     }
 
-    public function get_hosting_providers() {
-        $cache_key = 'wp_hosting_benchmarking_providers';
+    public function get_hosting_providers(): mixed {
+        $cache_key = 'wpspeedtestpro_hosting_providers';
         $cached_data = get_transient($cache_key);
     
         if ($cached_data !== false) {
@@ -141,4 +141,28 @@ class Wpspeedtestpro_API {
     
         return $unique_providers;
     }
+
+    public function get_hosting_providers_json() {
+        $cache_key = 'wpspeedtestpro_hosting_providers_json';
+        $cached_data = get_transient($cache_key);
+    
+        if ($cached_data !== false) {
+            error_log('Returning cached data');
+            return $cached_data;
+        }
+    
+        $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingprovider.json');
+        if (is_wp_error($response)) {
+            error_log('Error fetching hosting providers: ' . $response->get_error_message());
+            return false;
+        }
+    
+        $providers_json = wp_remote_retrieve_body($response);
+    
+        set_transient($cache_key, $providers_json, WEEK_IN_SECONDS);
+    
+        return $providers_json;
+    }
+
+
 }
