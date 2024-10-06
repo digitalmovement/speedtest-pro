@@ -87,8 +87,8 @@ class Wpspeedtestpro_Settings {
         wp_localize_script($this->plugin_name . '-latency-settings', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-            'selected_region' => get_option('wp_hosting_benchmarking_selected_region'), // Pass the selected region    
-            'hosting_providers' => $this->core->api->get_hosting_providers() 
+            'selected_region' => get_option('wp_hosting_benchmarking_selected_region') // Pass the selected region    
+           // 'hosting_providers' => $this->core->api->get_hosting_providers() 
         )); 
     }
 
@@ -101,8 +101,6 @@ class Wpspeedtestpro_Settings {
     public function display_settings() {
         $this->enqueue_styles();
         $this->enqueue_scripts();
-      
-   
        include_once( 'partials/wpspeedtestpro-settings-display.php' );
     }
 
