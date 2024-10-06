@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
     var $providerSelect = $('#wpspeedtestpro_selected_provider');
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var selectedPackage = $packageSelect.val(); // Store the initially selected package
-    var hostingProviders = JSON.parse(wpspeedtestpro_data.hosting_providers);
+    var hostingProviders = JSON.parse(wpspeedtestpro_ajax.hosting_providers);
 
     function populateProviders() {
         $providerSelect.empty().append('<option value="">Select a provider</option>');
