@@ -53,7 +53,7 @@ class Wpspeedtestpro_Settings {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
-       $this->init_components();
+        $this->init_components();
     }
 
     private function init_components() {
