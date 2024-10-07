@@ -110,7 +110,7 @@ class Wpspeedtestpro_SSL_Testing {
         $email = "jdoe@digitalmovement.co.uk";
 
         //$result = $this->core->api->test_ssl_certificate(home_url(), $email);
-        $result = $this->core->api->test_ssl_certificate("dreambook.com", $email);
+        $result = $this->core->api->test_ssl_certificate("https://dreambook.com", $email);
 
 
         if (is_array($result) && isset($result['status']) && $result['status'] !== 'READY') {
