@@ -13,9 +13,30 @@
  */
 ?>
 
-<!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap">
-    <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     <p>Test your website's SSL configuration and security.</p>
-    <!-- Add SSL testing interface here -->
+    
+    <div class="wpspeedtestpro-ssl-testing">
+        <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
+        
+        <div id="ssl-test-results">
+            <?php
+            if ($cached_result) {
+                echo $this->format_ssl_test_results($cached_result);
+            } else {
+                echo '<p>No SSL test results available. Click "Start SSL Test" to begin.</p>';
+            }
+            ?>
+        </div>
+    </div>
 </div>
+
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+        // Initialize tabs if there are cached results
+        if ($('.ssl-tabs').length > 0) {
+            initializeTabs();
+        }
+    });
+</script>

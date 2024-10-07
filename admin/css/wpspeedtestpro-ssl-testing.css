@@ -1,0 +1,108 @@
+.wpspeedtestpro-ssl-testing {
+    margin-top: 20px;
+}
+
+#start-ssl-test {
+    margin-bottom: 20px;
+}
+
+#ssl-test-results {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.ssl-tabs {
+    margin-top: 20px;
+}
+
+.ssl-tab-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.ssl-tab-links li {
+    display: inline-block;
+    margin-bottom: -1px;
+}
+
+.ssl-tab-links a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #444;
+    border: 1px solid transparent;
+}
+
+.ssl-tab-links li.active a {
+    background-color: #fff;
+    border-color: #ccc;
+    border-bottom-color: #fff;
+}
+
+.ssl-tab-content {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 20px;
+}
+
+.ssl-tab {
+    display: none;
+}
+
+.ssl-tab.active {
+    display: block;
+}
+
+.http-transaction {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+}
+
+.http-info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.http-info-table th,
+.http-info-table td {
+    padding: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.http-info-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+}
+
+.ssl-simulations-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ssl-simulations-table th,
+.ssl-simulations-table td {
+    padding: 8px;
+    border: 1px solid #e5e5e5;
+}
+
+.ssl-simulations-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    text-align: left;
+}
+
+.ssl-simulations-table tr.error {
+    background-color: #fff0f0;
+}
+
+.fas {
+    margin-right: 5px;
+}

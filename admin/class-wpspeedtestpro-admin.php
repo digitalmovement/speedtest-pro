@@ -59,6 +59,7 @@ class Wpspeedtestpro_Admin {
      */
 
     private $latency_testing;
+    private $ssl_testing;
     private $settings;
 
     public function __construct( $plugin_name, $version, $core ) {
@@ -91,6 +92,7 @@ class Wpspeedtestpro_Admin {
 
         $this->latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
         $this->settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
+        $this->ssl_testing = new Wpspeedtestpro_SSL_Testing( $this->plugin_name, $this->version, $this->core );
     }
 
     /**
@@ -194,8 +196,7 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_ssl_testing_page() {
-        $ssl_testing = new Wpspeedtestpro_SSL_Testing( $this->plugin_name, $this->version, $this->core );
-        $ssl_testing->display_ssl_testing();
+        $this->ssl_testing->display_ssl_testing();
     }
 
     /**
