@@ -48,6 +48,90 @@ class Wpspeedtestpro_API {
             ),
             'body' => array(
                 'host' => $host,
+                'fromCache' => 'on', // Don't use cached results
+                'ignoreMismatch' => 'on', // Proceed even if there's a mismatch
+                'all' => 'on',
+                'maxAge' => '1'
+            )
+        );
+    
+        // Make the API request
+        error_log('Starting SSL Labs API request for host: ' . $host);
+        $response = wp_remote_get($api_url, $args);
+        
+        if (is_wp_error($response)) {
+            $error_message = $response->get_error_message();
+            error_log('WP Error: ' . $error_message);
+            return array('error' => 'Failed to connect to SSL Labs API: ' . $error_message);
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        error_log('API Response Body: ' . substr($body, 0, 500) . '...'); // Log first 500 characters
+        
+        $data = json_decode($body, true); // Decode as associative array
+        
+        if (!$data) {
+            error_log('JSON Decode Error: ' . json_last_error_msg());
+            return array('error' => 'Failed to parse SSL Labs API response');
+        }
+        
+        error_log('Decoded Data: ' . print_r($data, true));
+        
+        // Check for API reported errors first
+        if (isset($data['errors']) && !empty($data['errors'])) {
+            error_log('SSL Labs reported errors:');
+            $error_messages = array();
+            foreach ($data['errors'] as $index => $error) {
+                if (is_array($error) && isset($error['message'])) {
+                    $error_message = $error['message'];
+                } elseif (is_string($error)) {
+                    $error_message = $error;
+                } else {
+                    $error_message = "Unknown error format";
+                }
+                error_log("Error $index: $error_message");
+                $error_messages[] = $error_message;
+            }
+            
+            // Return the error message(s) to the Ajax call
+            return array('error' => implode(', ', $error_messages));
+        }
+        
+        // If no errors, proceed with status check
+        if (isset($data['status'])) {
+            error_log('Assessment Status: ' . $data['status']);
+            if ($data['status'] === 'READY' && isset($data['endpoints'])) {
+                error_log('Assessment Ready. Returning full data.');
+                return $data; // Return the full data for detailed analysis
+            } else {
+                // Assessment is still in progress
+                $message = isset($data['statusMessage']) ? $data['statusMessage'] : 'SSL Assessment in progress';
+                error_log('Assessment in progress: ' . $message);
+                return array(
+                    'status' => $data['status'],
+                    'message' => $message
+                );
+            }
+        }
+    
+        // If we reach here, it's an unexpected response
+        error_log('Unexpected response structure from SSL Labs API');
+        return array('error' => 'Unexpected response from SSL Labs API');
+    }
+
+    
+    public function test_ssl_certificate_orig($domain, $email) {
+        $api_url = 'https://api.ssllabs.com/api/v4/analyze';
+        $host = parse_url($domain, PHP_URL_HOST);
+        
+        // Prepare the request arguments
+        $args = array(
+            'timeout' => 30, // Reduced timeout for quicker responses
+            'headers' => array(
+                'email' => $email
+            ),
+            'body' => array(
+                'host' => $host,
            //     'startNew' => 'on', // Start a new assessment if there's no cached result
                 'fromCache' => 'on', // Don't use cached results
                 'ignoreMismatch' => 'on', // Proceed even if there's a mismatch
@@ -109,7 +193,7 @@ class Wpspeedtestpro_API {
             $error_string = array_map(function($error) {
                 return is_array($error) ? json_encode($error) : $error;
             }, $data['errors']);
-        
+        }
 
         return array('error' => 'Unexpected response from SSL Labs API');
     }
