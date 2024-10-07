@@ -94,12 +94,21 @@ class Wpspeedtestpro_API {
                 );
             }
         }
-        
+
         if (isset($data['errors']) && !empty($data['errors'])) {
-            $errors = implode(', ', $data['errors']);
-            error_log('SSL Labs reported errors: ' . $errors);
-            return array('error' => 'SSL Labs reported errors: ' . $errors);
-        }
+            error_log('SSL Labs reported errors:');
+            foreach ($data['errors'] as $index => $error) {
+                if (is_array($error)) {
+                    error_log("Error $index: " . print_r($error, true));
+                } else {
+                    error_log("Error $index: $error");
+                }
+            }
+            
+            // For the return value, we'll create a flattened string representation
+            $error_string = array_map(function($error) {
+                return is_array($error) ? json_encode($error) : $error;
+            }, $data['errors']);
         
 
         return array('error' => 'Unexpected response from SSL Labs API');
