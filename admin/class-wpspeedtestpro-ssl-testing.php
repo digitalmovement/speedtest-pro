@@ -118,7 +118,7 @@ class Wpspeedtestpro_SSL_Testing {
             $this->cache_ssl_results($result);
             wp_send_json_success(array('status' => 'completed', 'data' => $this->format_ssl_test_results($result)));
         } else {
-            wp_send_json_error('Failed to start SSL test.');
+            wp_send_json_error('Failed to start SSL test: ' . $result['error']);
         }
     }
 
