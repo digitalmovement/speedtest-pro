@@ -57,36 +57,51 @@ class Wpspeedtestpro_API {
         );
     
         // Make the API request
+        error_log('Starting SSL Labs API request');
         $response = wp_remote_get($api_url, $args);
-    
+        
         if (is_wp_error($response)) {
-            return array('error' => 'Failed to connect to SSL Labs API: ' . $response->get_error_message());
+            $error_message = $response->get_error_message();
+            error_log('WP Error: ' . $error_message);
+            return array('error' => 'Failed to connect to SSL Labs API: ' . $error_message);
         }
-    
+        
         $body = wp_remote_retrieve_body($response);
+        error_log('API Response Body: ' . substr($body, 0, 500) . '...'); // Log first 500 characters
+        
         $data = json_decode($body, true); // Decode as associative array
-    
+        
         if (!$data) {
+            error_log('JSON Decode Error: ' . json_last_error_msg());
             return array('error' => 'Failed to parse SSL Labs API response');
         }
-    
+        
+        error_log('Decoded Data: ' . print_r($data, true));
+        
         // Check the status of the assessment
         if (isset($data['status'])) {
+            error_log('Assessment Status: ' . $data['status']);
             if ($data['status'] === 'READY' && isset($data['endpoints'])) {
+                error_log('Assessment Ready. Returning full data.');
                 return $data; // Return the full data for detailed analysis
             } else {
                 // Assessment is still in progress
+                $message = isset($data['statusMessage']) ? $data['statusMessage'] : 'SSL Assessment in progress';
+                error_log('Assessment in progress: ' . $message);
                 return array(
                     'status' => $data['status'],
-                    'message' => isset($data['statusMessage']) ? $data['statusMessage'] : 'Assessment in progress'
+                    'message' => $message
                 );
             }
         }
-    
+        
         if (isset($data['errors']) && !empty($data['errors'])) {
-            return array('error' => 'SSL Labs reported errors: ' . implode(', ', $data['errors']));
+            $errors = implode(', ', $data['errors']);
+            error_log('SSL Labs reported errors: ' . $errors);
+            return array('error' => 'SSL Labs reported errors: ' . $errors);
         }
-    
+        
+
         return array('error' => 'Unexpected response from SSL Labs API');
     }
 
