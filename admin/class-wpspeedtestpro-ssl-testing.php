@@ -109,7 +109,9 @@ class Wpspeedtestpro_SSL_Testing {
         // EMail must changed. 
         $email = "jdoe@digitalmovement.co.uk";
 
-        $result = $this->core->api->test_ssl_certificate(home_url(), $email);
+        //$result = $this->core->api->test_ssl_certificate(home_url(), $email);
+        $result = $this->core->api->test_ssl_certificate("dreambook.com", $email);
+
 
         if (is_array($result) && isset($result['status']) && $result['status'] !== 'READY') {
             set_transient($this->in_progress_key, $result, 30 * MINUTE_IN_SECONDS);
