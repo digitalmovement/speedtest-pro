@@ -55,8 +55,8 @@ class Wpspeedtestpro_API {
             )
         );
     
-        return array('error' => 'Unexpected response from SSL Labs API');
-        
+       
+
         // Make the API request
         error_log('Starting SSL Labs API request for host: ' . $host);
         $response = wp_remote_get($api_url, $args);
