@@ -1,7 +1,7 @@
 jQuery(document).ready(function($) {
     'use strict';
 
-    var testStatus = wpspeedtestproPerformance.testStatus;
+    var testStatus = wpspeedtestpro_performance.testStatus;
     var chart;
 
     // Initialize tabs
@@ -19,12 +19,12 @@ jQuery(document).ready(function($) {
         var newStatus = status === 'running' ? 'stopped' : 'running';
 
         $.ajax({
-            url: wpspeedtestproPerformance.ajaxurl,
+            url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
                 action: 'wpspeedtestpro_performance_toggle_test',
                 status: newStatus,
-                _ajax_nonce: wpspeedtestproPerformance.nonce
+                _ajax_nonce: wpspeedtestpro_performance.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -41,22 +41,22 @@ jQuery(document).ready(function($) {
 
     function startBackgroundTest() {
         $.ajax({
-            url: wpspeedtestproPerformance.ajaxurl,
+            url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
                 action: 'wpspeedtestpro_performance_run_test',
-                _ajax_nonce: wpspeedtestproPerformance.nonce
+                _ajax_nonce: wpspeedtestpro_performance.nonce
             }
         });
     }
 
     function loadResults() {
         $.ajax({
-            url: wpspeedtestproPerformance.ajaxurl,
+            url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
                 action: 'wpspeedtestpro_performance_get_results',
-                _ajax_nonce: wpspeedtestproPerformance.nonce
+                _ajax_nonce: wpspeedtestpro_performance.nonce
             },
             success: function(response) {
                 if (response.success && response.data) {
