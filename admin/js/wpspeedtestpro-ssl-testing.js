@@ -80,10 +80,6 @@ jQuery(document).ready(function($) {
         });
     }
 
-    function displayResults(results) {
-        $('#ssl-test-results').html(results);
-        initializeTabs();
-    }
 
     function initializeTabs() {
         $('.ssl-tab-links a').on('click', function(e) {
@@ -94,4 +90,12 @@ jQuery(document).ready(function($) {
             $(this).parent('li').addClass('active').siblings().removeClass('active');
         });
     }
+
+    
+    function displayResults(results) {
+        $('#ssl-test-results').html(results);
+        initializeTabs();
+    }
+
+  
 });
