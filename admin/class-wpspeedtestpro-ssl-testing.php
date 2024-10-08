@@ -167,7 +167,7 @@ class Wpspeedtestpro_SSL_Testing {
         // Overall Rating (always visible)
         $grade = $result['endpoints'][0]['grade'];
         $grade_color = ($grade === 'A' || $grade === 'A+') ? 'green' : (($grade === 'B') ? 'orange' : 'red');
-        $output .= '<h2><i class="fas fa-award" style="color: ' . $grade_color . ';"></i> Overall Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h2>';
+        $output .= '<h1><i class="fas fa-award" style="color: ' . $grade_color . ';"></i> Overall SSL Certificate Rating: <span style="color: ' . $grade_color . ';">' . $grade . '</span></h1>';
 
         // Start tabs
         $output .= '<div class="ssl-tabs">';

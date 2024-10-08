@@ -102,6 +102,8 @@ class Wpspeedtestpro_Admin {
      */
     public function enqueue_styles() {
         wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
     }
 
     /**
