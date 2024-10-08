@@ -101,8 +101,8 @@ class Wpspeedtestpro_Server_Performance {
         // Enqueue jQuery UI CSS
 
         wp_localize_script(
-            'wp-hosting-benchmarking-server-performance',
-            'wpHostingBenchmarkingPerformance',
+            'wpspeedtestpro-server-performance',
+            'wpspeedtestpro_performance',
             array(
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
