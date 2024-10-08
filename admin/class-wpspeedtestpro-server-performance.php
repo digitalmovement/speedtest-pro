@@ -82,8 +82,8 @@ class Wpspeedtestpro_Server_Performance {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
         wp_enqueue_style('wp-jquery-ui-dialog', 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css', array(), null);
+        wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
 
     }
 
