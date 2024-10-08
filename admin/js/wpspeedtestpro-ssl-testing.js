@@ -91,11 +91,14 @@ jQuery(document).ready(function($) {
         });
     }
 
-    
+
     function displayResults(results) {
         $('#ssl-test-results').html(results);
         initializeTabs();
     }
 
-  
+          // Initialize tabs if there are cached results
+    if ($('.ssl-tabs').length > 0) {
+       initializeTabs();
+   }
 });

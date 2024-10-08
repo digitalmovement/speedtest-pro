@@ -34,9 +34,6 @@
 
 <script type="text/javascript">
     jQuery(document).ready(function($) {
-        // Initialize tabs if there are cached results
-        if ($('.ssl-tabs').length > 0) {
-            initializeTabs();
-        }
+
     });
 </script>
