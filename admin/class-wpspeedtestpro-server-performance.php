@@ -83,7 +83,7 @@ class Wpspeedtestpro_Server_Performance {
      */
     public function enqueue_styles() {
         wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
-        wp_enqueue_style('wp-jquery-ui-dialog', 'https://code.jquery.com/ui/1.14.0/jquery-ui.js', array(), null);
+        wp_enqueue_style('wp-jquery-ui-dialog', 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css', array(), null);
 
     }
 
@@ -96,7 +96,7 @@ class Wpspeedtestpro_Server_Performance {
 
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-tabs');
-        wp_enqueue_script('chart-js', 'https://code.jquery.com/jquery-3.7.1.js', array(), '3.7.1', true);
+        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
    
         wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
         
