@@ -181,8 +181,30 @@ class Wpspeedtestpro_Server_Performance {
     private function test_cpu_memory() {
         // Implement CPU & Memory test
         // This is a placeholder implementation
-        sleep(5);
-        return rand(1, 5);
+        $count = 1000;
+
+        $time_start = microtime(true);
+
+        for ($i = 0; $i < $count; $i++) {
+            sin($i);
+            asin($i);
+            cos($i);
+            acos($i);
+            tan($i);
+            atan($i);
+            abs($i);
+            floor($i);
+            exp($i);
+            is_finite($i);
+            is_nan($i);
+            sqrt($i);
+            log10($i);
+        }
+    
+        return $this->timer_delta($time_start);
+
+
+        //return rand(1, 5);
     }
 
     private function test_filesystem() {
@@ -238,5 +260,11 @@ class Wpspeedtestpro_Server_Performance {
         
         return $data;
     }
+
+    private function timer_delta($time_start) {
+        return microtime(true) - $time_start;
+    }
+    
+
     
 }
