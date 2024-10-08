@@ -61,6 +61,10 @@ class Wpspeedtestpro_Admin {
     private $latency_testing;
     private $ssl_testing;
     private $settings;
+    private $server_performance;
+    private $uptime_monitoring;
+    private $page_speed_testing;
+    
 
     public function __construct( $plugin_name, $version, $core ) {
 
@@ -90,9 +94,14 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-page-speed-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-settings.php';
 
-        $this->latency_testing = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
-        $this->settings = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
-        $this->ssl_testing = new Wpspeedtestpro_SSL_Testing( $this->plugin_name, $this->version, $this->core );
+        $this->latency_testing      = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
+        $this->settings             = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
+        $this->ssl_testing          = new Wpspeedtestpro_SSL_Testing( $this->plugin_name, $this->version, $this->core );
+        $this->server_performance   = new Wpspeedtestpro_Server_Performance( $this->plugin_name, $this->version, $this->core );
+        $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
+        $this->$page_speed_testing  = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
+
+
     }
 
     /**
@@ -188,8 +197,7 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_server_performance_page() {
-        $server_performance = new Wpspeedtestpro_Server_Performance( $this->plugin_name, $this->version, $this->core );
-        $server_performance->display_server_performance();
+        $this->server_performance->display_server_performance();
     }
 
     /**
@@ -207,8 +215,7 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_uptime_monitoring_page() {
-        $uptime_monitoring = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
-        $uptime_monitoring->display_uptime_monitoring();
+        $this->uptime_monitoring->display_uptime_monitoring();
     }
 
     /**
@@ -217,8 +224,7 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_page_speed_testing_page() {
-        $page_speed_testing = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
-        $page_speed_testing->display_page_speed_testing();
+        $this->page_speed_testing->display_page_speed_testing();
     }
 
     /**
