@@ -96,6 +96,7 @@ class Wpspeedtestpro_Server_Performance {
 
         wp_enqueue_script('jquery-ui-core');
         wp_enqueue_script('jquery-ui-tabs');
+        wp_enqueue_script('jquery-ui-dialog');
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
    
         wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
