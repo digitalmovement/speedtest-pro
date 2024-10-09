@@ -118,7 +118,6 @@ class Wpspeedtestpro_Server_Performance {
         }
         
         $results = $this->get_test_results();
-        print_r($results);
         $industry_avg = $this->get_industry_averages();
         
         wp_send_json_success(array(
