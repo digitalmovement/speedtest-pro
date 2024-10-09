@@ -202,26 +202,32 @@ jQuery(document).ready(function($) {
 
     function displayWordPressPerformance(data) {
         var ctx = document.getElementById('wordpress-performance-chart').getContext('2d');
-
+    
         if (charts.wordpressPerformance) {
             charts.wordpressPerformance.destroy();
         }
-
+    
+        // Process the data to extract dates, time, and queries
+        var processedData = data.map(item => ({
+            x: new Date(item.test_date),
+            y1: parseFloat(item.wordpress_performance_time),
+            y2: parseFloat(item.wordpress_performance_queries)
+        }));
+    
         charts.wordpressPerformance = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(item => item.test_date),
                 datasets: [
                     {
                         label: 'Execution Time',
-                        data: data.map(item => item.time),
+                        data: processedData.map(item => ({ x: item.x, y: item.y1 })),
                         borderColor: 'rgba(75, 192, 192, 1)',
                         fill: false,
                         yAxisID: 'y-time'
                     },
                     {
                         label: 'Queries per Second',
-                        data: data.map(item => item.queries),
+                        data: processedData.map(item => ({ x: item.x, y: item.y2 })),
                         borderColor: 'rgba(255, 99, 132, 1)',
                         fill: false,
                         yAxisID: 'y-queries'
@@ -230,6 +236,16 @@ jQuery(document).ready(function($) {
             },
             options: {
                 scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Test Date'
+                        }
+                    },
                     'y-time': {
                         type: 'linear',
                         display: true,
@@ -249,12 +265,6 @@ jQuery(document).ready(function($) {
                         },
                         grid: {
                             drawOnChartArea: false
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Test Date'
                         }
                     }
                 }
