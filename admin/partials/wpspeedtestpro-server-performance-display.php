@@ -85,18 +85,3 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     </div>
 </div>
 
-<style>
-.chart-container {
-    width: 80%;
-    margin: 20px auto;
-}
-.test-controls {
-    margin-bottom: 20px;
-}
-#error-message {
-    margin: 10px 0;
-}
-#test-progress {
-    margin: 10px 0;
-}
-</style>
