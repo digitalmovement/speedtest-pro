@@ -157,9 +157,10 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     private function schedule_continuous_test() {
+        $args = array( false );
         if (get_option('wpspeedtestpro_continuous_test_status') === 'running') {
-            if (!wp_next_scheduled('wpspeedtestpro_continuous_test')) {
-                wp_schedule_event(time(), 'wpspeedtestpro_fifteen_minutes', 'wpspeedtestpro_continuous_test');
+            if (!wp_next_scheduled('wpspeedtestpro_continuous_test',$args)) {
+                wp_schedule_event(time(), 'wpspeedtestpro_fifteen_minutes', 'wpspeedtestpro_continuous_test', $args);
             }
         }
     }
