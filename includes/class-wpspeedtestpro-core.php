@@ -58,6 +58,8 @@ class Wpspeedtestpro_Core {
      */
     public  $db;
 
+    public $cron;
+
     /**
      * Initialize the class and set its properties.
      *
@@ -73,6 +75,7 @@ class Wpspeedtestpro_Core {
         $this->load_dependencies();
         $this->init_api();
         $this->init_db();
+        $this->init_cron()
     }
 
     /**
@@ -113,6 +116,9 @@ class Wpspeedtestpro_Core {
         $this->db = new Wpspeedtestpro_DB();
     }
 
+    private function init_cron() {
+        $this->cron = new Wpspeedtestpro_Cron();
+    }   
     /**
      * Get the API instance.
      *

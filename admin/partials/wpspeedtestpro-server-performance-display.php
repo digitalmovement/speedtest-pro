@@ -10,13 +10,34 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     </div>
     
     <div id="error-message" class="notice notice-error" style="display: none;"></div>
+
     
     <div class="test-controls">
         <button id="start-stop-test" class="button button-primary" data-status="<?php echo esc_attr(get_option('wpspeedtestpro_performance_test_status', 'stopped')); ?>">
             <?php echo get_option('wpspeedtestpro_performance_test_status', 'stopped') === 'running' ? 'Stop Test' : 'Start Test'; ?>
         </button>
+        <button id="continuous-test" class="button button-secondary">Continuous Testing</button>
         <div id="test-progress" class="notice notice-info" style="display: none;">
             <p>Test in progress... You can leave this page and come back later to see the results.</p>
+        </div>
+        <div id="continuous-test-info" class="notice notice-info" style="display: none;">
+            <p>Continuous test in progress. Next test scheduled for: <span id="next-test-time"></span></p>
+        </div>
+        <div id="continuous-test-info" class="notice notice-info" style="display: none;">
+            <p>Continuous test in progress. Time remaining: <span id="time-remaining"></span></p>
+        </div>
+        
+    </div>
+
+    <!-- Add modal for continuous testing warning -->
+    <div id="continuous-test-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2>Warning</h2>
+            <p>This is a continuous server test that can affect the performance of the server for end users. This should not be used on production sites. This test will run for 24 hours every 15 minutes.</p>
+            <div class="modal-buttons">
+                <button id="continue-test" class="button button-primary">Continue with test</button>
+                <button id="cancel-test" class="button button-secondary">Cancel</button>
+            </div>
         </div>
     </div>
 

@@ -2,16 +2,29 @@ jQuery(document).ready(function($) {
     'use strict';
 
     var testStatus = wpspeedtestpro_performance.testStatus;
+    // var continuousTestStatus = wpspeedtestpro_performance.continuousTestStatus;
     var charts = {};
+    var continuousTestStatus = wpspeedtestpro_continuous_data.continuousTestStatus;
+    var timeRemaining = wpspeedtestpro_continuous_data.timeRemaining;
+
 
     // Initialize tabs
     $('#server-performance-tabs').tabs();
 
     function updateButtonState(status) {
         var $button = $('#start-stop-test');
+        var $continuousButton = $('#continuous-test');
         $button.data('status', status);
         $button.text(status === 'running' ? 'Stop Test' : 'Start Test');
         $('#test-progress').toggle(status === 'running');
+
+        if (continuousTestStatus === 'running') {
+            $button.prop('disabled', true);
+            $continuousButton.text('Stop Continuous Test');
+        } else {
+            $button.prop('disabled', false);
+            $continuousButton.text('Continuous Testing');
+        }
     }
 
     function displayErrorMessage(message) {
@@ -20,6 +33,113 @@ jQuery(document).ready(function($) {
 
     function updateTestProgress(message) {
         $('#test-progress').text(message);
+    }
+
+    function updateContinuousTestInfo() {
+        if (continuousTestStatus === 'running') {
+            $('#continuous-test-info').show();
+            updateTimeRemaining();
+            updateNextTestTime();
+        } else {
+            $('#continuous-test-info').hide();
+        }
+    }
+
+    function updateNextTestTime() {
+        $.ajax({
+            url: wpspeedtestpro_performance.ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'wpspeedtestpro_get_next_test_time',
+                _ajax_nonce: wpspeedtestpro_performance.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#next-test-time').text(response.data);
+                }
+            }
+        });
+    }
+
+    function updateTimeRemaining() {
+        var hours = Math.floor(timeRemaining / 3600);
+        var minutes = Math.floor((timeRemaining % 3600) / 60);
+        var seconds = timeRemaining % 60;
+
+        var timeString = hours + 'h ' + minutes + 'm ' + seconds + 's';
+        $('#time-remaining').text(timeString);
+
+        if (timeRemaining > 0) {
+            timeRemaining--;
+            setTimeout(updateTimeRemaining, 1000);
+        } else {
+            continuousTestStatus = 'stopped';
+            updateButtonState(testStatus);
+            updateContinuousTestInfo();
+        }
+    }
+
+    $('#continuous-test').on('click', function() {
+        if (continuousTestStatus === 'running') {
+            stopContinuousTest();
+        } else {
+            $('#continuous-test-modal').show();
+        }
+    });
+
+    $('#continue-test').on('click', function() {
+        $('#continuous-test-modal').hide();
+        startContinuousTest();
+    });
+
+    $('#cancel-test').on('click', function() {
+        $('#continuous-test-modal').hide();
+    });
+
+    function startContinuousTest() {
+        $.ajax({
+            url: wpspeedtestpro_performance.ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'wpspeedtestpro_start_continuous_test',
+                _ajax_nonce: wpspeedtestpro_performance.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    continuousTestStatus = 'running';
+                    updateButtonState(testStatus);
+                    updateContinuousTestInfo();
+                } else {
+                    displayErrorMessage('Failed to start continuous test: ' + response.data);
+                }
+            },
+            error: function() {
+                displayErrorMessage('An error occurred while starting the continuous test. Please try again.');
+            }
+        });
+    }
+
+    function stopContinuousTest() {
+        $.ajax({
+            url: wpspeedtestpro_performance.ajaxurl,
+            method: 'POST',
+            data: {
+                action: 'wpspeedtestpro_stop_continuous_test',
+                _ajax_nonce: wpspeedtestpro_performance.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    continuousTestStatus = 'stopped';
+                    updateButtonState(testStatus);
+                    updateContinuousTestInfo();
+                } else {
+                    displayErrorMessage('Failed to stop continuous test: ' + response.data);
+                }
+            },
+            error: function() {
+                displayErrorMessage('An error occurred while stopping the continuous test. Please try again.');
+            }
+        });
     }
 
     $('#start-stop-test').on('click', function() {
@@ -343,6 +463,7 @@ jQuery(document).ready(function($) {
     });
 }
 
-    updateButtonState(testStatus);
-    loadResults();
+updateButtonState(testStatus);
+updateContinuousTestInfo();
+loadResults();
 });

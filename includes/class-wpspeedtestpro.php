@@ -135,6 +135,11 @@ class Wpspeedtestpro {
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-core.php';
 
+		/**
+		 * The class responsible for defining all actions that occur in the cron.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-cron.php';
+
 
 		$this->loader = new Wpspeedtestpro_Loader();
 
