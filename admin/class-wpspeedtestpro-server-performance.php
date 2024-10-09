@@ -118,6 +118,7 @@ class Wpspeedtestpro_Server_Performance {
         }
         
         $results = $this->get_test_results();
+        print_r($results);
         $industry_avg = $this->get_industry_averages();
         
         wp_send_json_success(array(
@@ -157,7 +158,7 @@ class Wpspeedtestpro_Server_Performance {
             $results['loops'] = $this->get_historical_results('loops');
             $results['conditionals'] = $this->get_historical_results('conditionals');
             $results['mysql'] = $this->get_historical_results('mysql');
-//            $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
+            $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
 
             update_option('wpspeedtestpro_performance_test_results', $results);
             update_option('wpspeedtestpro_performance_test_status', 'stopped');
