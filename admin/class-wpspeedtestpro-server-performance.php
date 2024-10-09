@@ -239,7 +239,7 @@ class Wpspeedtestpro_Server_Performance {
         
         if (is_wp_error($response)) {
             return array(
-                'cpu_memory' => 2.5,
+                'cpu_memory' => 4.5,
                 'filesystem' => 2.5,
                 'database' => 2.5,
                 'object_cache' => 2.5
