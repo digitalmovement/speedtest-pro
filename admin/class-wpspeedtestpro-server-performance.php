@@ -79,7 +79,7 @@ class Wpspeedtestpro_Server_Performance {
     }
     private function create_benchmark_table() {
         $db = new Wpspeedtestpro_DB();
-        $db->create_benchmark_table();
+        $this->core->db->create_benchmark_table();
     }
 
     public function display_server_performance() {
@@ -318,8 +318,8 @@ class Wpspeedtestpro_Server_Performance {
 
     private function save_test_results($results) {
         try {
-            $db = new Wpspeedtestpro_DB();
-            $db->insert_benchmark_result($results);
+            //$db = new Wpspeedtestpro_DB();
+            $this->core->db->insert_benchmark_result($results);
             return true;
         } catch (Exception $e) {
             return $e->getMessage();
@@ -339,8 +339,8 @@ class Wpspeedtestpro_Server_Performance {
 */
     private function get_historical_results($test_type, $limit = 30) {
         try {
-            $db = new Wpspeedtestpro_DB();
-            $results = $db->get_benchmark_results($limit);
+            //$db = new Wpspeedtestpro_DB();
+            $results = $this->core->db->get_benchmark_results($limit);
             
             // Process the results to match the expected format
             return array_map(function($result) use ($test_type) {
