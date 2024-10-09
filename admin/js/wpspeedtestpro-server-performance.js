@@ -155,35 +155,44 @@ jQuery(document).ready(function($) {
 
     function displayHistoricalResults(testType, data) {
         var ctx = document.getElementById(testType + '-chart').getContext('2d');
-
+    
         if (charts[testType]) {
             charts[testType].destroy();
         }
-
+    
+        // Process the data to extract dates and values
+        var processedData = data.map(item => ({
+            x: new Date(item.test_date),
+            y: parseFloat(item[testType])
+        }));
+    
         charts[testType] = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(item => item.test_date),
                 datasets: [{
                     label: testType.charAt(0).toUpperCase() + testType.slice(1) + ' Performance',
-                    data: data.map(item => item.value),
+                    data: processedData,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     fill: false
                 }]
             },
             options: {
                 scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Test Date'
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Time (seconds)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Test Date'
                         }
                     }
                 }

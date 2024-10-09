@@ -12,6 +12,10 @@
 
 /**
  * The server performance functionality of the plugin.
+ * This benchamarking code is inspired by: 
+ * - www.php-benchmark-script.com  (Alessandro Torrisi)
+ * - www.webdesign-informatik.de
+ * - WPBenchmarking 
  *
  * Defines the plugin name, version, and hooks for the server performance functionality.
  *
@@ -55,6 +59,11 @@ class Wpspeedtestpro_Server_Performance {
         wp_enqueue_script('jquery-ui-tabs');
         wp_enqueue_script('jquery-ui-dialog');
         wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
+        wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
+
+        
+
+
    
         wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
         
