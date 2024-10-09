@@ -177,6 +177,7 @@ jQuery(document).ready(function($) {
                 }]
             },
             options: {
+                responsive: true,
                 scales: {
                     x: {
                         type: 'time',
@@ -235,6 +236,7 @@ jQuery(document).ready(function($) {
                 ]
             },
             options: {
+                responsive: true,
                 scales: {
                     x: {
                         type: 'time',
