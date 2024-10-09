@@ -187,18 +187,18 @@ class Wpspeedtestpro_Server_Performance {
 
         for ($i = 0; $i < $count; $i++) {
             sin($i);
-            asin($i);
+            asin($i / $count); // Avoid domain errors
             cos($i);
-            acos($i);
+            acos($i / $count); // Avoid domain errors
             tan($i);
             atan($i);
             abs($i);
             floor($i);
-            exp($i);
+            exp($i % 10); // Avoid overflow
             is_finite($i);
             is_nan($i);
-            sqrt($i);
-            log10($i);
+            sqrt(abs($i)); // Avoid domain errors
+            log10($i + 1); // Avoid domain errors
         }
     
         return $this->timer_delta($time_start);
@@ -262,8 +262,18 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     private function timer_delta($time_start) {
-        return number_format(microtime(true) - $time_start, 3);
+        return microtime(true) - $time_start;
     }    
+
+    private function normalize_score($value, $min, $max, $invert = false) {
+        $normalized = ($value - $min) / ($max - $min);
+        if ($invert) {
+            $normalized = 1 - $normalized;
+        }
+        return max(0, min(5, $normalized * 5)); // Scale to 0-5 range
+    }
+
+
 
     
 }
