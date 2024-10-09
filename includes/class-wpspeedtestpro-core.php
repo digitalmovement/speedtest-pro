@@ -75,7 +75,7 @@ class Wpspeedtestpro_Core {
         $this->load_dependencies();
         $this->init_api();
         $this->init_db();
-        $this->init_cron()
+        $this->init_cron();
     }
 
     /**
