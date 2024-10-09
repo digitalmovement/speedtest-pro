@@ -326,6 +326,7 @@ class Wpspeedtestpro_Server_Performance {
         }
     }
 
+    /*
     private function get_historical_results($test_type, $limit = 30) {
         try {
             $db = new Wpspeedtestpro_DB();
@@ -335,4 +336,23 @@ class Wpspeedtestpro_Server_Performance {
             return array();
         }
     }
+*/
+    private function get_historical_results($test_type, $limit = 30) {
+        try {
+            $db = new Wpspeedtestpro_DB();
+            $results = $db->get_benchmark_results($limit);
+            
+            // Process the results to match the expected format
+            return array_map(function($result) use ($test_type) {
+                return [
+                    'test_date' => $result['test_date'],
+                    $test_type => $result[$test_type]
+                ];
+            }, $results);
+        } catch (Exception $e) {
+            error_log('Error getting historical results: ' . $e->getMessage());
+            return array();
+        }
+    }
+
 }

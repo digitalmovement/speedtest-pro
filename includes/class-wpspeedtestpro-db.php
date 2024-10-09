@@ -102,11 +102,12 @@ class Wpspeedtestpro_DB {
         return $wpdb->get_row("SELECT * FROM $table_name ORDER BY test_date DESC LIMIT 1", ARRAY_A);
     }
 
-    public function get_benchmark_results($limit = 10) {
+    public function get_benchmark_results($limit = 30) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wpspeedtestpro_benchmark_results';
         return $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_name ORDER BY test_date DESC LIMIT %d", $limit), ARRAY_A);
     }
+
 
     public function get_latest_results_by_region() {
         global $wpdb;
