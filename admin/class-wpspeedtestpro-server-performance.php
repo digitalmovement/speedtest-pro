@@ -290,12 +290,12 @@ class Wpspeedtestpro_Server_Performance {
         
         if (is_wp_error($response)) {
             return array(
-                'math' => 2.5,
-                'string' => 2.5,
-                'loops' => 2.5,
-                'conditionals' => 2.5,
-                'mysql' => 2.5,
-                'wordpress_performance' => array('time' => 2.5, 'queries' => 1000)
+                'math' => 0.04,
+                'string' => 0.2,
+                'loops' => 0.01,
+                'conditionals' => 0.01,
+                'mysql' => 2.3,
+                'wordpress_performance' => array('time' => 0.5, 'queries' => 3000)
             );
         }
         
