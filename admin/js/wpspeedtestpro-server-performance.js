@@ -211,8 +211,8 @@ jQuery(document).ready(function($) {
         // Process the data to extract dates, time, and queries
         var processedData = data.map(item => ({
             x: new Date(item.test_date),
-            y1: parseFloat(item.wordpress_performance_time),
-            y2: parseFloat(item.wordpress_performance_queries)
+            y1: parseFloat(item.wordpress_performance.time),
+            y2: parseFloat(item.wordpress_performance.queries)
         }));
     
         charts.wordpressPerformance = new Chart(ctx, {
