@@ -100,8 +100,6 @@ class Wpspeedtestpro_Admin {
         $this->server_performance   = new Wpspeedtestpro_Server_Performance( $this->plugin_name, $this->version, $this->core );
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         $this->page_speed_testing   = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
-
-
     }
 
     /**
@@ -112,7 +110,6 @@ class Wpspeedtestpro_Admin {
     public function enqueue_styles() {
         wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
         wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-
     }
 
     /**
@@ -122,9 +119,10 @@ class Wpspeedtestpro_Admin {
      */
     public function enqueue_scripts() {
         wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-admin.js', array( 'jquery' ), $this->version, false );
+        wp_enqueue_script( 'chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true );
     }
 
-	/**
+    /**
      * Register all of the hooks related to the admin area functionality
      * of the plugin.
      *
@@ -135,8 +133,20 @@ class Wpspeedtestpro_Admin {
         add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_server_performance_scripts' ) );
     }
 
+    /**
+     * Enqueue scripts specifically for the server performance page.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_server_performance_scripts($hook) {
+        if ($hook === 'wpspeedtestpro_page_' . $this->plugin_name . '-server-performance') {
+            wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery', 'chart-js' ), $this->version, false );
+            wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
+        }
+    }
 
     /**
      * Register the administration menu for this plugin into the WordPress Dashboard menu.
@@ -146,7 +156,6 @@ class Wpspeedtestpro_Admin {
     public function add_plugin_admin_menu() {
         add_menu_page( 'WP Speed Test Pro', 'WP Speed Test Pro', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page'), 'dashicons-performance', 99 );
        
-	
         add_submenu_page( $this->plugin_name, 'Dashboard', 'Dashboard', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page') );
         add_submenu_page( $this->plugin_name, 'Latency Testing', 'Latency Testing', 'manage_options', $this->plugin_name . '-latency-testing', array($this, 'display_plugin_latency_testing_page') );
         add_submenu_page( $this->plugin_name, 'Server Performance', 'Server Performance', 'manage_options', $this->plugin_name . '-server-performance', array($this, 'display_plugin_server_performance_page') );
@@ -154,9 +163,6 @@ class Wpspeedtestpro_Admin {
         add_submenu_page( $this->plugin_name, 'Uptime Monitoring', 'Uptime Monitoring', 'manage_options', $this->plugin_name . '-uptime-monitoring', array($this, 'display_plugin_uptime_monitoring_page') );
         add_submenu_page( $this->plugin_name, 'Page Speed Testing', 'Page Speed Testing', 'manage_options', $this->plugin_name . '-page-speed-testing', array($this, 'display_plugin_page_speed_testing_page') );
         add_submenu_page( $this->plugin_name, 'Settings', 'Settings', 'manage_options', $this->plugin_name . '-settings', array($this, 'display_plugin_settings_page') );
-
-      
-     
     }
 
     /**
@@ -180,7 +186,6 @@ class Wpspeedtestpro_Admin {
             }
         </style>';
     }
-
 
     /**
      * Render the latency testing page for this plugin.

@@ -21,110 +21,33 @@
  */
 class Wpspeedtestpro_Server_Performance {
 
-    /**
-     * The ID of this plugin.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      string    $plugin_name    The ID of this plugin.
-     */
     private $plugin_name;
-
-    /**
-     * The version of this plugin.
-     *
-     * @since    1.0.0
-     * @access   private
-     * @var      string    $version    The current version of this plugin.
-     */
     private $version;
-
-    /**
-     * Initialize the class and set its properties.
-     *
-     * @since    1.0.0
-     * @param      string    $plugin_name       The name of this plugin.
-     * @param      string    $version    The version of this plugin.
-     */
     private $core;
 
-    /**
-     * Initialize the class and set its properties.
-     *
-     * @since    1.0.0
-     * @param      string    $plugin_name       The name of this plugin.
-     * @param      string    $version    The version of this plugin.
-     */
-  public function __construct( $plugin_name, $version, $core ) {
-
+    public function __construct( $plugin_name, $version, $core ) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
         $this->add_hooks();
+        $this->create_benchmark_table();
     }
 
-    /**
-     * Add the hooks for the server performance area.
-     *
-     * @since    1.0.0
-     */
     public function add_hooks() {
         add_action('wp_ajax_wpspeedtestpro_performance_toggle_test', array($this, 'ajax_performance_toggle_test'));
         add_action('wp_ajax_wpspeedtestpro_performance_run_test', array($this, 'ajax_performance_run_test'));
         add_action('wp_ajax_wpspeedtestpro_performance_get_results', array($this, 'ajax_performance_get_results'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-
-    }
-    /**
-     * Register the stylesheets for the server performance area.
-     *
-     * @since    1.0.0
-     */
-    public function enqueue_styles() {
-        wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css', array(), null);
-        wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
-
     }
 
-    /**
-     * Register the JavaScript for the server performance area.
-     *
-     * @since    1.0.0
-     */
-    public function enqueue_scripts() {
-
-        wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-tabs');
-        wp_enqueue_script('jquery-ui-dialog');
-        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
-   
-        wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
-        
-        // Enqueue jQuery UI CSS
-
-        wp_localize_script(
-            'wpspeedtestpro-server-performance',
-            'wpspeedtestpro_performance',
-            array(
-                'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
-                'testStatus' => get_option('wpspeedtestpro_performance_test_status', 'stopped')
-            )
-        );
-
+    private function create_benchmark_table() {
+        $db = new Wpspeedtestpro_DB();
+        $db->create_benchmark_table();
     }
 
-    /**
-     * Render the server performance page for this plugin.
-     *
-     * @since    1.0.0
-     */
     public function display_server_performance() {
         include_once( 'partials/wpspeedtestpro-server-performance-display.php' );
     }
 
-    // Add more methods as needed for server performance functionality
     public function ajax_performance_toggle_test() {
         check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
@@ -142,10 +65,12 @@ class Wpspeedtestpro_Server_Performance {
             wp_send_json_error('Insufficient permissions');
         }
 
-        // Run tests in the background
-        $this->run_performance_tests();
-        
-        wp_send_json_success();
+        $result = $this->run_performance_tests();
+        if ($result === true) {
+            wp_send_json_success('Tests completed successfully');
+        } else {
+            wp_send_json_error($result);
+        }
     }
 
     public function ajax_performance_get_results() {
@@ -158,79 +83,167 @@ class Wpspeedtestpro_Server_Performance {
         $industry_avg = $this->get_industry_averages();
         
         wp_send_json_success(array(
-            'cpu_memory' => $results['cpu_memory'],
-            'filesystem' => $results['filesystem'],
-            'database' => $results['database'],
-            'object_cache' => $results['object_cache'],
+            'latest_results' => $results['latest_results'],
+            'math' => $results['math'],
+            'string' => $results['string'],
+            'loops' => $results['loops'],
+            'conditionals' => $results['conditionals'],
+            'mysql' => $results['mysql'],
+            'wordpress_performance' => $results['wordpress_performance'],
             'industry_avg' => $industry_avg
         ));
     }
 
     private function run_performance_tests() {
-        $results = array(
-            'cpu_memory' => $this->test_cpu_memory(),
-            'filesystem' => $this->test_filesystem(),
-            'database' => $this->test_database(),
-            'object_cache' => $this->test_object_cache()
-        );
+        try {
+            update_option('wpspeedtestpro_performance_test_status', 'running');
+            
+            $results = array(
+                'latest_results' => array(
+                    'math' => $this->test_math(),
+                    'string' => $this->test_string(),
+                    'loops' => $this->test_loops(),
+                    'conditionals' => $this->test_conditionals(),
+                    'mysql' => $this->test_mysql(),
+                    'wordpress_performance' => $this->test_wordpress_performance()
+                )
+            );
 
-        update_option('wpspeedtestpro_performance_test_results', $results);
-        update_option('wpspeedtestpro_performance_test_status', 'stopped');
+            $save_result = $this->save_test_results($results['latest_results']);
+            if ($save_result !== true) {
+                throw new Exception('Failed to save test results: ' . $save_result);
+            }
+
+            $results['math'] = $this->get_historical_results('math');
+            $results['string'] = $this->get_historical_results('string');
+            $results['loops'] = $this->get_historical_results('loops');
+            $results['conditionals'] = $this->get_historical_results('conditionals');
+            $results['mysql'] = $this->get_historical_results('mysql');
+            $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
+
+            update_option('wpspeedtestpro_performance_test_results', $results);
+            update_option('wpspeedtestpro_performance_test_status', 'stopped');
+
+            return true;
+        } catch (Exception $e) {
+            update_option('wpspeedtestpro_performance_test_status', 'error');
+            return 'Error running performance tests: ' . $e->getMessage();
+        }
     }
 
-    private function test_cpu_memory() {
-        // Implement CPU & Memory test
-        // This is a placeholder implementation
-        $count = 1000000;
-
+    private function test_math($count = 99999) {
         $time_start = microtime(true);
 
         for ($i = 0; $i < $count; $i++) {
             sin($i);
-            asin($i / $count); // Avoid domain errors
+            asin($i / $count);
             cos($i);
-            acos($i / $count); // Avoid domain errors
+            acos($i / $count);
             tan($i);
             atan($i);
             abs($i);
             floor($i);
-            exp($i % 10); // Avoid overflow
+            exp($i % 10);
             is_finite($i);
             is_nan($i);
-            sqrt(abs($i)); // Avoid domain errors
-            log10($i + 1); // Avoid domain errors
+            sqrt(abs($i));
+            log10($i + 1);
         }
     
         return $this->timer_delta($time_start);
-
-
-        //return rand(1, 5);
     }
 
-    private function test_filesystem() {
-        // Implement Filesystem test
-        // This is a placeholder implementation
-        return rand(1, 5);
+    private function test_string($count = 99999) {
+        $time_start = microtime(true);
+        $string = 'the quick brown fox jumps over the lazy dog';
+        for ($i = 0; $i < $count; $i++) {
+            addslashes($string);
+            chunk_split($string);
+            metaphone($string);
+            strip_tags($string);
+            md5($string);
+            sha1($string);
+            strtoupper($string);
+            strtolower($string);
+            strrev($string);
+            strlen($string);
+            soundex($string);
+            ord($string);
+        }
+        return $this->timer_delta($time_start);
     }
 
-    private function test_database() {
-        // Implement Database test
-        // This is a placeholder implementation
-        return rand(1, 5);
+    private function test_loops($count = 999999) {
+        $time_start = microtime(true);
+        for ($i = 0; $i < $count; ++$i);
+        $i = 0;
+        while ($i < $count) {
+            ++$i;
+        }
+        return $this->timer_delta($time_start);
     }
 
-    private function test_object_cache() {
-        // Implement Object Cache test
-        // This is a placeholder implementation
-        return rand(1, 5);
+    private function test_conditionals($count = 999999) {
+        $time_start = microtime(true);
+        for ($i = 0; $i < $count; $i++) {
+            if ($i == -1) {
+            } elseif ($i == -2) {
+            } else if ($i == -3) {
+            }
+        }
+        return $this->timer_delta($time_start);
+    }
+
+    private function test_mysql() {
+        $time_start = microtime(true);
+        global $wpdb;
+        
+        $query = "SELECT BENCHMARK(1000000, AES_ENCRYPT('WPSpeedTestPro',UNHEX(SHA2('benchmark',512))))";
+        $wpdb->query($query);
+        
+        return $this->timer_delta($time_start);
+    }
+
+    private function test_wordpress_performance() {
+        $time_start = microtime(true);
+        global $wpdb;
+        $table = $wpdb->prefix . 'options';
+        $optionname = 'wpspeedtestpro_benchmark_';
+        $count = 250;
+        $dummytext = str_repeat('Lorem ipsum dolor sit amet ', 100);
+
+        for ($x = 0; $x < $count; $x++) {
+            $wpdb->insert($table, array('option_name' => $optionname . $x, 'option_value' => $dummytext));
+            $wpdb->get_var("SELECT option_value FROM $table WHERE option_name='$optionname$x'");
+            $wpdb->update($table, array('option_value' => 'updated_' . $dummytext), array('option_name' => $optionname . $x));
+            $wpdb->delete($table, array('option_name' => $optionname . $x));
+        }
+
+        $time = $this->timer_delta($time_start);
+        $queries = ($count * 4) / $time;
+        return array('time' => $time, 'queries' => $queries);
+    }
+
+    private function timer_delta($time_start) {
+        return number_format(microtime(true) - $time_start, 3);
     }
 
     private function get_test_results() {
         return get_option('wpspeedtestpro_performance_test_results', array(
-            'cpu_memory' => 0,
-            'filesystem' => 0,
-            'database' => 0,
-            'object_cache' => 0
+            'latest_results' => array(
+                'math' => 0,
+                'string' => 0,
+                'loops' => 0,
+                'conditionals' => 0,
+                'mysql' => 0,
+                'wordpress_performance' => array('time' => 0, 'queries' => 0)
+            ),
+            'math' => array(),
+            'string' => array(),
+            'loops' => array(),
+            'conditionals' => array(),
+            'mysql' => array(),
+            'wordpress_performance' => array()
         ));
     }
 
@@ -239,10 +252,12 @@ class Wpspeedtestpro_Server_Performance {
         
         if (is_wp_error($response)) {
             return array(
-                'cpu_memory' => 4.5,
-                'filesystem' => 2.5,
-                'database' => 2.5,
-                'object_cache' => 2.5
+                'math' => 2.5,
+                'string' => 2.5,
+                'loops' => 2.5,
+                'conditionals' => 2.5,
+                'mysql' => 2.5,
+                'wordpress_performance' => array('time' => 2.5, 'queries' => 1000)
             );
         }
         
@@ -251,29 +266,35 @@ class Wpspeedtestpro_Server_Performance {
         
         if (!$data) {
             return array(
-                'cpu_memory' => 2.5,
-                'filesystem' => 2.5,
-                'database' => 2.5,
-                'object_cache' => 2.5
+                'math' => 2.5,
+                'string' => 2.5,
+                'loops' => 2.5,
+                'conditionals' => 2.5,
+                'mysql' => 2.5,
+                'wordpress_performance' => array('time' => 2.5, 'queries' => 1000)
             );
         }
         
         return $data;
     }
 
-    private function timer_delta($time_start) {
-        return microtime(true) - $time_start;
-    }    
-
-    private function normalize_score($value, $min, $max, $invert = false) {
-        $normalized = ($value - $min) / ($max - $min);
-        if ($invert) {
-            $normalized = 1 - $normalized;
+    private function save_test_results($results) {
+        try {
+            $db = new Wpspeedtestpro_DB();
+            $db->insert_benchmark_result($results);
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
-        return max(0, min(5, $normalized * 5)); // Scale to 0-5 range
     }
 
-
-
-    
+    private function get_historical_results($test_type, $limit = 5) {
+        try {
+            $db = new Wpspeedtestpro_DB();
+            return $db->get_benchmark_results($limit);
+        } catch (Exception $e) {
+            error_log('Error getting historical results: ' . $e->getMessage());
+            return array();
+        }
+    }
 }

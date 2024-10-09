@@ -6,50 +6,97 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
     <div class="server-performance-content">
         <h2>Server Performance Tests</h2>
-        <p>This page will contain various server performance tests and their results. Implement your server performance testing logic here.</p>
-        <!-- Add your server performance testing content here -->
+        <p>This page contains various server performance tests and their results. The tests measure different aspects of your server's performance.</p>
     </div>
+    
+    <div id="error-message" class="notice notice-error" style="display: none;"></div>
+    
+    <div class="test-controls">
+        <button id="start-stop-test" class="button button-primary" data-status="<?php echo esc_attr(get_option('wpspeedtestpro_performance_test_status', 'stopped')); ?>">
+            <?php echo get_option('wpspeedtestpro_performance_test_status', 'stopped') === 'running' ? 'Stop Test' : 'Start Test'; ?>
+        </button>
+        <div id="test-progress" class="notice notice-info" style="display: none;">
+            <p>Test in progress... You can leave this page and come back later to see the results.</p>
+        </div>
+    </div>
+
     <div id="server-performance-tabs">
         <ul>
-            <li><a href="#tab-overview">Overview</a></li>
-            <li><a href="#tab-cpu-memory">CPU & Memory</a></li>
-            <li><a href="#tab-filesystem">Filesystem</a></li>
-            <li><a href="#tab-database">Database</a></li>
-            <li><a href="#tab-object-cache">Object Cache</a></li>
+            <li><a href="#tab-latest-results">Latest Results</a></li>
+            <li><a href="#tab-math">Math</a></li>
+            <li><a href="#tab-string">String</a></li>
+            <li><a href="#tab-loops">Loops</a></li>
+            <li><a href="#tab-conditionals">Conditionals</a></li>
+            <li><a href="#tab-mysql">MySQL</a></li>
+            <li><a href="#tab-wordpress">WordPress Performance</a></li>
         </ul>
         
-        <div id="tab-overview">
-            <h2>Server Performance Overview</h2>
-            <button id="start-stop-test" class="button button-primary" data-status="<?php echo esc_attr(get_option('wpspeedtestpro_performance_test_status', 'stopped')); ?>">
-                <?php echo get_option('wpspeedtestpro_performance_test_status', 'stopped') === 'running' ? 'Stop Test' : 'Start Test'; ?>
-            </button>
-            <div id="test-progress" style="display: none;">
-                <p>Test in progress... You can leave this page and come back later to see the results.</p>
-            </div>
-            <div id="results-chart-container" style="width: 80%; margin: 20px auto;">
-                <canvas id="results-chart"></canvas>
+        <div id="tab-latest-results">
+            <h2>Latest Benchmark Results</h2>
+            <div id="latest-results-chart-container" class="chart-container">
+                <canvas id="latest-results-chart"></canvas>
             </div>
         </div>
         
-        <div id="tab-cpu-memory">
-            <h2>CPU & Memory Performance</h2>
-            <!-- CPU & Memory specific content will go here -->
+        <div id="tab-math">
+            <h2>Math Performance</h2>
+            <div class="chart-container">
+                <canvas id="math-chart"></canvas>
+            </div>
         </div>
         
-        <div id="tab-filesystem">
-            <h2>Filesystem Performance</h2>
-            <!-- Filesystem specific content will go here -->
+        <div id="tab-string">
+            <h2>String Performance</h2>
+            <div class="chart-container">
+                <canvas id="string-chart"></canvas>
+            </div>
         </div>
         
-        <div id="tab-database">
-            <h2>Database Performance</h2>
-            <!-- Database specific content will go here -->
+        <div id="tab-loops">
+            <h2>Loops Performance</h2>
+            <div class="chart-container">
+                <canvas id="loops-chart"></canvas>
+            </div>
         </div>
         
-        <div id="tab-object-cache">
-            <h2>Object Cache Performance</h2>
-            <!-- Object Cache specific content will go here -->
+        <div id="tab-conditionals">
+            <h2>Conditionals Performance</h2>
+            <div class="chart-container">
+                <canvas id="conditionals-chart"></canvas>
+            </div>
         </div>
+        
+        <div id="tab-mysql">
+            <h2>MySQL Performance</h2>
+            <div class="chart-container">
+                <canvas id="mysql-chart"></canvas>
+            </div>
+        </div>
+        
+        <div id="tab-wordpress">
+            <h2>WordPress Performance</h2>
+            <div class="chart-container">
+                <canvas id="wordpress-performance-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="performance-note">
+        <p><strong>Note:</strong> Historical charts will be displayed once at least 5 test results have been collected. Run multiple tests to see the performance trends over time.</p>
     </div>
 </div>
 
+<style>
+.chart-container {
+    width: 80%;
+    margin: 20px auto;
+}
+.test-controls {
+    margin-bottom: 20px;
+}
+#error-message {
+    margin: 10px 0;
+}
+#test-progress {
+    margin: 10px 0;
+}
+</style>
