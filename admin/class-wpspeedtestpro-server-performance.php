@@ -157,7 +157,7 @@ class Wpspeedtestpro_Server_Performance {
             $results['loops'] = $this->get_historical_results('loops');
             $results['conditionals'] = $this->get_historical_results('conditionals');
             $results['mysql'] = $this->get_historical_results('mysql');
-            $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
+//            $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
 
             update_option('wpspeedtestpro_performance_test_results', $results);
             update_option('wpspeedtestpro_performance_test_status', 'stopped');
@@ -342,7 +342,7 @@ class Wpspeedtestpro_Server_Performance {
             //$db = new Wpspeedtestpro_DB();
             $results = $this->core->db->get_benchmark_results($limit);
             
-return array_map(function($result) use ($test_type) {
+            return array_map(function($result) use ($test_type) {
                 if ($test_type === 'wordpress_performance') {
                     return [
                         'test_date' => $result['test_date'],
