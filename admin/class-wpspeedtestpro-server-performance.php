@@ -142,6 +142,21 @@ class Wpspeedtestpro_Server_Performance {
         wp_send_json_success();
     }
 
+    public function ajax_get_next_test_time() {
+        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Insufficient permissions');
+        }
+
+        $next_test_time = wp_next_scheduled('wpspeedtestpro_continuous_test');
+        if ($next_test_time) {
+            wp_send_json_success(date('Y-m-d H:i:s', $next_test_time));
+        } else {
+            wp_send_json_error('No scheduled test found');
+        }
+    }
+
+    
     private function schedule_continuous_test() {
         if (!wp_next_scheduled('wpspeedtestpro_continuous_test')) {
             wp_schedule_event(time(), 'wpspeedtestpro_fifteen_minutes', 'wpspeedtestpro_continuous_test');
@@ -167,6 +182,8 @@ class Wpspeedtestpro_Server_Performance {
             }
         }
     }
+
+    
 
     public function run_continuous_test() {
         $start_time = get_option('wpspeedtestpro_continuous_test_start_time');
