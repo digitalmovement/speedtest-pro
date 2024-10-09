@@ -104,7 +104,7 @@ jQuery(document).ready(function($) {
     }
 
     function displayResults(data) {
-        displayLatestResults(data.latest_results);
+        displayLatestResults(data.latest_results, data.industry_avg);
         displayHistoricalResults('math', data.math, data.industry_avg);
         displayHistoricalResults('string', data.string, data.industry_avg);
         displayHistoricalResults('loops', data.loops, data.industry_avg);
@@ -113,40 +113,77 @@ jQuery(document).ready(function($) {
         displayWordPressPerformance(data.wordpress_performance, data.industry_avg);
     }
 
-    function displayLatestResults(data) {
+    function displayLatestResults(data, industryAvg) {
         var ctx = document.getElementById('latest-results-chart').getContext('2d');
-
+    
         if (charts.latestResults) {
             charts.latestResults.destroy();
         }
-
+    
+        const labels = ['Math', 'String', 'Loops', 'Conditionals', 'MySQL', 'WordPress Time'];
+        const latestData = [
+            data.math,
+            data.string,
+            data.loops,
+            data.conditionals,
+            data.mysql,
+            data.wordpress_performance.time
+        ];
+        const avgData = [
+            industryAvg.math,
+            industryAvg.string,
+            industryAvg.loops,
+            industryAvg.conditionals,
+            industryAvg.mysql,
+            industryAvg.wordpress_performance.time
+        ];
+    
         charts.latestResults = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Math', 'String', 'Loops', 'Conditionals', 'MySQL', 'WordPress'],
+                labels: labels,
                 datasets: [
                     {
-                        label: 'Latest Results',
-                        data: [
-                            data.math,
-                            data.string,
-                            data.loops,
-                            data.conditionals,
-                            data.mysql,
-                            data.wordpress_performance.time
-                        ],
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                        label: 'Your Results',
+                        data: latestData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Industry Average',
+                        data: avgData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
                     }
                 ]
             },
             options: {
+                responsive: true,
                 scales: {
+                    x: {
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Performance Metrics'
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Time (seconds)'
                         }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Latest Results vs Industry Average'
                     }
                 }
             }
