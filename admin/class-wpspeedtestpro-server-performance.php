@@ -289,16 +289,14 @@ class Wpspeedtestpro_Server_Performance {
         $response = wp_remote_get('https://assets.wpspeedtestpro.com/performance-test-averages.json');
         
         $default_averages = array(
-            'industry_avg' => array(
-                'math' => 0.04,
-                'string' => 0.2,
-                'loops' => 0.01,
-                'conditionals' => 0.01,
-                'mysql' => 2.3,
-                'wordpress_performance' => array(
-                    'time' => 0.5,
-                    'queries' => 3000
-                )
+            'math' => 0.04,
+            'string' => 0.2,
+            'loops' => 0.01,
+            'conditionals' => 0.01,
+            'mysql' => 2.3,
+            'wordpress_performance' => array(
+                'time' => 0.5,
+                'queries' => 3000
             )
         );
         
@@ -313,29 +311,39 @@ class Wpspeedtestpro_Server_Performance {
             return $default_averages;
         }
         
-        // Ensure the data is in the correct format
-        if (!isset($data['industry_avg'])) {
-            $data = array('industry_avg' => $data);
+        // If the data is already in the correct format, use it directly
+        if (isset($data['math']) && isset($data['wordpress_performance'])) {
+            $averages = $data;
+        } 
+        // If the data has an 'industry_avg' key, use that
+        elseif (isset($data['industry_avg'])) {
+            $averages = $data['industry_avg'];
+        } 
+        // Otherwise, assume the whole data is the averages
+        else {
+            $averages = $data;
         }
         
         // Ensure all required keys are present
         $required_keys = array('math', 'string', 'loops', 'conditionals', 'mysql', 'wordpress_performance');
         foreach ($required_keys as $key) {
-            if (!isset($data['industry_avg'][$key])) {
-                $data['industry_avg'][$key] = $default_averages['industry_avg'][$key];
+            if (!isset($averages[$key])) {
+                $averages[$key] = $default_averages[$key];
             }
         }
         
         // Ensure WordPress performance has both time and queries
-        if (!isset($data['industry_avg']['wordpress_performance']['time'])) {
-            $data['industry_avg']['wordpress_performance']['time'] = $default_averages['industry_avg']['wordpress_performance']['time'];
+        if (!isset($averages['wordpress_performance']['time'])) {
+            $averages['wordpress_performance']['time'] = $default_averages['wordpress_performance']['time'];
         }
-        if (!isset($data['industry_avg']['wordpress_performance']['queries'])) {
-            $data['industry_avg']['wordpress_performance']['queries'] = $default_averages['industry_avg']['wordpress_performance']['queries'];
+        if (!isset($averages['wordpress_performance']['queries'])) {
+            $averages['wordpress_performance']['queries'] = $default_averages['wordpress_performance']['queries'];
         }
         
-        return $data;
+        return $averages;
     }
+
+    
     private function save_test_results($results) {
         try {
             //$db = new Wpspeedtestpro_DB();
