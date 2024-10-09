@@ -42,10 +42,12 @@ class Wpspeedtestpro_Server_Performance {
         add_action('wp_ajax_wpspeedtestpro_performance_toggle_test', array($this, 'ajax_performance_toggle_test'));
         add_action('wp_ajax_wpspeedtestpro_performance_run_test', array($this, 'ajax_performance_run_test'));
         add_action('wp_ajax_wpspeedtestpro_performance_get_results', array($this, 'ajax_performance_get_results'));
+
         add_action('wp_ajax_wpspeedtestpro_start_continuous_test', array($this, 'ajax_start_continuous_test'));
         add_action('wp_ajax_wpspeedtestpro_stop_continuous_test', array($this, 'ajax_stop_continuous_test'));
         add_action('wp_ajax_wpspeedtestpro_get_next_test_time', array($this, 'ajax_get_next_test_time'));
         add_action('wpspeedtestpro_continuous_test', array($this, 'run_continuous_test'));
+        add_action('admin_init', array($this, 'check_and_schedule_continuous_test'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
@@ -129,37 +131,39 @@ class Wpspeedtestpro_Server_Performance {
 
         wp_send_json_success();
     }
-
+    
     public function ajax_stop_continuous_test() {
         check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
 
-        update_option('wpspeedtestpro_continuous_test_status', 'stopped');
-        wp_clear_scheduled_hook('wpspeedtestpro_continuous_test');
-
+        $this->stop_continuous_test();
         wp_send_json_success();
     }
 
-    public function ajax_get_next_test_time() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Insufficient permissions');
-        }
-
-        $next_test_time = wp_next_scheduled('wpspeedtestpro_continuous_test');
-        if ($next_test_time) {
-            wp_send_json_success(date('Y-m-d H:i:s', $next_test_time));
-        } else {
-            wp_send_json_error('No scheduled test found');
+    private function schedule_continuous_test() {
+        if (!wp_next_scheduled('wpspeedtestpro_continuous_test')) {
+            wp_schedule_event(time(), 'wpspeedtestpro_fifteen_minutes', 'wpspeedtestpro_continuous_test');
+            $this->log_message('Continuous test scheduled.');
         }
     }
 
-    private function schedule_continuous_test() {
+    private function stop_continuous_test() {
+        update_option('wpspeedtestpro_continuous_test_status', 'stopped');
+        wp_clear_scheduled_hook('wpspeedtestpro_continuous_test');
+        $this->log_message('Continuous test stopped.');
+    }
+
+    public function check_and_schedule_continuous_test() {
         if (get_option('wpspeedtestpro_continuous_test_status') === 'running') {
-            if (!wp_next_scheduled('wpspeedtestpro_continuous_test')) {
-                wp_schedule_event(time(), 'wpspeedtestpro_fifteen_minutes', 'wpspeedtestpro_continuous_test');
+            $start_time = get_option('wpspeedtestpro_continuous_test_start_time', 0);
+            $current_time = current_time('timestamp');
+            
+            if (($current_time - $start_time) >= 86400) { // 24 hours
+                $this->stop_continuous_test();
+            } else {
+                $this->schedule_continuous_test();
             }
         }
     }
@@ -169,14 +173,12 @@ class Wpspeedtestpro_Server_Performance {
         $current_time = current_time('timestamp');
         
         if (($current_time - $start_time) >= 86400) { // 24 hours
-            update_option('wpspeedtestpro_continuous_test_status', 'stopped');
-            wp_clear_scheduled_hook('wpspeedtestpro_continuous_test');
-            error_log('Continuous test completed after 24 hours.');
+            $this->stop_continuous_test();
             return;
         }
 
         $result = $this->run_performance_tests();
-        if ($result !== true) { 
+        if ($result !== true) {
             $this->log_message('Continuous test error: ' . $result);
         } else {
             $this->log_message('Continuous test executed successfully.');
