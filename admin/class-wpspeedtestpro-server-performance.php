@@ -288,34 +288,54 @@ class Wpspeedtestpro_Server_Performance {
     private function get_industry_averages() {
         $response = wp_remote_get('https://assets.wpspeedtestpro.com/performance-test-averages.json');
         
-        if (is_wp_error($response)) {
-            return array(
+        $default_averages = array(
+            'industry_avg' => array(
                 'math' => 0.04,
                 'string' => 0.2,
                 'loops' => 0.01,
                 'conditionals' => 0.01,
                 'mysql' => 2.3,
-                'wordpress_performance' => array('time' => 0.5, 'queries' => 3000)
-            );
+                'wordpress_performance' => array(
+                    'time' => 0.5,
+                    'queries' => 3000
+                )
+            )
+        );
+        
+        if (is_wp_error($response)) {
+            return $default_averages;
         }
         
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
         
         if (!$data) {
-            return array(
-                'math' => 0.04,
-                'string' => 0.2,
-                'loops' => 0.01,
-                'conditionals' => 0.01,
-                'mysql' => 2.3,
-                'wordpress_performance' => array('time' => 0.5, 'queries' => 3000)
-            );
+            return $default_averages;
+        }
+        
+        // Ensure the data is in the correct format
+        if (!isset($data['industry_avg'])) {
+            $data = array('industry_avg' => $data);
+        }
+        
+        // Ensure all required keys are present
+        $required_keys = array('math', 'string', 'loops', 'conditionals', 'mysql', 'wordpress_performance');
+        foreach ($required_keys as $key) {
+            if (!isset($data['industry_avg'][$key])) {
+                $data['industry_avg'][$key] = $default_averages['industry_avg'][$key];
+            }
+        }
+        
+        // Ensure WordPress performance has both time and queries
+        if (!isset($data['industry_avg']['wordpress_performance']['time'])) {
+            $data['industry_avg']['wordpress_performance']['time'] = $default_averages['industry_avg']['wordpress_performance']['time'];
+        }
+        if (!isset($data['industry_avg']['wordpress_performance']['queries'])) {
+            $data['industry_avg']['wordpress_performance']['queries'] = $default_averages['industry_avg']['wordpress_performance']['queries'];
         }
         
         return $data;
     }
-
     private function save_test_results($results) {
         try {
             //$db = new Wpspeedtestpro_DB();
