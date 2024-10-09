@@ -4,8 +4,8 @@ jQuery(document).ready(function($) {
     var testStatus = wpspeedtestpro_performance.testStatus;
     // var continuousTestStatus = wpspeedtestpro_performance.continuousTestStatus;
     var charts = {};
-    var continuousTestStatus = wpspeedtestpro_continuous_data.continuousTestStatus;
-    var timeRemaining = wpspeedtestpro_continuous_data.timeRemaining;
+    var continuousTestStatus = wpspeedtestpro_performance.wpspeedtestpro_continuous_data.continuousTestStatus;
+    var timeRemaining = wpspeedtestpro_performance.wpspeedtestpro_continuous_data.timeRemaining;
 
 
     // Initialize tabs
