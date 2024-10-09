@@ -64,7 +64,7 @@ class Wpspeedtestpro_Admin {
     private $server_performance;
     private $uptime_monitoring;
     private $page_speed_testing;
-    
+
 
     public function __construct( $plugin_name, $version, $core ) {
 
@@ -99,7 +99,7 @@ class Wpspeedtestpro_Admin {
         $this->ssl_testing          = new Wpspeedtestpro_SSL_Testing( $this->plugin_name, $this->version, $this->core );
         $this->server_performance   = new Wpspeedtestpro_Server_Performance( $this->plugin_name, $this->version, $this->core );
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
-        $this->$page_speed_testing  = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
+        $this->page_speed_testing   = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
 
 
     }

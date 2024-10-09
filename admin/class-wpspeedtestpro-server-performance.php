@@ -181,7 +181,7 @@ class Wpspeedtestpro_Server_Performance {
     private function test_cpu_memory() {
         // Implement CPU & Memory test
         // This is a placeholder implementation
-        $count = 1000;
+        $count = 100000;
 
         $time_start = microtime(true);
 
@@ -262,9 +262,8 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     private function timer_delta($time_start) {
-        return microtime(true) - $time_start;
-    }
-    
+        return number_format(microtime(true) - $time_start, 3);
+    }    
 
     
 }
