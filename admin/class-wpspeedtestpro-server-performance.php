@@ -181,7 +181,7 @@ class Wpspeedtestpro_Server_Performance {
     private function test_cpu_memory() {
         // Implement CPU & Memory test
         // This is a placeholder implementation
-        $count = 100000;
+        $count = 1000000;
 
         $time_start = microtime(true);
 
