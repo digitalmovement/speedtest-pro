@@ -326,7 +326,7 @@ class Wpspeedtestpro_Server_Performance {
         }
     }
 
-    private function get_historical_results($test_type, $limit = 5) {
+    private function get_historical_results($test_type, $limit = 30) {
         try {
             $db = new Wpspeedtestpro_DB();
             return $db->get_benchmark_results($limit);
