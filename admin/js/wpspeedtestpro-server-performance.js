@@ -344,7 +344,8 @@ jQuery(document).ready(function($) {
                         data: industryAvgData,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderDash: [5, 5],
-                        fill: false
+                        fill: false,
+                        tension: 0.4 
                     }
                 ]
             },
