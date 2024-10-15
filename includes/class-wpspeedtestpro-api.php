@@ -345,6 +345,8 @@ class Wpspeedtestpro_API {
             'timeout' => 30
         ));
 
+        echo "here";
+        print_r($response);
         $res = new WP_Error('api_error_ib', print_r($response, true));
 
 
