@@ -61,7 +61,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         add_action('wp_ajax_speedvitals_delete_old_results', array($this, 'speedvitals_ajax_delete_old_results'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        
+
 
     }
     /**
@@ -223,11 +223,12 @@ class Wpspeedtestpro_Page_Speed_Testing {
 
     public function speedvitals_schedule_events() {
         if (!wp_next_scheduled('speedvitals_run_scheduled_tests')) {
-            wp_schedule_event(time(), 'hourly', 'speedvitals_run_scheduled_tests');
+            wp_schedule_event(time(), 'hourly', array($this,'speedvitals_run_scheduled_tests'));
+            
         }
 
         if (!wp_next_scheduled('speedvitals_check_pending_tests')) {
-            wp_schedule_event(time(), '5min', 'speedvitals_check_pending_tests');
+            wp_schedule_event(time(), '5min', array($this,'speedvitals_check_pending_tests'));
         }
     }
 
