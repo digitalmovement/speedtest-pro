@@ -91,7 +91,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
             'credits' => $this->speedvitals_get_account_credits()
         );
 
-        include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-admin-page-speed-testing-display.php');
+        include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
     }
 
     private function speedvitals_get_pages_and_posts() {
