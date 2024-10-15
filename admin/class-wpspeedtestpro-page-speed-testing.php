@@ -54,7 +54,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         $this->version = $version;
         $this->core = $core;
 
-        $this->speedvitals_schedule_events();
+     //   $this->speedvitals_schedule_events();
         add_action('wp_ajax_speedvitals_run_test', array($this, 'speedvitals_ajax_run_test'));
         add_action('wp_ajax_speedvitals_get_test_status', array($this, 'speedvitals_ajax_get_test_status'));
         add_action('wp_ajax_speedvitals_cancel_scheduled_test', array($this, 'speedvitals_ajax_cancel_scheduled_test'));
@@ -62,6 +62,8 @@ class Wpspeedtestpro_Page_Speed_Testing {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
+        add_action('speedvitals_run_scheduled_tests', array($this, 'speedvitals_run_scheduled_tests'));
+        add_action('speedvitals_check_pending_tests', array($this, 'speedvitals_check_pending_tests'));
 
     }
     /**
@@ -223,12 +225,13 @@ class Wpspeedtestpro_Page_Speed_Testing {
 
     public function speedvitals_schedule_events() {
         if (!wp_next_scheduled('speedvitals_run_scheduled_tests')) {
-            wp_schedule_event(time(), 'hourly', array($this,'speedvitals_run_scheduled_tests'));
-            
+            wp_schedule_event(time(), 'hourly', 'speedvitals_run_scheduled_tests');
         }
 
         if (!wp_next_scheduled('speedvitals_check_pending_tests')) {
-            wp_schedule_event(time(), '5min', array($this,'speedvitals_check_pending_tests'));
+            if (!wp_get_schedule('speedvitals_check_pending_tests')) {
+                wp_schedule_event(time(), 'five_minutes', 'speedvitals_check_pending_tests');
+            }
         }
     }
 
@@ -258,7 +261,6 @@ class Wpspeedtestpro_Page_Speed_Testing {
             }
         }
     }
-
 
 
 }
