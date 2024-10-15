@@ -55,6 +55,13 @@ class Wpspeedtestpro_Page_Speed_Testing {
         $this->core = $core;
 
         $this->speedvitals_schedule_events();
+        add_action('wp_ajax_speedvitals_run_test', array($this, 'speedvitals_ajax_run_test'));
+        add_action('wp_ajax_speedvitals_get_test_status', array($this, 'speedvitals_ajax_get_test_status'));
+        add_action('wp_ajax_speedvitals_cancel_scheduled_test', array($this, 'speedvitals_ajax_cancel_scheduled_test'));
+        add_action('wp_ajax_speedvitals_delete_old_results', array($this, 'speedvitals_ajax_delete_old_results'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        
 
     }
     /**
