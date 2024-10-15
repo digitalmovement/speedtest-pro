@@ -355,11 +355,11 @@ class Wpspeedtestpro_API {
         $body = wp_remote_retrieve_body($response);
        
         $data = json_decode($body, true);
-        print_r($data);
-        if (!isset($data['lighthouse'])) {
+    
+        if (!isset($data['data']['lighthouse'])) {
             return new WP_Error('api_error', 'Invalid response from SpeedVitals Credits API');
         }
 
-        return $data;
+        return $data['data'];
     }
 }
