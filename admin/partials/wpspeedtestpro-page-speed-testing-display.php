@@ -16,6 +16,9 @@
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap">
     <h1>WP Speed Test Pro - Page Speed Testing</h1>
+    <?php print_r($data); ?>
+
+    <?php if (!isset($data)) { echo "There was an error fetching data."; return; } ?>
 
     <div id="speedvitals-credits-info">
         <h3>Account Credits</h3>
