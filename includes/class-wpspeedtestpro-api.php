@@ -274,5 +274,88 @@ class Wpspeedtestpro_API {
         return $providers_json;
     }
 
+    public function speedvitals_run_test($api_key, $url, $location, $device) {
+        $api_url = 'https://api.speedvitals.com/v1/lighthouse-tests';
+        
+        $body = array(
+            'url' => $url,
+            'device' => $device,
+            'location' => $location,
+            'config' => array(
+                'connection' => 'fiber',
+                'video' => true,
+                'adblock' => true
+            )
+        );
 
+        $response = wp_remote_post($api_url, array(
+            'headers' => array(
+                'X-API-KEY' => $api_key,
+                'Content-Type' => 'application/json'
+            ),
+            'body' => json_encode($body),
+            'timeout' => 30
+        ));
+
+        if (is_wp_error($response)) {
+            return new WP_Error('api_error', $response->get_error_message());
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!isset($data['id'])) {
+            return new WP_Error('api_error', 'Invalid response from SpeedVitals API');
+        }
+
+        return $data;
+    }
+
+    public function speedvitals_get_test_result($api_key, $test_id) {
+        $api_url = "https://api.speedvitals.com/v1/lighthouse-tests/{$test_id}";
+
+        $response = wp_remote_get($api_url, array(
+            'headers' => array(
+                'X-API-KEY' => $api_key
+            ),
+            'timeout' => 30
+        ));
+
+        if (is_wp_error($response)) {
+            return new WP_Error('api_error', $response->get_error_message());
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!isset($data['id'])) {
+            return new WP_Error('api_error', 'Invalid response from SpeedVitals API');
+        }
+
+        return $data;
+    }
+
+    public function speedvitals_get_account_credits($api_key) {
+        $api_url = 'https://api.speedvitals.com/v1/account/credits';
+
+        $response = wp_remote_get($api_url, array(
+            'headers' => array(
+                'X-API-KEY' => $api_key
+            ),
+            'timeout' => 30
+        ));
+
+        if (is_wp_error($response)) {
+            return new WP_Error('api_error', $response->get_error_message());
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!isset($data['lighthouse'])) {
+            return new WP_Error('api_error', 'Invalid response from SpeedVitals API');
+        }
+
+        return $data;
+    }
 }

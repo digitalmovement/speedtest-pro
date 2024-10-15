@@ -11,5 +11,7 @@ class Wpspeedtestpro_Cron {
             'display'  => esc_html__('Every 15 minutes'),
         );
         return $schedules;
-    }
+    }    
+
+
 }

@@ -216,4 +216,211 @@ class Wpspeedtestpro_DB {
     
         return $wpdb->get_results($query);
     }
+
+    public function speedvitals_create_tables() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $test_results_table = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+        $scheduled_tests_table = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+
+        $sql = "CREATE TABLE $test_results_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            url varchar(255) NOT NULL,
+            location varchar(50) NOT NULL,
+            device varchar(50) NOT NULL,
+            test_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            status varchar(20) NOT NULL,
+            performance_score int(3),
+            first_contentful_paint int(11),
+            speed_index int(11),
+            largest_contentful_paint int(11),
+            time_to_interactive int(11),
+            total_blocking_time int(11),
+            cumulative_layout_shift float,
+            report_url varchar(255),
+            PRIMARY KEY  (id)
+        ) $charset_collate;
+
+        CREATE TABLE $scheduled_tests_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            url varchar(255) NOT NULL,
+            location varchar(50) NOT NULL,
+            device varchar(50) NOT NULL,
+            frequency varchar(20) NOT NULL,
+            last_run datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            next_run datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+
+    public function speedvitals_insert_test_result($result) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+
+        $wpdb->insert(
+            $table_name,
+            array(
+                'url' => $result['url'],
+                'location' => $result['location'],
+                'device' => $result['device'],
+                'test_date' => current_time('mysql'),
+                'status' => $result['status'],
+                'performance_score' => $result['metrics']['performance_score'] ?? null,
+                'first_contentful_paint' => $result['metrics']['first_contentful_paint'] ?? null,
+                'speed_index' => $result['metrics']['speed_index'] ?? null,
+                'largest_contentful_paint' => $result['metrics']['largest_contentful_paint'] ?? null,
+                'time_to_interactive' => $result['metrics']['time_to_interactive'] ?? null,
+                'total_blocking_time' => $result['metrics']['total_blocking_time'] ?? null,
+                'cumulative_layout_shift' => $result['metrics']['cumulative_layout_shift'] ?? null,
+                'report_url' => $result['report_url'] ?? null
+            )
+        );
+
+        return $wpdb->insert_id;
+    }
+
+    public function speedvitals_get_test_results($limit = 20) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+
+        return $wpdb->get_results(
+            $wpdb->prepare("SELECT * FROM $table_name ORDER BY test_date DESC LIMIT %d", $limit),
+            ARRAY_A
+        );
+    }
+
+    public function speedvitals_get_test_result($id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+
+        return $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id),
+            ARRAY_A
+        );
+    }
+
+    public function speedvitals_schedule_test($url, $location, $device, $frequency) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+
+        $next_run = $this->speedvitals_calculate_next_run($frequency);
+
+        return $wpdb->insert(
+            $table_name,
+            array(
+                'url' => $url,
+                'location' => $location,
+                'device' => $device,
+                'frequency' => $frequency,
+                'last_run' => current_time('mysql'),
+                'next_run' => $next_run
+            )
+        );
+    }
+
+    private function speedvitals_calculate_next_run($frequency) {
+        switch ($frequency) {
+            case 'daily':
+                return date('Y-m-d H:i:s', strtotime('+1 day'));
+            case 'weekly':
+                return date('Y-m-d H:i:s', strtotime('+1 week'));
+            default:
+                return null;
+        }
+    }
+
+    public function speedvitals_get_scheduled_tests() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+
+        return $wpdb->get_results("SELECT * FROM $table_name ORDER BY next_run ASC", ARRAY_A);
+    }
+
+    public function speedvitals_cancel_scheduled_test($id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+
+        return $wpdb->delete($table_name, array('id' => $id));
+    }
+
+    public function speedvitals_delete_old_results($days) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+
+        $date = date('Y-m-d H:i:s', strtotime("-$days days"));
+
+        return $wpdb->query(
+            $wpdb->prepare("DELETE FROM $table_name WHERE test_date < %s", $date)
+        );
+    }
+
+    public function speedvitals_update_test_result($id, $result) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+
+        return $wpdb->update(
+            $table_name,
+            array(
+                'status' => $result['status'],
+                'performance_score' => $result['metrics']['performance_score'] ?? null,
+                'first_contentful_paint' => $result['metrics']['first_contentful_paint'] ?? null,
+                'speed_index' => $result['metrics']['speed_index'] ?? null,
+                'largest_contentful_paint' => $result['metrics']['largest_contentful_paint'] ?? null,
+                'time_to_interactive' => $result['metrics']['time_to_interactive'] ?? null,
+                'total_blocking_time' => $result['metrics']['total_blocking_time'] ?? null,
+                'cumulative_layout_shift' => $result['metrics']['cumulative_layout_shift'] ?? null,
+                'report_url' => $result['report_url'] ?? null
+            ),
+            array('id' => $id)
+        );
+    }
+
+    public function speedvitals_get_pending_tests() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+
+        return $wpdb->get_results(
+            "SELECT * FROM $table_name WHERE status NOT IN ('success', 'failed') ORDER BY test_date ASC",
+            ARRAY_A
+        );
+    }
+
+    public function speedvitals_update_scheduled_test($id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+
+        $scheduled_test = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $id), ARRAY_A);
+
+        if (!$scheduled_test) {
+            return false;
+        }
+
+        $next_run = $this->speedvitals_calculate_next_run($scheduled_test['frequency']);
+
+        return $wpdb->update(
+            $table_name,
+            array(
+                'last_run' => current_time('mysql'),
+                'next_run' => $next_run
+            ),
+            array('id' => $id)
+        );
+    }
+
+    public function speedvitals_get_due_scheduled_tests() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+
+        $current_time = current_time('mysql');
+
+        return $wpdb->get_results(
+            $wpdb->prepare("SELECT * FROM $table_name WHERE next_run <= %s", $current_time),
+            ARRAY_A
+        );
+    }       
+    
 } // End of class
