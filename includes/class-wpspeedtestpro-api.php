@@ -354,7 +354,7 @@ class Wpspeedtestpro_API {
      
         $body = wp_remote_retrieve_body($response);
        
-        $data = json_decode($body, true);
+        $data = json_decode($body);
         print_r($data);
         if (!isset($data['lighthouse'])) {
             return new WP_Error('api_error', 'Invalid response from SpeedVitals API');
