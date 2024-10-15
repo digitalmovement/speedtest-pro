@@ -345,13 +345,14 @@ class Wpspeedtestpro_API {
             'timeout' => 30
         ));
 
+        $res = new WP_Error('api_error_ib', print_r($response, true));
+
+
         if (is_wp_error($response)) {
             return new WP_Error('api_error', $response->get_error_message());
         }
 
-        $res = new WP_Error('api_error_ib', print_r($response, true));
-
-
+     
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
 
