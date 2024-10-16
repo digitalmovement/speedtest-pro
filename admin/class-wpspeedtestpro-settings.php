@@ -140,6 +140,7 @@ class Wpspeedtestpro_Settings {
             'default' => true,
             'sanitize_callback' => 'boolval'
         ));
+        register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_speedvitals_api_key' );
     
         // Add settings section
         add_settings_section(
