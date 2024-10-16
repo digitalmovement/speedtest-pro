@@ -58,10 +58,8 @@ class Wpspeedtestpro_Settings {
 
     private function init_components() {
         add_action('admin_init', array($this, 'register_settings'));
-        if ($this->is_plugin_settings_page()) {
-            add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
-            add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        }
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
 
     private function add_hooks() {
@@ -69,8 +67,11 @@ class Wpspeedtestpro_Settings {
     }
 
     private function is_plugin_settings_page() {
-        $screen = get_current_screen();
-        return $screen && $screen->id === 'wpspeedtestpro_page_wpspeedtestpro-settings';
+        if ( function_exists( 'get_current_screen' ) ) {
+            $current_screen = get_current_screen();
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wpspeedtestpro_page_wpspeedtestpro-settings';    
+        }
     }
 
 
@@ -80,22 +81,26 @@ class Wpspeedtestpro_Settings {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        wp_enqueue_style( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-settings.css', array(), $this->version, 'all' );
+        if ($this->is_plugin_settings_page()) {
+            wp_enqueue_style( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-settings.css', array(), $this->version, 'all' );
+        }
     }
-
+    
     /**
      * Register the JavaScript for the settings area.
      *
      * @since    1.0.0
      */
     public function enqueue_scripts() {
-        wp_enqueue_script( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-settings.js', array( 'jquery' ), $this->version, false );
-        wp_localize_script($this->plugin_name . '-settings', 'wpspeedtestpro_ajax', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-            'selected_region' => get_option('wp_hosting_benchmarking_selected_region'), // Pass the selected region    
-            'hosting_providers' => $this->core->api->get_hosting_providers_json() 
-        )); 
+        if ($this->is_plugin_settings_page()) {
+            wp_enqueue_script( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-settings.js', array( 'jquery' ), $this->version, false );
+            wp_localize_script($this->plugin_name . '-settings', 'wpspeedtestpro_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
+                'selected_region' => get_option('wp_hosting_benchmarking_selected_region'), // Pass the selected region    
+                'hosting_providers' => $this->core->api->get_hosting_providers_json() 
+            )); 
+        }
     }
 
 
