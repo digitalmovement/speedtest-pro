@@ -66,9 +66,8 @@ class Wpspeedtestpro_Settings {
         add_action('wp_ajax_wpspeedtestpro_get_provider_packages', array($this, 'ajax_get_provider_packages'));
     }
 
-    private function is_plugin_settings_page() {
+    private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
-            $current_screen = get_current_screen();
             $screen = get_current_screen();
             return $screen && $screen->id === 'wpspeedtestpro_page_wpspeedtestpro-settings';    
         }
@@ -81,18 +80,18 @@ class Wpspeedtestpro_Settings {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        if ($this->is_plugin_settings_page()) {
+        if ($this->is_this_the_right_plugin_page()) {
             wp_enqueue_style( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-settings.css', array(), $this->version, 'all' );
         }
     }
-    
+
     /**
      * Register the JavaScript for the settings area.
      *
      * @since    1.0.0
      */
     public function enqueue_scripts() {
-        if ($this->is_plugin_settings_page()) {
+        if ($this->is_this_the_right_plugin_page()) {
             wp_enqueue_script( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-settings.js', array( 'jquery' ), $this->version, false );
             wp_localize_script($this->plugin_name . '-settings', 'wpspeedtestpro_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),

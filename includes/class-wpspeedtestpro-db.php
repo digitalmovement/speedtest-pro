@@ -229,6 +229,7 @@ class Wpspeedtestpro_DB {
             url varchar(255) NOT NULL,
             location varchar(50) NOT NULL,
             device varchar(50) NOT NULL,
+            test_id varchar(50) NOT NULL,
             test_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             status varchar(20) NOT NULL,
             performance_score int(3),
@@ -267,6 +268,7 @@ class Wpspeedtestpro_DB {
                 'url' => $result['url'],
                 'location' => $result['location'],
                 'device' => $result['device'],
+                'test_id' => $result['id'],
                 'test_date' => current_time('mysql'),
                 'status' => $result['status'],
                 'performance_score' => $result['metrics']['performance_score'] ?? null,
@@ -422,5 +424,5 @@ class Wpspeedtestpro_DB {
             ARRAY_A
         );
     }       
-    
+
 } // End of class

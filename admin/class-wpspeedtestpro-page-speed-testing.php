@@ -198,11 +198,11 @@ class Wpspeedtestpro_Page_Speed_Testing {
         if (is_wp_error($result)) {
             wp_send_json_error($result->get_error_message());
         } else {
-            $test_id = $this->core->db->speedvitals_insert_test_result($result);
+            $insert_id = $this->core->db->speedvitals_insert_test_result($result);
             if ($frequency !== 'one_off') {
                 $this->core->db->speedvitals_schedule_test($url, $location, $device, $frequency);
             }
-            wp_send_json_success(array('test_id' => $test_id));
+            wp_send_json_success(array('insert_id' => $insert_id));
         }
     }
 
@@ -276,7 +276,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         $api_key = get_option('wpspeedtestpro_speedvitals_api_key');
 
         foreach ($pending_tests as $test) {
-            $result = $this->core->api->speedvitals_get_test_result($api_key, $test['id']);
+            $result = $this->core->api->speedvitals_get_test_result($api_key, $test['test_id']);
 
             if (!is_wp_error($result)) {
                 $this->core->db->speedvitals_update_test_result($test['id'], $result);
