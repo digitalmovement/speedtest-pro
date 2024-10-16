@@ -172,20 +172,8 @@
 <script type="text/javascript">
 jQuery(document).ready(function($) {
 
-        $('#speedvitals-test-form').on('submit', function(e) {
-        e.preventDefault();
-        var formData = $(this).serializeArray();
-        
-        $('#speedvitals-test-status').show();
-        $('#speedvitals-loading-gif').show();
-        $('#speedvitals-status-message').text('Initiating test...');
 
-        var data = {
-            action: 'speedvitals_run_test',
-            nonce: wpspeedtestpro_ajax.nonce
-        };
-
-        var probeInterval;
+    var probeInterval;
     var isProbing = false;
 
     function startProbing() {
@@ -291,7 +279,22 @@ jQuery(document).ready(function($) {
         stopProbing();
     });
 
-    // end
+    
+
+        $('#speedvitals-test-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serializeArray();
+        
+        $('#speedvitals-test-status').show();
+        $('#speedvitals-loading-gif').show();
+        $('#speedvitals-status-message').text('Initiating test...');
+
+        var data = {
+            action: 'speedvitals_run_test',
+            nonce: wpspeedtestpro_ajax.nonce
+        };
+
+        
         // Convert the serialized array to an object
         $.each(formData, function(i, field) {
             data[field.name] = field.value;
