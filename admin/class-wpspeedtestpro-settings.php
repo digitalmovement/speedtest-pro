@@ -58,13 +58,19 @@ class Wpspeedtestpro_Settings {
 
     private function init_components() {
         add_action('admin_init', array($this, 'register_settings'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-
+        if ($this->is_plugin_settings_page()) {
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        }
     }
 
     private function add_hooks() {
         add_action('wp_ajax_wpspeedtestpro_get_provider_packages', array($this, 'ajax_get_provider_packages'));
+    }
+
+    private function is_plugin_settings_page() {
+        $screen = get_current_screen();
+        return $screen && $screen->id === 'wpspeedtestpro_page_wpspeedtestpro-settings';
     }
 
 
@@ -91,6 +97,7 @@ class Wpspeedtestpro_Settings {
             'hosting_providers' => $this->core->api->get_hosting_providers_json() 
         )); 
     }
+
 
 
     /**
