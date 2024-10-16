@@ -171,6 +171,7 @@
 
 <script type="text/javascript">
 jQuery(document).ready(function($) {
+
         $('#speedvitals-test-form').on('submit', function(e) {
         e.preventDefault();
         var formData = $(this).serializeArray();
@@ -184,6 +185,113 @@ jQuery(document).ready(function($) {
             nonce: wpspeedtestpro_ajax.nonce
         };
 
+        var probeInterval;
+    var isProbing = false;
+
+    function startProbing() {
+        if (!isProbing) {
+            isProbing = true;
+            probeInterval = setInterval(probeForUpdates, 5000); // Probe every 5 seconds
+        }
+    }
+
+    function stopProbing() {
+        if (isProbing) {
+            clearInterval(probeInterval);
+            isProbing = false;
+        }
+    }
+
+    function probeForUpdates() {
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'speedvitals_probe_for_updates',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateResultsTable(response.data.updated_tests);
+                }
+            },
+            error: function() {
+                console.log('Error probing for updates');
+            }
+        });
+    }
+
+    function updateResultsTable(updatedTests) {
+        updatedTests.forEach(function(test) {
+            var row = $('#test-row-' + test.id);
+            if (row.length) {
+                // Update existing row
+                row.find('.status').text(test.status);
+                row.find('.performance-score').text(test.performance_score);
+                // Update other fields as necessary
+            } else {
+                // Add new row to the table
+                var newRow = '<tr id="test-row-' + test.id + '">' +
+                    '<td>' + test.id + '</td>' +
+                    '<td>' + test.url + '</td>' +
+                    '<td>' + test.device + '</td>' +
+                    '<td>' + test.location + '</td>' +
+                    '<td>' + test.test_date + '</td>' +
+                    '<td class="status">' + test.status + '</td>' +
+                    '<td class="performance-score">' + test.performance_score + '</td>' +
+                    // Add other fields as necessary
+                    '</tr>';
+                $('#speedvitals-results-body').prepend(newRow);
+            }
+        });
+    }
+
+    $('#speedvitals-test-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = $(this).serializeArray();
+        
+        $('#speedvitals-test-status').show();
+        $('#speedvitals-loading-gif').show();
+        $('#speedvitals-status-message').text('Initiating test...');
+
+        var data = {
+            action: 'speedvitals_run_test',
+            nonce: wpspeedtestpro_ajax.nonce
+        };
+
+        $.each(formData, function(i, field) {
+            data[field.name] = field.value;
+        });
+
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    $('#speedvitals-status-message').text('Test initiated successfully. Results will update automatically.');
+                    startProbing(); // Start probing for updates
+                } else {
+                    $('#speedvitals-status-message').text('Error: ' + response.data);
+                    $('#speedvitals-loading-gif').hide();
+                }
+            },
+            error: function() {
+                $('#speedvitals-status-message').text('An error occurred. Please try again.');
+                $('#speedvitals-loading-gif').hide();
+            }
+        });
+    });
+
+    // Start probing when the page loads
+    startProbing();
+
+    // Stop probing when the user leaves the page
+    $(window).on('beforeunload', function() {
+        stopProbing();
+    });
+
+    // end
         // Convert the serialized array to an object
         $.each(formData, function(i, field) {
             data[field.name] = field.value;

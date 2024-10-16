@@ -59,6 +59,9 @@ class Wpspeedtestpro_Page_Speed_Testing {
         add_action('wp_ajax_speedvitals_get_test_status', array($this, 'speedvitals_ajax_get_test_status'));
         add_action('wp_ajax_speedvitals_cancel_scheduled_test', array($this, 'speedvitals_ajax_cancel_scheduled_test'));
         add_action('wp_ajax_speedvitals_delete_old_results', array($this, 'speedvitals_ajax_delete_old_results'));
+        add_action('wp_ajax_speedvitals_probe_for_updates', array($this, 'speedvitals_ajax_probe_for_updates'));
+
+
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
@@ -101,6 +104,25 @@ class Wpspeedtestpro_Page_Speed_Testing {
         );
 
         include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
+    }
+
+    public function speedvitals_ajax_probe_for_updates() {
+        check_ajax_referer('wpspeedtestpro-page-speed-testing-nonce', 'nonce');
+
+        $pending_tests = $this->core->db->speedvitals_get_pending_tests();
+        $api_key = get_option('wpspeedtestpro_speedvitals_api_key');
+        $updated_tests = array();
+
+        foreach ($pending_tests as $test) {
+            $result = $this->core->api->speedvitals_get_test_result($api_key, $test['id']);
+
+            if (!is_wp_error($result)) {
+                $this->core->db->speedvitals_update_test_result($test['id'], $result);
+                $updated_tests[] = $result;
+            }
+        }
+
+        wp_send_json_success(array('updated_tests' => $updated_tests));
     }
 
     private function speedvitals_get_pages_and_posts() {
