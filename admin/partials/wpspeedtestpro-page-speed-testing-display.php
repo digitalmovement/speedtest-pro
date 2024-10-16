@@ -267,16 +267,18 @@ $('#speedvitals-test-form').on('submit', function(e) {
         type: 'POST',
         data: data,
         success: function(response) {
-            if (response.success) {
+            if (response.success && response.data && response.data.updated_tests && response.data.updated_tests.length > 0) {
                 $('#speedvitals-status-message').text('Test initiated successfully. Results will update automatically.');
                 
+                var testData = response.data.updated_tests[0];
+                
                 // Add a new row for the initiated test
-                var newRow = '<tr id="test-row-' + response.updated_tests.id + '">' +
-                    '<td>' + response.updated_tests.id + '</td>' +
-                    '<td>' + data.url + '</td>' +
-                    '<td>' + data.device + '</td>' +
-                    '<td>' + data.location + '</td>' +
-                    '<td>' + new Date().toLocaleString() + '</td>' +
+                var newRow = '<tr id="test-row-' + testData.id + '">' +
+                    '<td>' + testData.id + '</td>' +
+                    '<td>' + testData.url + '</td>' +
+                    '<td>' + testData.device + '</td>' +
+                    '<td>' + testData.location + '</td>' +
+                    '<td>' + new Date(testData.created_at).toLocaleString() + '</td>' +
                     '<td colspan="6">Test in progress...</td>' +
                     '<td><a href="#" target="_blank">Report Pending</a></td>' +
                     '</tr>';
@@ -284,7 +286,7 @@ $('#speedvitals-test-form').on('submit', function(e) {
                 
                 startProbing(); // Start probing for updates
             } else {
-                $('#speedvitals-status-message').text('Error: ' + response.data);
+                $('#speedvitals-status-message').text('Error: Unable to initiate test. Please try again.');
                 $('#speedvitals-loading-gif').hide();
             }
         },
