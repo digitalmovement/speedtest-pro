@@ -216,6 +216,7 @@ jQuery(document).ready(function($) {
             row.find('td:eq(2)').text(test.device);
             row.find('td:eq(3)').text(test.location);
             row.find('td:eq(4)').text(new Date(test.created_at).toLocaleString());
+            if (test.metrics) {
             row.find('td:eq(5)').text(test.metrics.performance_score);
             row.find('td:eq(6)').text(test.metrics.first_contentful_paint);
             row.find('td:eq(7)').text(test.metrics.speed_index);
@@ -223,6 +224,10 @@ jQuery(document).ready(function($) {
             row.find('td:eq(9)').text(test.metrics.total_blocking_time);
             row.find('td:eq(10)').text(test.metrics.cumulative_layout_shift);
             row.find('td:eq(11) a').attr('href', test.report_url);
+            } else { // Test in progress    
+            row.find('td:eq(5)').text('Test in progress....');
+            }
+
         } else {
             // Add new row to the table
             var newRow = '<tr id="test-row-' + test.id + '">' +
@@ -231,13 +236,16 @@ jQuery(document).ready(function($) {
                 '<td>' + test.device + '</td>' +
                 '<td>' + test.location + '</td>' +
                 '<td>' + new Date(test.created_at).toLocaleString() + '</td>' +
-                '<td>' + test.metrics.performance_score + '</td>' +
-                '<td>' + test.metrics.first_contentful_paint + '</td>' +
-                '<td>' + test.metrics.speed_index + '</td>' +
-                '<td>' + test.metrics.largest_contentful_paint + '</td>' +
-                '<td>' + test.metrics.total_blocking_time + '</td>' +
-                '<td>' + test.metrics.cumulative_layout_shift + '</td>' +
-                '<td><a href="' + test.report_url + '" target="_blank">View Report</a></td>' +
+                if (test.metrics) {
+                    '<td>' + test.metrics.performance_score + '</td>' +
+                    '<td>' + test.metrics.first_contentful_paint + '</td>' +
+                    '<td>' + test.metrics.speed_index + '</td>' +
+                    '<td>' + test.metrics.largest_contentful_paint + '</td>' +
+                    '<td>' + test.metrics.total_blocking_time + '</td>' +
+                    '<td>' + test.metrics.cumulative_layout_shift + '</td>' +
+                } else {
+                    '<td colspan="6">Test in progress.....</td>';
+                }
                 '</tr>';
             $('#speedvitals-results-body').prepend(newRow);
         }
