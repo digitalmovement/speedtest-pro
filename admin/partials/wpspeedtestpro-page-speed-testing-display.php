@@ -267,7 +267,7 @@ $('#speedvitals-test-form').on('submit', function(e) {
         type: 'POST',
         data: data,
         success: function(response) {
-            if (response.success && response.data && response.data.updated_tests && response.data.updated_tests.length > 0) {
+            if (response.success && response.data && response.data.id) {
                 $('#speedvitals-status-message').text('Test initiated successfully. Results will update automatically.');
                 
                 var testData = response.data.updated_tests[0];
