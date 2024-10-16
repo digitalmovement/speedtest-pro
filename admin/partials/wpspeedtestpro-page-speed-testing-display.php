@@ -289,7 +289,8 @@ $('#speedvitals-test-form').on('submit', function(e) {
                     '<td>' + testData.device + '</td>' +
                     '<td>' + testData.location + '</td>' +
                     '<td>' + new Date(testData.created_at).toLocaleString() + '</td>' +
-                    '<td colspan="6">Test in progress...</td>' +
+                    '<td>Test in progress...</td>' +
+                    '<td></td>' + '<td></td>' + '<td></td>' + '<td></td>' + '<td></td>' +
                     '<td><a href="#" target="_blank">Report Pending</a></td>' +
                     '</tr>';
                 $('#speedvitals-results-body').prepend(newRow);
