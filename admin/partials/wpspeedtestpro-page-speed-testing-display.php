@@ -11,6 +11,11 @@
  * @package    Wpspeedtestpro
  * @subpackage Wpspeedtestpro/admin/partials
  */
+
+ function convert_to_seconds($milliseconds) {
+    return number_format($milliseconds / 1000, 2) . 's';
+}
+
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -110,13 +115,13 @@
                     <td><?php echo esc_html($result['location']); ?></td>
                     <td><?php echo esc_html($result['test_date']); ?></td>
                     <td><?php echo esc_html($result['performance_score']); ?></td>
-                    <td><?php echo esc_html($result['first_contentful_paint']); ?></td>
-                    <td><?php echo esc_html($result['speed_index']); ?></td>
-                    <td><?php echo esc_html($result['largest_contentful_paint']); ?></td>
-                    <td><?php echo esc_html($result['total_blocking_time']); ?></td>
-                    <td><?php echo esc_html($result['cumulative_layout_shift']); ?></td>
-                    <td>
-                        <a href="<?php echo esc_url($result['report_url']); ?>" target="_blank">View Report</a>
+                 
+                    <td><?php echo esc_html(convert_to_seconds($result['first_contentful_paint'])); ?></td>
+                    <td><?php echo esc_html(convert_to_seconds($result['speed_index'])); ?></td>
+                    <td><?php echo esc_html(convert_to_seconds($result['largest_contentful_paint'])); ?></td>
+                    <td><?php echo esc_html(convert_to_seconds($result['total_blocking_time'])); ?></td>
+                    <td><?php echo esc_html(number_format($result['cumulative_layout_shift'], 2)); ?></td>                 <td>
+                     <a href="<?php echo esc_url($result['report_url']); ?>" target="_blank">View Report</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -217,13 +222,14 @@ jQuery(document).ready(function($) {
             row.find('td:eq(3)').text(test.location);
             row.find('td:eq(4)').text(new Date(test.created_at).toLocaleString());
             if (test.metrics.performance_score) {
-            row.find('td:eq(5)').text(test.metrics.performance_score);
-            row.find('td:eq(6)').text(test.metrics.first_contentful_paint);
-            row.find('td:eq(7)').text(test.metrics.speed_index);
-            row.find('td:eq(8)').text(test.metrics.largest_contentful_paint);
-            row.find('td:eq(9)').text(test.metrics.total_blocking_time);
-            row.find('td:eq(10)').text(test.metrics.cumulative_layout_shift);
+                row.find('td:eq(5)').text(test.metrics.performance_score || 'N/A').removeAttr('colspan');
+                row.find('td:eq(6)').text(test.metrics.first_contentful_paint ? convertToSeconds(test.metrics.first_contentful_paint) : 'N/A').show();
+                row.find('td:eq(7)').text(test.metrics.speed_index ? convertToSeconds(test.metrics.speed_index) : 'N/A').show();
+                row.find('td:eq(8)').text(test.metrics.largest_contentful_paint ? convertToSeconds(test.metrics.largest_contentful_paint) : 'N/A').show();
+                row.find('td:eq(9)').text(test.metrics.total_blocking_time ? convertToSeconds(test.metrics.total_blocking_time) : 'N/A').show();
+                row.find('td:eq(10)').text(test.metrics.cumulative_layout_shift ? test.metrics.cumulative_layout_shift.toFixed(2) : 'N/A').show();
             row.find('td:eq(11) a').attr('href', test.report_url);
+            row.find('td:eq(11) a').attr('href', test.report_url).text('View Report');
             } else { // Test in progress    
             row.find('td:eq(5)').text('Test in progress....');
             }
@@ -238,14 +244,14 @@ jQuery(document).ready(function($) {
                 '<td>' + new Date(test.created_at).toLocaleString() + '</td>';
                 if (test.metrics.performance_score) {
                     newRow +=
-                    '<td>' + test.metrics.performance_score + '</td>' +
-                    '<td>' + test.metrics.first_contentful_paint + '</td>' +
-                    '<td>' + test.metrics.speed_index + '</td>' +
-                    '<td>' + test.metrics.largest_contentful_paint + '</td>' +
-                    '<td>' + test.metrics.total_blocking_time + '</td>' +
-                    '<td>' + test.metrics.cumulative_layout_shift + '</td>'; 
-                } else {
-                    newRow += '<td>Test in progress.....</td>';
+                    '<td>' + (test.metrics ? (test.metrics.performance_score || 'N/A') : 'N/A') + '</td>' +
+                    '<td>' + (test.metrics ? (test.metrics.first_contentful_paint ? convertToSeconds(test.metrics.first_contentful_paint) : 'N/A') : 'N/A') + '</td>' +
+                    '<td>' + (test.metrics ? (test.metrics.speed_index ? convertToSeconds(test.metrics.speed_index) : 'N/A') : 'N/A') + '</td>' +
+                  '<td>' + (test.metrics ? (test.metrics.largest_contentful_paint ? convertToSeconds(test.metrics.largest_contentful_paint) : 'N/A') : 'N/A') + '</td>' +
+                 '<td>' + (test.metrics ? (test.metrics.total_blocking_time ? convertToSeconds(test.metrics.total_blocking_time) : 'N/A') : 'N/A') + '</td>' +
+                 '<td>' + (test.metrics ? (test.metrics.cumulative_layout_shift ? test.metrics.cumulative_layout_shift.toFixed(2) : 'N/A') : 'N/A') + '</td>' +
+                    } else {
+                    newRow += '<td colspan="6">Test in progress.....</td>';
                     newRow += "<td></td><td></td><td></td><td></td><td></td>";
                 }
                 newRow += '</tr>';
