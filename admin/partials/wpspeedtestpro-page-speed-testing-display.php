@@ -212,6 +212,12 @@ jQuery(document).ready(function($) {
     }
 
     function updateResultsTable(updatedTests) {
+
+        function convertToSeconds(milliseconds) {
+        return (milliseconds / 1000).toFixed(2) + 's';
+    }
+
+
     updatedTests.forEach(function(test) {
         var row = $('#test-row-' + test.id);
         if (row.length) {
@@ -221,8 +227,8 @@ jQuery(document).ready(function($) {
             row.find('td:eq(2)').text(test.device);
             row.find('td:eq(3)').text(test.location);
             row.find('td:eq(4)').text(new Date(test.created_at).toLocaleString());
-            if (test.metrics.performance_score) {
-                row.find('td:eq(5)').text(test.metrics.performance_score || 'N/A').removeAttr('colspan');
+            if (test.metrics && typeof test.metrics.performance_score !== 'undefined') {
+                row.find('td:eq(5)').text(test.metrics.performance_score);
                 row.find('td:eq(6)').text(test.metrics.first_contentful_paint ? convertToSeconds(test.metrics.first_contentful_paint) : 'N/A').show();
                 row.find('td:eq(7)').text(test.metrics.speed_index ? convertToSeconds(test.metrics.speed_index) : 'N/A').show();
                 row.find('td:eq(8)').text(test.metrics.largest_contentful_paint ? convertToSeconds(test.metrics.largest_contentful_paint) : 'N/A').show();
@@ -242,7 +248,7 @@ jQuery(document).ready(function($) {
                 '<td>' + test.device + '</td>' +
                 '<td>' + test.location + '</td>' +
                 '<td>' + new Date(test.created_at).toLocaleString() + '</td>';
-                if (test.metrics.performance_score) {
+                if (test.metrics && typeof test.metrics.performance_score !== 'undefined') {}
                     newRow +=
                     '<td>' + (test.metrics ? (test.metrics.performance_score || 'N/A') : 'N/A') + '</td>' +
                     '<td>' + (test.metrics ? (test.metrics.first_contentful_paint ? convertToSeconds(test.metrics.first_contentful_paint) : 'N/A') : 'N/A') + '</td>' +
@@ -251,7 +257,7 @@ jQuery(document).ready(function($) {
                  '<td>' + (test.metrics ? (test.metrics.total_blocking_time ? convertToSeconds(test.metrics.total_blocking_time) : 'N/A') : 'N/A') + '</td>' +
                  '<td>' + (test.metrics ? (test.metrics.cumulative_layout_shift ? test.metrics.cumulative_layout_shift.toFixed(2) : 'N/A') : 'N/A') + '</td>';
                     } else {
-                    newRow += '<td colspan="6">Test in progress.....</td>';
+                    newRow += '<td>Test in progress.....</td>';
                     newRow += "<td></td><td></td><td></td><td></td><td></td>";
                 }
                 newRow += '</tr>';
