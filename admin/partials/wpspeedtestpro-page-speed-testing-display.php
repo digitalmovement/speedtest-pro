@@ -248,7 +248,7 @@ jQuery(document).ready(function($) {
                 '<td>' + test.device + '</td>' +
                 '<td>' + test.location + '</td>' +
                 '<td>' + new Date(test.created_at).toLocaleString() + '</td>';
-                if (test.metrics && typeof test.metrics.performance_score !== 'undefined') {}
+                if (test.metrics && typeof test.metrics.performance_score !== 'undefined') {
                     newRow +=
                     '<td>' + (test.metrics ? (test.metrics.performance_score || 'N/A') : 'N/A') + '</td>' +
                     '<td>' + (test.metrics ? (test.metrics.first_contentful_paint ? convertToSeconds(test.metrics.first_contentful_paint) : 'N/A') : 'N/A') + '</td>' +
