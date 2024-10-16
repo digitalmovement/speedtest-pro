@@ -16,7 +16,6 @@
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap">
     <h1>WP Speed Test Pro - Page Speed Testing</h1>
-    <?php print_r($data); ?>
 
     <?php if (!isset($data)) { echo "There was an error fetching data."; return; } ?>
 
@@ -88,7 +87,7 @@
     <table class="wp-list-table widefat fixed striped">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Test ID</th>
                 <th>URL</th>
                 <th>Device</th>
                 <th>Location</th>
@@ -105,8 +104,8 @@
         </thead>
         <tbody id="speedvitals-results-body">
             <?php foreach ($data['test_results'] as $result) : ?>
-                <tr>
-                    <td><?php echo esc_html($result['id']); ?></td>
+                <tr id="test-row-"<?php echo esc_html($result['test_id']); ?>>
+                    <td><?php echo esc_html($result['test_id']); ?></td>
                     <td><?php echo esc_url($result['url']); ?></td>
                     <td><?php echo esc_html($result['device']); ?></td>
                     <td><?php echo esc_html($result['location']); ?></td>
@@ -211,7 +210,7 @@ jQuery(document).ready(function($) {
 
     function updateResultsTable(updatedTests) {
         updatedTests.forEach(function(test) {
-            var row = $('#test-row-' + test.id);
+            var row = $('#test-row-' + test.test_id);
             if (row.length) {
                 // Update existing row
                 row.find('.status').text(test.status);
@@ -219,7 +218,7 @@ jQuery(document).ready(function($) {
                 // Update other fields as necessary
             } else {
                 // Add new row to the table
-                var newRow = '<tr id="test-row-' + test.id + '">' +
+                var newRow = '<tr id="test-row-' + test.test_id + '">' +
                     '<td>' + test.id + '</td>' +
                     '<td>' + test.url + '</td>' +
                     '<td>' + test.device + '</td>' +
@@ -279,7 +278,7 @@ jQuery(document).ready(function($) {
         stopProbing();
     });
 
-    
+
 
         $('#speedvitals-test-form').on('submit', function(e) {
         e.preventDefault();
