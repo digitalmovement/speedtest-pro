@@ -114,7 +114,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         $updated_tests = array();
 
         foreach ($pending_tests as $test) {
-            $result = $this->core->api->speedvitals_get_test_result($api_key, $test['id']);
+            $result = $this->core->api->speedvitals_get_test_result($api_key, $test['test_id']);
 
             if (!is_wp_error($result)) {
                 $this->core->db->speedvitals_update_test_result($test['id'], $result);
