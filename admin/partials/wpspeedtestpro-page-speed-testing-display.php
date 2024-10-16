@@ -96,7 +96,6 @@
                 <th>FCP</th>
                 <th>SI</th>
                 <th>LCP</th>
-                <th>TTI</th>
                 <th>TBT</th>
                 <th>CLS</th>
                 <th>Actions</th>
@@ -114,7 +113,6 @@
                     <td><?php echo esc_html($result['first_contentful_paint']); ?></td>
                     <td><?php echo esc_html($result['speed_index']); ?></td>
                     <td><?php echo esc_html($result['largest_contentful_paint']); ?></td>
-                    <td><?php echo esc_html($result['time_to_interactive']); ?></td>
                     <td><?php echo esc_html($result['total_blocking_time']); ?></td>
                     <td><?php echo esc_html($result['cumulative_layout_shift']); ?></td>
                     <td>
@@ -273,13 +271,13 @@ $('#speedvitals-test-form').on('submit', function(e) {
                 $('#speedvitals-status-message').text('Test initiated successfully. Results will update automatically.');
                 
                 // Add a new row for the initiated test
-                var newRow = '<tr id="test-row-' + response.data.id + '">' +
-                    '<td>' + response.data.id + '</td>' +
+                var newRow = '<tr id="test-row-' + data.id + '">' +
+                    '<td>' + data.id + '</td>' +
                     '<td>' + data.url + '</td>' +
                     '<td>' + data.device + '</td>' +
                     '<td>' + data.location + '</td>' +
                     '<td>' + new Date().toLocaleString() + '</td>' +
-                    '<td colspan="7">Test in progress...</td>' +
+                    '<td colspan="6">Test in progress...</td>' +
                     '<td><a href="#" target="_blank">Report Pending</a></td>' +
                     '</tr>';
                 $('#speedvitals-results-body').prepend(newRow);
