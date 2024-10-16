@@ -49,9 +49,20 @@ class Wpspeedtestpro_Server_Performance {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
+
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wpspeedtestpro_page_wpspeedtestpro-server-performance';    
+        }
+    }
+
+
     public function enqueue_styles() {
-        wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css', array(), null);
-        wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
+        if ($this-is_this_the_right_plugin_page()) {
+            wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css', array(), null);
+            wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
+        }
     }
 
     /**
@@ -60,40 +71,37 @@ class Wpspeedtestpro_Server_Performance {
      * @since    1.0.0
      */
     public function enqueue_scripts() {
-        wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-tabs');
-        wp_enqueue_script('jquery-ui-dialog');
-        wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
-        wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
+        if ($this-is_this_the_right_plugin_page()) {
+            wp_enqueue_script('jquery-ui-core');
+            wp_enqueue_script('jquery-ui-tabs');
+            wp_enqueue_script('jquery-ui-dialog');
+            wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
+            wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
+            wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
+            
+            $continuous_test_status = get_option('wpspeedtestpro_continuous_test_status', 'stopped');
+            $continuous_test_start_time = get_option('wpspeedtestpro_continuous_test_start_time', 0);
+            $current_time = current_time('timestamp');
+            $time_remaining = max(0, 86400 - ($current_time - $continuous_test_start_time));
 
-        
-
-
-   
-        wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
-        
-        $continuous_test_status = get_option('wpspeedtestpro_continuous_test_status', 'stopped');
-        $continuous_test_start_time = get_option('wpspeedtestpro_continuous_test_start_time', 0);
-        $current_time = current_time('timestamp');
-        $time_remaining = max(0, 86400 - ($current_time - $continuous_test_start_time));
-
-        $data = array(
-            'continuousTestStatus' => $continuous_test_status,
-            'timeRemaining' => $time_remaining,
-        );
+            $data = array(
+                'continuousTestStatus' => $continuous_test_status,
+                'timeRemaining' => $time_remaining,
+            );
 
 
-        wp_localize_script(
-            'wpspeedtestpro-server-performance',
-            'wpspeedtestpro_performance',
-            array(
-                'ajaxurl' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
-                'testStatus' => get_option('wpspeedtestpro_performance_test_status', 'stopped'),
-                'continuousTestStatus' => get_option('wpspeedtestpro_continuous_test_status', 'stopped'),
-                'wpspeedtestpro_continuous_data' => $data
-            )
-        );
+            wp_localize_script(
+                'wpspeedtestpro-server-performance',
+                'wpspeedtestpro_performance',
+                array(
+                    'ajaxurl' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
+                    'testStatus' => get_option('wpspeedtestpro_performance_test_status', 'stopped'),
+                    'continuousTestStatus' => get_option('wpspeedtestpro_continuous_test_status', 'stopped'),
+                    'wpspeedtestpro_continuous_data' => $data
+                )
+            );
+        }
     }
     private function create_benchmark_table() {
         $db = new Wpspeedtestpro_DB();
