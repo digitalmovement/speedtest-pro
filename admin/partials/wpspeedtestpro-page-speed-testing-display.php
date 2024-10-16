@@ -216,7 +216,7 @@ jQuery(document).ready(function($) {
             row.find('td:eq(2)').text(test.device);
             row.find('td:eq(3)').text(test.location);
             row.find('td:eq(4)').text(new Date(test.created_at).toLocaleString());
-            if (test.metrics) {
+            if (test.metrics.performance_score) {
             row.find('td:eq(5)').text(test.metrics.performance_score);
             row.find('td:eq(6)').text(test.metrics.first_contentful_paint);
             row.find('td:eq(7)').text(test.metrics.speed_index);
@@ -235,18 +235,19 @@ jQuery(document).ready(function($) {
                 '<td>' + test.url + '</td>' +
                 '<td>' + test.device + '</td>' +
                 '<td>' + test.location + '</td>' +
-                '<td>' + new Date(test.created_at).toLocaleString() + '</td>' +
-                if (test.metrics) {
+                '<td>' + new Date(test.created_at).toLocaleString() + '</td>';
+                if (test.metrics.performance_score) {
+                    newRow +=
                     '<td>' + test.metrics.performance_score + '</td>' +
                     '<td>' + test.metrics.first_contentful_paint + '</td>' +
                     '<td>' + test.metrics.speed_index + '</td>' +
                     '<td>' + test.metrics.largest_contentful_paint + '</td>' +
                     '<td>' + test.metrics.total_blocking_time + '</td>' +
-                    '<td>' + test.metrics.cumulative_layout_shift + '</td>' +
+                    '<td>' + test.metrics.cumulative_layout_shift + '</td>'; 
                 } else {
-                    '<td colspan="6">Test in progress.....</td>';
+                    newRow += '<td colspan="6">Test in progress.....</td>';
                 }
-                '</tr>';
+                newRow += '</tr>';
             $('#speedvitals-results-body').prepend(newRow);
         }
     });
