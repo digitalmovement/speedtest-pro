@@ -249,7 +249,7 @@ jQuery(document).ready(function($) {
                     '<td>' + (test.metrics ? (test.metrics.speed_index ? convertToSeconds(test.metrics.speed_index) : 'N/A') : 'N/A') + '</td>' +
                   '<td>' + (test.metrics ? (test.metrics.largest_contentful_paint ? convertToSeconds(test.metrics.largest_contentful_paint) : 'N/A') : 'N/A') + '</td>' +
                  '<td>' + (test.metrics ? (test.metrics.total_blocking_time ? convertToSeconds(test.metrics.total_blocking_time) : 'N/A') : 'N/A') + '</td>' +
-                 '<td>' + (test.metrics ? (test.metrics.cumulative_layout_shift ? test.metrics.cumulative_layout_shift.toFixed(2) : 'N/A') : 'N/A') + '</td>' +
+                 '<td>' + (test.metrics ? (test.metrics.cumulative_layout_shift ? test.metrics.cumulative_layout_shift.toFixed(2) : 'N/A') : 'N/A') + '</td>';
                     } else {
                     newRow += '<td colspan="6">Test in progress.....</td>';
                     newRow += "<td></td><td></td><td></td><td></td><td></td>";
