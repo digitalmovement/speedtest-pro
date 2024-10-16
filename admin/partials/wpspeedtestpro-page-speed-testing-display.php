@@ -209,66 +209,93 @@ jQuery(document).ready(function($) {
     }
 
     function updateResultsTable(updatedTests) {
-        updatedTests.forEach(function(test) {
-            var row = $('#test-row-' + test.id);
-            if (row.length) {
-                // Update existing row
-                row.find('.status').text(test.status);
-                row.find('.performance-score').text(test.performance_score);
-                // Update other fields as necessary
-            } else {
-                // Add new row to the table
-                var newRow = '<tr id="test-row-' + test.id + '">' +
-                    '<td>' + test.id + '</td>' +
-                    '<td>' + test.url + '</td>' +
-                    '<td>' + test.device + '</td>' +
-                    '<td>' + test.location + '</td>' +
-                    '<td>' + test.test_date + '</td>' +
-                    '<td class="status">' + test.status + '</td>' +
-                    '<td class="performance-score">' + test.performance_score + '</td>' +
-                    // Add other fields as necessary
+    updatedTests.forEach(function(test) {
+        var row = $('#test-row-' + test.id);
+        if (row.length) {
+            // Update existing row
+            row.find('td:eq(0)').text(test.id);
+            row.find('td:eq(1)').text(test.url);
+            row.find('td:eq(2)').text(test.device);
+            row.find('td:eq(3)').text(test.location);
+            row.find('td:eq(4)').text(new Date(test.created_at).toLocaleString());
+            row.find('td:eq(5)').text(test.metrics.performance_score);
+            row.find('td:eq(6)').text(test.metrics.first_contentful_paint);
+            row.find('td:eq(7)').text(test.metrics.speed_index);
+            row.find('td:eq(8)').text(test.metrics.largest_contentful_paint);
+            row.find('td:eq(9)').text(test.metrics.total_blocking_time);
+            row.find('td:eq(10)').text(test.metrics.cumulative_layout_shift);
+            row.find('td:eq(11) a').attr('href', test.report_url);
+        } else {
+            // Add new row to the table
+            var newRow = '<tr id="test-row-' + test.id + '">' +
+                '<td>' + test.id + '</td>' +
+                '<td>' + test.url + '</td>' +
+                '<td>' + test.device + '</td>' +
+                '<td>' + test.location + '</td>' +
+                '<td>' + new Date(test.created_at).toLocaleString() + '</td>' +
+                '<td>' + test.metrics.performance_score + '</td>' +
+                '<td>' + test.metrics.first_contentful_paint + '</td>' +
+                '<td>' + test.metrics.speed_index + '</td>' +
+                '<td>' + test.metrics.largest_contentful_paint + '</td>' +
+                '<td>' + test.metrics.total_blocking_time + '</td>' +
+                '<td>' + test.metrics.cumulative_layout_shift + '</td>' +
+                '<td><a href="' + test.report_url + '" target="_blank">View Report</a></td>' +
+                '</tr>';
+            $('#speedvitals-results-body').prepend(newRow);
+        }
+    });
+}
+
+$('#speedvitals-test-form').on('submit', function(e) {
+    e.preventDefault();
+    var formData = $(this).serializeArray();
+    
+    $('#speedvitals-test-status').show();
+    $('#speedvitals-loading-gif').show();
+    $('#speedvitals-status-message').text('Initiating test...');
+
+    var data = {
+        action: 'speedvitals_run_test',
+        nonce: wpspeedtestpro_ajax.nonce
+    };
+
+    // Convert the serialized array to an object
+    $.each(formData, function(i, field) {
+        data[field.name] = field.value;
+    });
+
+    $.ajax({
+        url: wpspeedtestpro_ajax.ajax_url,
+        type: 'POST',
+        data: data,
+        success: function(response) {
+            if (response.success) {
+                $('#speedvitals-status-message').text('Test initiated successfully. Results will update automatically.');
+                
+                // Add a new row for the initiated test
+                var newRow = '<tr id="test-row-' + response.data.test_id + '">' +
+                    '<td>' + response.data.test_id + '</td>' +
+                    '<td>' + data.url + '</td>' +
+                    '<td>' + data.device + '</td>' +
+                    '<td>' + data.location + '</td>' +
+                    '<td>' + new Date().toLocaleString() + '</td>' +
+                    '<td colspan="7">Test in progress...</td>' +
+                    '<td><a href="#" target="_blank">Report Pending</a></td>' +
                     '</tr>';
                 $('#speedvitals-results-body').prepend(newRow);
-            }
-        });
-    }
-
-    $('#speedvitals-test-form').on('submit', function(e) {
-        e.preventDefault();
-        var formData = $(this).serializeArray();
-        
-        $('#speedvitals-test-status').show();
-        $('#speedvitals-loading-gif').show();
-        $('#speedvitals-status-message').text('Initiating test...');
-
-        var data = {
-            action: 'speedvitals_run_test',
-            nonce: wpspeedtestpro_ajax.nonce
-        };
-
-        $.each(formData, function(i, field) {
-            data[field.name] = field.value;
-        });
-
-        $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
-            type: 'POST',
-            data: data,
-            success: function(response) {
-                if (response.success) {
-                    $('#speedvitals-status-message').text('Test initiated successfully. Results will update automatically.');
-                    startProbing(); // Start probing for updates
-                } else {
-                    $('#speedvitals-status-message').text('Error: ' + response.data);
-                    $('#speedvitals-loading-gif').hide();
-                }
-            },
-            error: function() {
-                $('#speedvitals-status-message').text('An error occurred. Please try again.');
+                
+                startProbing(); // Start probing for updates
+            } else {
+                $('#speedvitals-status-message').text('Error: ' + response.data);
                 $('#speedvitals-loading-gif').hide();
             }
-        });
+        },
+        error: function() {
+            $('#speedvitals-status-message').text('An error occurred. Please try again.');
+            $('#speedvitals-loading-gif').hide();
+        }
     });
+});
 
     // Start probing when the page loads
     startProbing();
@@ -278,45 +305,6 @@ jQuery(document).ready(function($) {
         stopProbing();
     });
 
-
-
-        $('#speedvitals-test-form').on('submit', function(e) {
-        e.preventDefault();
-        var formData = $(this).serializeArray();
-        
-        $('#speedvitals-test-status').show();
-        $('#speedvitals-loading-gif').show();
-        $('#speedvitals-status-message').text('Initiating test...');
-
-        var data = {
-            action: 'speedvitals_run_test',
-            nonce: wpspeedtestpro_ajax.nonce
-        };
-
-        
-        // Convert the serialized array to an object
-        $.each(formData, function(i, field) {
-            data[field.name] = field.value;
-        });
-
-        $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
-            type: 'POST',
-            data: data,
-            success: function(response) {
-                if (response.success) {
-                    checkTestStatus(response.data.test_id);
-                } else {
-                    $('#speedvitals-status-message').text('Error: ' + response.data);
-                    $('#speedvitals-loading-gif').hide();
-                }
-            },
-            error: function() {
-                $('#speedvitals-status-message').text('An error occurred. Please try again.');
-                $('#speedvitals-loading-gif').hide();
-            }
-        });
-    });
 
     function checkTestStatus(testId) {
         $.ajax({
@@ -338,7 +326,7 @@ jQuery(document).ready(function($) {
                         $('#speedvitals-status-message').text('Test in progress: ' + response.data.status);
                         setTimeout(function() {
                             checkTestStatus(testId);
-                        }, 5000);
+                        }, 10000);
                     }
                 } else {
                     $('#speedvitals-status-message').text('Error: ' + response.data);
