@@ -245,7 +245,8 @@ jQuery(document).ready(function($) {
                     '<td>' + test.metrics.total_blocking_time + '</td>' +
                     '<td>' + test.metrics.cumulative_layout_shift + '</td>'; 
                 } else {
-                    newRow += '<td colspan="6">Test in progress.....</td>';
+                    newRow += '<td>Test in progress.....</td>';
+                    newRow += "<td></td><td></td><td></td><td></td><td></td>";
                 }
                 newRow += '</tr>';
             $('#speedvitals-results-body').prepend(newRow);
