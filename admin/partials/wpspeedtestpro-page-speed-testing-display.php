@@ -210,7 +210,7 @@ jQuery(document).ready(function($) {
 
     function updateResultsTable(updatedTests) {
         updatedTests.forEach(function(test) {
-            var row = $('#test-row-' + test.test_id);
+            var row = $('#test-row-' + test.id);
             if (row.length) {
                 // Update existing row
                 row.find('.status').text(test.status);
@@ -218,7 +218,7 @@ jQuery(document).ready(function($) {
                 // Update other fields as necessary
             } else {
                 // Add new row to the table
-                var newRow = '<tr id="test-row-' + test.test_id + '">' +
+                var newRow = '<tr id="test-row-' + test.id + '">' +
                     '<td>' + test.id + '</td>' +
                     '<td>' + test.url + '</td>' +
                     '<td>' + test.device + '</td>' +
