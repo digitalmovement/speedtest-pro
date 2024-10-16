@@ -202,7 +202,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
             if ($frequency !== 'one_off') {
                 $this->core->db->speedvitals_schedule_test($url, $location, $device, $frequency);
             }
-            wp_send_json_success(array('insert_id' => $insert_id));
+            wp_send_json_success($result);
         }
     }
 
