@@ -130,25 +130,34 @@ function get_color_class($metric, $value) {
             </tr>
         </thead>
         <tbody id="speedvitals-results-body"><?php
-// In your table rendering loop:
-foreach ($data['test_results'] as $result) : ?>
-    <tr id="test-row-<?php echo esc_attr($result['test_id']); ?>">
-        <td><?php echo esc_html($result['test_id']); ?></td>
-        <td><?php echo esc_url($result['url']); ?></td>
-        <td><?php echo esc_html($result['device']); ?></td>
-        <td><?php echo esc_html($result['location']); ?></td>
-        <td><?php echo esc_html($result['test_date']); ?></td>
-        <td class="<?php echo get_color_class('performance_score', $result['performance_score']); ?>"><?php echo esc_html($result['performance_score']); ?></td>
-        <td class="<?php echo get_color_class('first_contentful_paint', $result['first_contentful_paint'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['first_contentful_paint'])); ?></td>
-        <td class="<?php echo get_color_class('speed_index', $result['speed_index'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['speed_index'])); ?></td>
-        <td class="<?php echo get_color_class('largest_contentful_paint', $result['largest_contentful_paint'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['largest_contentful_paint'])); ?></td>
-        <td class="<?php echo get_color_class('total_blocking_time', $result['total_blocking_time']); ?>"><?php echo esc_html(convert_to_seconds($result['total_blocking_time'])); ?></td>
-        <td class="<?php echo get_color_class('cumulative_layout_shift', $result['cumulative_layout_shift']); ?>"><?php echo esc_html(number_format($result['cumulative_layout_shift'], 2)); ?></td>
-        <td>
-            <a href="<?php echo esc_url($result['report_url']); ?>" target="_blank">View Report</a>
-        </td>
-    </tr>
-<?php endforeach; ?>
+            // In your table rendering loop:
+            foreach ($data['test_results'] as $result) : ?>
+                <tr id="test-row-<?php echo esc_attr($result['test_id']); ?>">
+                    <td><?php echo esc_html($result['test_id']); ?></td>
+                    <td><?php echo esc_url($result['url']); ?></td>
+                    <td><?php echo esc_html($result['device']); ?></td>
+                    <td><?php echo esc_html($result['location']); ?></td>
+                    <td><?php echo esc_html($result['test_date']); ?></td>
+                    <?php if (empty($result['performance_score'])) : ?>
+                        <td>Pending Results...</td>
+                        <td></td><td></td><td></td><td></td><td></td>
+                    <?php else : ?>
+                        <td class="<?php echo get_color_class('performance_score', $result['performance_score']); ?>"><?php echo esc_html($result['performance_score']); ?></td>
+                        <td class="<?php echo get_color_class('first_contentful_paint', $result['first_contentful_paint'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['first_contentful_paint'])); ?></td>
+                        <td class="<?php echo get_color_class('speed_index', $result['speed_index'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['speed_index'])); ?></td>
+                        <td class="<?php echo get_color_class('largest_contentful_paint', $result['largest_contentful_paint'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['largest_contentful_paint'])); ?></td>
+                        <td class="<?php echo get_color_class('total_blocking_time', $result['total_blocking_time']); ?>"><?php echo esc_html(convert_to_seconds($result['total_blocking_time'])); ?></td>
+                        <td class="<?php echo get_color_class('cumulative_layout_shift', $result['cumulative_layout_shift']); ?>"><?php echo esc_html(number_format($result['cumulative_layout_shift'], 2)); ?></td>
+                    <?php endif; ?>
+                    <td>
+                        <?php if (empty($result['performance_score'])) : ?>
+                            Report Pending
+                        <?php else : ?>
+                            <a href="<?php echo esc_url($result['report_url']); ?>" target="_blank">View Report</a>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         </tbody>
     </table>
 
