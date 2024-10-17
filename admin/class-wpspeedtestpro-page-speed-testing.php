@@ -67,6 +67,8 @@ class Wpspeedtestpro_Page_Speed_Testing {
 
         add_action('speedvitals_run_scheduled_tests', array($this, 'speedvitals_run_scheduled_tests'));
         add_action('speedvitals_check_pending_tests', array($this, 'speedvitals_check_pending_tests'));
+        add_action('speedvitals_check_scheduled_tests', array($this, 'speedvitals_check_scheduled_tests'));
+
 
     }
     /**
@@ -201,6 +203,9 @@ class Wpspeedtestpro_Page_Speed_Testing {
             $insert_id = $this->core->db->speedvitals_insert_test_result($result);
             if ($frequency !== 'one_off') {
                 $this->core->db->speedvitals_schedule_test($url, $location, $device, $frequency);
+                if (!wp_next_scheduled('speedvitals_check_scheduled_tests')) {
+                    $this->activate_scheduled_tests_cron();
+                }
             }
             wp_send_json_success($result);
         }
@@ -280,6 +285,32 @@ class Wpspeedtestpro_Page_Speed_Testing {
 
             if (!is_wp_error($result)) {
                 $this->core->db->speedvitals_update_test_result($test['id'], $result);
+            }
+        }
+    }
+
+    private function activate_scheduled_tests_cron() {
+        if (!wp_next_scheduled('speedvitals_check_scheduled_tests')) {
+            wp_schedule_event(time(), 'wpspeedtestpro_fifteen_minutes', 'speedvitals_check_scheduled_tests');
+        }
+    }
+
+    public function speedvitals_check_scheduled_tests() {
+        $scheduled_tests = $this->core->db->speedvitals_get_scheduled_tests();
+
+        if (empty($scheduled_tests)) {
+            // If there are no scheduled tests, deactivate the cron job
+            wp_clear_scheduled_hook('speedvitals_check_scheduled_tests');
+            return;
+        }
+
+        foreach ($scheduled_tests as $test) {
+            $api_key = get_option('wpspeedtestpro_speedvitals_api_key');
+            $result = $this->core->api->speedvitals_run_test($api_key, $test['url'], $test['location'], $test['device']);
+
+            if (!is_wp_error($result)) {
+                $this->core->db->speedvitals_insert_test_result($result);
+                $this->core->db->speedvitals_update_scheduled_test($test['id']);
             }
         }
     }
