@@ -53,7 +53,6 @@ function get_color_class($metric, $value) {
         <?php if ($data['credits']['lighthouse']['available_credits'] <= 0) : ?>
             <p style="color: red;">You have no Lighthouse credits remaining. Please <a href="https://speedvitals/pricing" target="_blank">purchase more credits or wait until the next refill</a>.</p>
         <?php endif; ?>
-        <?php echo $data['credits']['credits_refill_date']; ?>
         </div>
     <h2>Run a New Test</h2>
     <form id="speedvitals-test-form">
