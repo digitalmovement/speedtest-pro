@@ -56,51 +56,47 @@ function get_color_class($metric, $value) {
         </div>
     <h2>Run a New Test</h2>
     <form id="speedvitals-test-form">
-        <table class="form-table">
-            <tr>
-                <th scope="row"><label for="speedvitals-url">URL to Test</label></th>
-                <td>
+        <div class="speedvitals-form-container">
+            <div class="speedvitals-form-row">
+                <div class="speedvitals-form-column full-width">
+                    <label for="speedvitals-url">URL to Test</label>
                     <select id="speedvitals-url" name="url">
                         <?php foreach ($data['pages_and_posts'] as $id => $title) : ?>
                             <option value="<?php echo esc_url(get_permalink($id)); ?>"><?php echo esc_html($title); ?></option>
                         <?php endforeach; ?>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row"><label for="speedvitals-location">Test Location</label></th>
-                <td>
+                </div>
+            </div>
+            <div class="speedvitals-form-row">
+                <div class="speedvitals-form-column">
+                    <label for="speedvitals-location">Test Location</label>
                     <select id="speedvitals-location" name="location">
                         <?php foreach ($data['locations'] as $code => $name) : ?>
                             <option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name); ?></option>
                         <?php endforeach; ?>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row"><label for="speedvitals-device">Device</label></th>
-                <td>
+                </div>
+                <div class="speedvitals-form-column">
+                    <label for="speedvitals-device">Device</label>
                     <select id="speedvitals-device" name="device">
                         <?php foreach ($data['devices'] as $code => $name) : ?>
                             <option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name); ?></option>
                         <?php endforeach; ?>
                     </select>
-                </td>
-            </tr>
-            <tr>
-                <th scope="row"><label for="speedvitals-frequency">Test Frequency</label></th>
-                <td>
+                </div>
+                <div class="speedvitals-form-column">
+                    <label for="speedvitals-frequency">Test Frequency</label>
                     <select id="speedvitals-frequency" name="frequency">
                         <?php foreach ($data['frequencies'] as $code => $name) : ?>
                             <option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name); ?></option>
                         <?php endforeach; ?>
                     </select>
-                </td>
-            </tr>
-        </table>
-        <p class="submit">
-            <input type="submit" name="submit" id="submit" class="button button-primary" value="Run Test">
-        </p>
+                </div>
+                <div class="speedvitals-form-column submit-column">
+                    <input type="submit" name="submit" id="submit" class="button button-primary" value="Run Test">
+                </div>
+            </div>
+        </div>
     </form>
 
     <div id="speedvitals-test-status" style="display: none;">

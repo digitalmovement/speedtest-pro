@@ -22,3 +22,49 @@
     z-index: 99;
 }
 
+
+.speedvitals-form-container {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+.speedvitals-form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -10px;  /* Negative margin to counteract padding on columns */
+    margin-bottom: 10px;
+}
+
+.speedvitals-form-column {
+    flex: 1 1 200px;  /* Grow, shrink, and base width */
+    padding: 10px;
+    min-width: 150px;  /* Reduced minimum width for better fit */
+}
+
+.speedvitals-form-column.full-width {
+    flex-basis: 100%;
+}
+
+.speedvitals-form-column label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.speedvitals-form-column select,
+.speedvitals-form-column input[type="submit"] {
+    width: 100%;
+    padding: 5px;
+}
+
+.speedvitals-form-column.submit-column {
+    flex: 0 1 auto;  /* Don't grow, allow shrinking, auto basis */
+    align-self: flex-end;  /* Align to bottom of row */
+}
+
+@media (max-width: 768px) {
+    .speedvitals-form-column,
+    .speedvitals-form-column.submit-column {
+        flex-basis: 100%;  /* Full width on smaller screens */
+    }
+}
