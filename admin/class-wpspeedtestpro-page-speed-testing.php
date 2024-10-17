@@ -95,6 +95,8 @@ class Wpspeedtestpro_Page_Speed_Testing {
             return;
         }
 
+        $this->speedvitals_check_pending_tests(); // check for any results that are pending
+        
         $data = array(
             'pages_and_posts' => $this->speedvitals_get_pages_and_posts(),
             'locations' => $this->speedvitals_get_test_locations(),
