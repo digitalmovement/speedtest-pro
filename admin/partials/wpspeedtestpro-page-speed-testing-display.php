@@ -16,6 +16,29 @@
     return number_format($milliseconds / 1000, 2) . 's';
 }
 
+function get_color_class($metric, $value) {
+    $thresholds = [
+        'performance_score' => ['green' => 90, 'amber' => 50],
+        'first_contentful_paint' => ['green' => 1.8, 'amber' => 3],
+        'speed_index' => ['green' => 3.4, 'amber' => 5.8],
+        'largest_contentful_paint' => ['green' => 2.5, 'amber' => 4],
+        'total_blocking_time' => ['green' => 200, 'amber' => 600],
+        'cumulative_layout_shift' => ['green' => 0.1, 'amber' => 0.25]
+    ];
+
+    if ($metric === 'performance_score') {
+        if ($value >= $thresholds[$metric]['green']) return 'green';
+        if ($value >= $thresholds[$metric]['amber']) return 'amber';
+        return 'red';
+    } else {
+        if ($value <= $thresholds[$metric]['green']) return 'green';
+        if ($value <= $thresholds[$metric]['amber']) return 'amber';
+        return 'red';
+    }
+}
+
+
+
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -27,7 +50,7 @@
     <div id="speedvitals-credits-info">
         <h3>Account Credits</h3>
         <p>Lighthouse Credits: <?php echo esc_html($data['credits']['lighthouse']['available_credits']); ?></p>
-        <p>TTFB Credits: <?php echo esc_html($data['credits']['ttfb']['available_credits']); ?></p>
+     <!-- Not used at the moment  <p>TTFB Credits: <?php echo esc_html($data['credits']['ttfb']['available_credits']); ?></p> -->
         <p>Next Refill: <?php echo date('Y-m-d H:i:s', $data['credits']['credits_refill_date']); ?></p>
     </div>
 
@@ -106,25 +129,26 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody id="speedvitals-results-body">
-            <?php foreach ($data['test_results'] as $result) : ?>
-                <tr id="test-row-"<?php echo esc_html($result['test_id']); ?>>
-                    <td><?php echo esc_html($result['test_id']); ?></td>
-                    <td><?php echo esc_url($result['url']); ?></td>
-                    <td><?php echo esc_html($result['device']); ?></td>
-                    <td><?php echo esc_html($result['location']); ?></td>
-                    <td><?php echo esc_html($result['test_date']); ?></td>
-                    <td><?php echo esc_html($result['performance_score']); ?></td>
-                 
-                    <td><?php echo esc_html(convert_to_seconds($result['first_contentful_paint'])); ?></td>
-                    <td><?php echo esc_html(convert_to_seconds($result['speed_index'])); ?></td>
-                    <td><?php echo esc_html(convert_to_seconds($result['largest_contentful_paint'])); ?></td>
-                    <td><?php echo esc_html(convert_to_seconds($result['total_blocking_time'])); ?></td>
-                    <td><?php echo esc_html(number_format($result['cumulative_layout_shift'], 2)); ?></td>                 <td>
-                     <a href="<?php echo esc_url($result['report_url']); ?>" target="_blank">View Report</a>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
+        <tbody id="speedvitals-results-body"><?php
+// In your table rendering loop:
+foreach ($data['test_results'] as $result) : ?>
+    <tr id="test-row-<?php echo esc_attr($result['test_id']); ?>">
+        <td><?php echo esc_html($result['test_id']); ?></td>
+        <td><?php echo esc_url($result['url']); ?></td>
+        <td><?php echo esc_html($result['device']); ?></td>
+        <td><?php echo esc_html($result['location']); ?></td>
+        <td><?php echo esc_html($result['test_date']); ?></td>
+        <td class="<?php echo get_color_class('performance_score', $result['performance_score']); ?>"><?php echo esc_html($result['performance_score']); ?></td>
+        <td class="<?php echo get_color_class('first_contentful_paint', $result['first_contentful_paint'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['first_contentful_paint'])); ?></td>
+        <td class="<?php echo get_color_class('speed_index', $result['speed_index'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['speed_index'])); ?></td>
+        <td class="<?php echo get_color_class('largest_contentful_paint', $result['largest_contentful_paint'] / 1000); ?>"><?php echo esc_html(convert_to_seconds($result['largest_contentful_paint'])); ?></td>
+        <td class="<?php echo get_color_class('total_blocking_time', $result['total_blocking_time']); ?>"><?php echo esc_html(convert_to_seconds($result['total_blocking_time'])); ?></td>
+        <td class="<?php echo get_color_class('cumulative_layout_shift', $result['cumulative_layout_shift']); ?>"><?php echo esc_html(number_format($result['cumulative_layout_shift'], 2)); ?></td>
+        <td>
+            <a href="<?php echo esc_url($result['report_url']); ?>" target="_blank">View Report</a>
+        </td>
+    </tr>
+<?php endforeach; ?>
         </tbody>
     </table>
 
@@ -217,6 +241,27 @@ jQuery(document).ready(function($) {
         return (milliseconds / 1000).toFixed(2) + 's';
     }
 
+    function getColorClass(metric, value) {
+        const thresholds = {
+            performance_score: { green: 90, amber: 50 },
+            first_contentful_paint: { green: 1.8, amber: 3 },
+            speed_index: { green: 3.4, amber: 5.8 },
+            largest_contentful_paint: { green: 2.5, amber: 4 },
+            total_blocking_time: { green: 200, amber: 600 },
+            cumulative_layout_shift: { green: 0.1, amber: 0.25 }
+        };
+
+        if (metric === 'performance_score') {
+            if (value >= thresholds[metric].green) return 'green';
+            if (value >= thresholds[metric].amber) return 'amber';
+            return 'red';
+        } else {
+            if (value <= thresholds[metric].green) return 'green';
+            if (value <= thresholds[metric].amber) return 'amber';
+            return 'red';
+        }
+    }
+    
 
     updatedTests.forEach(function(test) {
         var row = $('#test-row-' + test.id);
@@ -228,15 +273,32 @@ jQuery(document).ready(function($) {
             row.find('td:eq(3)').text(test.location);
             row.find('td:eq(4)').text(new Date(test.created_at).toLocaleString());
             if (test.metrics && typeof test.metrics.performance_score !== 'undefined') {
-                row.find('td:eq(5)').text(test.metrics.performance_score);
-                row.find('td:eq(6)').text(test.metrics.first_contentful_paint ? convertToSeconds(test.metrics.first_contentful_paint) : 'N/A').show();
-                row.find('td:eq(7)').text(test.metrics.speed_index ? convertToSeconds(test.metrics.speed_index) : 'N/A').show();
-                row.find('td:eq(8)').text(test.metrics.largest_contentful_paint ? convertToSeconds(test.metrics.largest_contentful_paint) : 'N/A').show();
-                row.find('td:eq(9)').text(test.metrics.total_blocking_time ? convertToSeconds(test.metrics.total_blocking_time) : 'N/A').show();
-                row.find('td:eq(10)').text(test.metrics.cumulative_layout_shift ? test.metrics.cumulative_layout_shift.toFixed(2) : 'N/A').show();
-            row.find('td:eq(11) a').attr('href', test.report_url);
-            row.find('td:eq(11) a').attr('href', test.report_url).text('View Report');
-            } else { // Test in progress    
+                row.find('td:eq(5)').text(test.metrics.performance_score)
+                    .removeClass('red amber green')
+                    .addClass(getColorClass('performance_score', test.metrics.performance_score));
+                row.find('td:eq(6)').text(convertToSeconds(test.metrics.first_contentful_paint))
+                    .removeClass('red amber green')
+                    .addClass(getColorClass('first_contentful_paint', test.metrics.first_contentful_paint / 1000))
+                    .show();
+                row.find('td:eq(7)').text(convertToSeconds(test.metrics.speed_index))
+                    .removeClass('red amber green')
+                    .addClass(getColorClass('speed_index', test.metrics.speed_index / 1000))
+                    .show();
+                row.find('td:eq(8)').text(convertToSeconds(test.metrics.largest_contentful_paint))
+                    .removeClass('red amber green')
+                    .addClass(getColorClass('largest_contentful_paint', test.metrics.largest_contentful_paint / 1000))
+                    .show();
+                row.find('td:eq(9)').text(convertToSeconds(test.metrics.total_blocking_time))
+                    .removeClass('red amber green')
+                    .addClass(getColorClass('total_blocking_time', test.metrics.total_blocking_time))
+                    .show();
+                row.find('td:eq(10)').text(test.metrics.cumulative_layout_shift.toFixed(2))
+                    .removeClass('red amber green')
+                    .addClass(getColorClass('cumulative_layout_shift', test.metrics.cumulative_layout_shift))
+                    .show();
+                row.find('td:eq(11) a').attr('href', test.report_url);
+                row.find('td:eq(11) a').attr('href', test.report_url).text('View Report');
+                    } else { // Test in progress    
             row.find('td:eq(5)').text('Test in progress....');
             }
 
