@@ -50,6 +50,10 @@ function get_color_class($metric, $value) {
         <p>Lighthouse Credits: <?php echo esc_html($data['credits']['lighthouse']['available_credits']); ?></p>
         <!-- Not used at the moment  <p>TTFB Credits: <?php echo esc_html($data['credits']['ttfb']['available_credits']); ?></p> -->
          <p>Next Refill: <?php echo wp_date('Y-m-d H:i:s', $data['credits']['credits_refill_date']); ?></p>
+        <?php if ($data['credits']['lighthouse']['available_credits'] <= 0) : ?>
+            <p style="color: red;">You have no Lighthouse credits remaining. Please <a href="https://speedvitals/pricing" target="_blank">purchase more credits or wait until the next refill</a>.</p>
+        <php endif; ?>
+        <?php echo $data['credits']['credits_refill_date']; ?>
         </div>
     <h2>Run a New Test</h2>
     <form id="speedvitals-test-form">
