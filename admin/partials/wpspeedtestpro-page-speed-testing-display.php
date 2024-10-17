@@ -48,10 +48,9 @@ function get_color_class($metric, $value) {
     <div id="speedvitals-credits-info">
         <h3>Account Credits</h3>
         <p>Lighthouse Credits: <?php echo esc_html($data['credits']['lighthouse']['available_credits']); ?></p>
-     <!-- Not used at the moment  <p>TTFB Credits: <?php echo esc_html($data['credits']['ttfb']['available_credits']); ?></p> -->
-        <p>Next Refill: <?php echo date('Y-m-d H:i:s', $data['credits']['credits_refill_date']); ?></p>
-    </div>
-
+        <!-- Not used at the moment  <p>TTFB Credits: <?php echo esc_html($data['credits']['ttfb']['available_credits']); ?></p> -->
+         <p>Next Refill: <?php echo wp_date('Y-m-d H:i:s', $data['credits']['credits_refill_date']); ?></p>
+        </div>
     <h2>Run a New Test</h2>
     <form id="speedvitals-test-form">
         <table class="form-table">
