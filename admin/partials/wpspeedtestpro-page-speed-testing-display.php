@@ -37,8 +37,6 @@ function get_color_class($metric, $value) {
     }
 }
 
-
-
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
@@ -112,21 +110,21 @@ function get_color_class($metric, $value) {
     </div>
 
     <h2>Test Results</h2>
-    <table class="wp-list-table widefat fixed striped">
+    <table class="speedvitals-table wp-list-table widefat fixed striped">
         <thead>
             <tr>
-                <th>Test ID</th>
-                <th>URL</th>
-                <th>Device</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Performance Score</th>
-                <th>FCP</th>
-                <th>SI</th>
-                <th>LCP</th>
-                <th>TBT</th>
-                <th>CLS</th>
-                <th>Actions</th>
+            <th title="Unique identifier for each test">Test ID</th>
+            <th title="The URL that was tested">URL</th>
+            <th title="The device type used for the test">Device</th>
+            <th title="The location from which the test was run">Location</th>
+            <th title="The date and time when the test was conducted">Date</th>
+            <th title="Overall performance score (0-100). Higher is better.">Performance Score</th>
+            <th title="First Contentful Paint (FCP): Time when the first text or image is painted. Lower is better.">FCP (s)</th>
+            <th title="Speed Index (SI): How quickly the contents of a page are visibly populated. Lower is better.">SI (s)</th>
+            <th title="Largest Contentful Paint (LCP): Time when the largest text or image is painted. Lower is better.">LCP (s)</th>
+            <th title="Total Blocking Time (TBT): Sum of all time periods between FCP and Time to Interactive, when task length exceeded 50ms. Lower is better.">TBT (s)</th>
+            <th title="Cumulative Layout Shift (CLS): Measures visual stability. Lower is better.">CLS</th>
+            <th title="Actions you can take on this test result">Actions</th>
             </tr>
         </thead>
         <tbody id="speedvitals-results-body"><?php
@@ -261,7 +259,7 @@ jQuery(document).ready(function($) {
             return 'red';
         }
     }
-    
+
 
     updatedTests.forEach(function(test) {
         var row = $('#test-row-' + test.id);
