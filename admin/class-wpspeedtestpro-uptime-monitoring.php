@@ -78,8 +78,8 @@ class Wpspeedtestpro_Uptime_Monitoring {
             return false;
         }
 
-        $ping_monitor = $this->uptimerobot_create_monitor($ping_filename, 'WP Speed Test Pro Ping Monitor');
-        $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WP Speed Test Pro Cron Monitor');
+        $ping_monitor = $this->uptimerobot_create_monitor(wp_upload_dir().'/$ping_filename', 'WPSpeedTestPro Ping Monitor');
+        $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor');
 
         if ($ping_monitor && $cron_monitor) {
             update_option('wpspeedtestpro_uptimerobot_ping_id', $ping_monitor['id']);
