@@ -58,7 +58,7 @@ function get_color_class($metric, $value) {
     <form id="speedvitals-test-form">
         <div class="speedvitals-form-container">
             <div class="speedvitals-form-row">
-                <div class="speedvitals-form-column full-width">
+                <div class="speedvitals-form-column">
                     <label for="speedvitals-url">URL to Test</label>
                     <select id="speedvitals-url" name="url">
                         <?php foreach ($data['pages_and_posts'] as $id => $title) : ?>
@@ -66,8 +66,6 @@ function get_color_class($metric, $value) {
                         <?php endforeach; ?>
                     </select>
                 </div>
-            </div>
-            <div class="speedvitals-form-row">
                 <div class="speedvitals-form-column">
                     <label for="speedvitals-location">Test Location</label>
                     <select id="speedvitals-location" name="location">
