@@ -81,7 +81,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
             return false;
         }
 
-        $ping_monitor = $this->uptimerobot_create_monitor($upload_url.'/$ping_filename', 'WPSpeedTestPro Ping Monitor');
+        $ping_monitor = $this->uptimerobot_create_monitor($upload_url.'/' . $ping_filename, 'WPSpeedTestPro Ping Monitor');
         $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor');
 
         if ($ping_monitor && $cron_monitor) {
@@ -140,7 +140,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $data = json_decode(wp_remote_retrieve_body($response), true);
 
         if ($data['stat'] === 'ok') {
-            return $data['monitor'];
+            return $data['monitor']['id'];
         }
 
         return false;
