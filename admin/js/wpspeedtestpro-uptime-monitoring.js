@@ -42,10 +42,10 @@
         if (Array.isArray(data)) {
             data.forEach(function(monitor) {
                 if (monitor.friendly_name.includes('Ping')) {
-                    uptimerobot_updateGraph('ping-monitor-graph', monitor.response_times || []);
+                    uptimerobot_updateGraph('ping-monitor-graph', monitor.response_times || [], monitor.average_response_time);
                     uptimerobot_updateLogs('ping-monitor-logs', monitor.logs || []);
                 } else if (monitor.friendly_name.includes('Cron')) {
-                    uptimerobot_updateGraph('cron-monitor-graph', monitor.response_times || []);
+                    uptimerobot_updateGraph('cron-monitor-graph', monitor.response_times || [], monitor.average_response_time);
                     uptimerobot_updateLogs('cron-monitor-logs', monitor.logs || []);
                 }
             });
@@ -54,7 +54,7 @@
         }
     }
 
-    function uptimerobot_updateGraph(canvasId, responseTimes) {
+    function uptimerobot_updateGraph(canvasId, responseTimes, averageResponseTime) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
 
@@ -62,8 +62,10 @@
             $canvas.hide();
             let $message = $container.find('.not-enough-data');
             if ($message.length === 0) {
-                $message = $('<p class="not-enough-data">').text('Not enough data to display the graph yet. Please wait for more data to be collected.');
+                $message = $('<p class="not-enough-data">').html('Not enough data to display the graph yet. Please wait for more data to be collected.<br>Average Response Time: ' + averageResponseTime + ' ms');
                 $container.append($message);
+            } else {
+                $message.html('Not enough data to display the graph yet. Please wait for more data to be collected.<br>Average Response Time: ' + averageResponseTime + ' ms');
             }
             return;
         }
@@ -130,8 +132,6 @@
             default: return 'Unknown';
         }
     }
-
-
 
     function uptimerobot_setupMonitors() {
         $.ajax({
