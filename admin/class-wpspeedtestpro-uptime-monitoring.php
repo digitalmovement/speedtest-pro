@@ -65,7 +65,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
             exit;
         }
 
-        include_once('partials/wpspeedtestpro-admin-uptime-monitoring-display.php');
+        include_once('partials/wpspeedtestpro-uptime-monitoring-display.php');
     }
 
     private function uptimerobot_check_api_key() {
