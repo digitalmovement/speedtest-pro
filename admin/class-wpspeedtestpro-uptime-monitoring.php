@@ -59,7 +59,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
         ));
     }
 
-    public function uptimerobot_display_monitoring() {
+    public function display_plugin_uptime_monitoring_page() {
         if (!$this->uptimerobot_check_api_key()) {
             wp_redirect(admin_url('admin.php?page=wpspeedtestpro-settings'));
             exit;
