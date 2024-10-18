@@ -42,11 +42,11 @@
         if (Array.isArray(data)) {
             data.forEach(function(monitor) {
                 if (monitor.friendly_name.includes('Ping')) {
-                    uptimerobot_updateGraph('ping-monitor-graph', monitor.response_times || [], monitor.average_response_time);
-                    uptimerobot_updateLogs('ping-monitor-logs', monitor.logs || []);
+                    uptimerobot_updateGraph('ping-monitor-graph', monitor.response_times, monitor.average_response_time);
+                    uptimerobot_updateLogs('ping-monitor-logs', monitor.logs);
                 } else if (monitor.friendly_name.includes('Cron')) {
-                    uptimerobot_updateGraph('cron-monitor-graph', monitor.response_times || [], monitor.average_response_time);
-                    uptimerobot_updateLogs('cron-monitor-logs', monitor.logs || []);
+                    uptimerobot_updateGraph('cron-monitor-graph', monitor.response_times, monitor.average_response_time);
+                    uptimerobot_updateLogs('cron-monitor-logs', monitor.logs);
                 }
             });
         } else {
@@ -105,6 +105,7 @@
             }
         });
     }
+
 
     function uptimerobot_updateLogs(tableId, logs) {
         var $table = $('#' + tableId);

@@ -200,8 +200,8 @@ class Wpspeedtestpro_Uptime_Monitoring {
             return false;
         }
     
-        if (isset($data['success']) && $data['success'] === true && isset($data['data'])) {
-            $monitors = $data['data'];
+        if (isset($data['stat']) && $data['stat'] === 'ok' && isset($data['monitors']) && is_array($data['monitors'])) {
+            $monitors = $data['monitors'];
             foreach ($monitors as &$monitor) {
                 // Ensure response_times is always an array
                 if (!isset($monitor['response_times']) || !is_array($monitor['response_times'])) {
