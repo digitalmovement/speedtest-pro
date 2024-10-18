@@ -141,6 +141,7 @@ class Wpspeedtestpro_Settings {
             'sanitize_callback' => 'boolval'
         ));
         register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_speedvitals_api_key' );
+        register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_uptimerobot_api_key' );
     
         // Add settings section
         add_settings_section(
@@ -191,6 +192,14 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
 
+        add_settings_field(
+            'wpspeedtestpro_uptimerobot_api_key',
+            'UptimeRobot API Key',
+            array($this, 'uptimerobot_api_key_callback'),
+            'wpspeedtestpro-settings',
+            'wpspeedtestpro_section'
+        );
+
 
     }
 
@@ -216,6 +225,11 @@ class Wpspeedtestpro_Settings {
         if (isset($input['wpspeedtestpro_speedvitals_api_key'])) {
             $sanitized_input['wpspeedtestpro_speedvitals_api_key'] = sanitize_text_field($input['wpspeedtestpro_speedvitals_api_key']);
         }
+
+        if (isset($input['wpspeedtestpro_uptimerobot_api_key'])) {
+            $sanitized_input['wpspeedtestpro_uptimerobot_api_key'] = sanitize_text_field($input['wpspeedtestpro_uptimerobot_api_key']);
+        }
+
         return $sanitized_input;
     }
 
@@ -354,4 +368,11 @@ class Wpspeedtestpro_Settings {
         echo '<input type="text" id="wpspeedtestpro_speedvitals_api_key" name="wpspeedtestpro_speedvitals_api_key" value="' . esc_attr($api_key) . '" class="regular-text">';
         echo '<p class="description">Enter your SpeedVitals API key. You can find your API key in your <a href="https://app.speedvitals.com/account" target="_blank">SpeedVitals account settings</a>.</p>';
     }
+
+    public function uptimerobot_api_key_callback() {
+        $api_key = get_option('wpspeedtestpro_uptimerobot_api_key');
+        echo '<input type="text" id="wpspeedtestpro_uptimerobot_api_key" name="wpspeedtestpro_uptimerobot_api_key" value="' . esc_attr($api_key) . '" class="regular-text">';
+        echo '<p class="description">Enter your UptimeRobot API key. You can find your API key in your <a href="https://dashboard.uptimerobot.com/integrations" target="_blank">Uptime account settings</a>. <br /> Please create a <b>Main API key</b></p>';
+    }
+
 }
