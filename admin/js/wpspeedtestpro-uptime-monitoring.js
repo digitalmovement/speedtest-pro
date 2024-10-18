@@ -132,6 +132,7 @@
     }
 
 
+
     function uptimerobot_setupMonitors() {
         $.ajax({
             url: wpspeedtestpro_uptime.ajax_url,
@@ -152,8 +153,8 @@
                     alert(errorMessage);
                 }
             },
-            error: function() {
-                alert('Error setting up monitors. Please try again.');
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert('Error setting up monitors: ' + textStatus + ' - ' + errorThrown);
             }
         });
     }

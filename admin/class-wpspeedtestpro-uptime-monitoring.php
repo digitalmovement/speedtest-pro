@@ -73,22 +73,24 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_setup_monitors() {
-
         $ping_filename = $this->uptimerobot_create_ping_file();
         if (!$ping_filename) {
-            return false;
+            return array('success' => false, 'message' => 'Failed to create ping file.');
         }
 
         $ping_monitor = $this->uptimerobot_create_monitor(site_url('/'.$ping_filename), 'WPSpeedTestPro Ping Monitor');
-        $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor');
-
-        if ($ping_monitor && $cron_monitor) {
-            update_option('wpspeedtestpro_uptimerobot_ping_id', $ping_monitor['id']);
-            update_option('wpspeedtestpro_uptimerobot_cron_id', $cron_monitor['id']);
-            return true;
+        if (!$ping_monitor['success']) {
+            return $ping_monitor; // Return the error message from create_monitor
         }
 
-        return false;
+        $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor');
+        if (!$cron_monitor['success']) {
+            return $cron_monitor; // Return the error message from create_monitor
+        }
+
+        update_option('wpspeedtestpro_uptimerobot_ping_id', $ping_monitor['data']['id']);
+        update_option('wpspeedtestpro_uptimerobot_cron_id', $cron_monitor['data']['id']);
+        return array('success' => true, 'message' => 'Monitors set up successfully.');
     }
 
     private function uptimerobot_create_ping_file() {
@@ -270,10 +272,10 @@ class Wpspeedtestpro_Uptime_Monitoring {
 
         $setup_result = $this->uptimerobot_setup_monitors();
 
-        if ($setup_result) {
-            wp_send_json_success('Monitors set up successfully.');
+        if ($setup_result['success']) {
+            wp_send_json_success($setup_result['message']);
         } else {
-            wp_send_json_error('Failed to set up monitors.');
+            wp_send_json_error($setup_result['message']);
         }
     }
 
