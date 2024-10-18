@@ -129,14 +129,8 @@ class Wpspeedtestpro_Uptime_Monitoring {
         );
     
         error_log("WPSpeedTestPro: Attempting to create new UptimeRobot monitor");
-        error_log("WPSpeedTestPro: API URL: " . $api_url);
         error_log("WPSpeedTestPro: Monitor URL: " . $url);
         error_log("WPSpeedTestPro: Monitor Friendly Name: " . $friendly_name);
-    
-        // Log the request body, but mask the API key
-        $log_body = $body;
-        $log_body['api_key'] = substr($log_body['api_key'], 0, 5) . '...'; // Show only first 5 characters
-        error_log("WPSpeedTestPro: Request Body: " . json_encode($log_body));
     
         $response = wp_remote_post($api_url, array(
             'body' => $body,
@@ -145,32 +139,34 @@ class Wpspeedtestpro_Uptime_Monitoring {
     
         if (is_wp_error($response)) {
             error_log("WPSpeedTestPro: WP Error in create_monitor: " . $response->get_error_message());
-            return false;
+            return array('success' => false, 'message' => 'WordPress error: ' . $response->get_error_message());
         }
     
-        $response_code = wp_remote_retrieve_response_code($response);
         $response_body = wp_remote_retrieve_body($response);
-        error_log("WPSpeedTestPro: API Response Code: " . $response_code);
         error_log("WPSpeedTestPro: API Response Body: " . $response_body);
     
         $data = json_decode($response_body, true);
     
         if (json_last_error() !== JSON_ERROR_NONE) {
             error_log("WPSpeedTestPro: JSON decode error: " . json_last_error_msg());
-            return false;
+            return array('success' => false, 'message' => 'JSON decode error: ' . json_last_error_msg());
         }
     
         if ($data['stat'] === 'ok') {
             error_log("WPSpeedTestPro: Monitor created successfully. Monitor ID: " . $data['monitor']['id']);
-            return $data['monitor'];
+            return array('success' => true, 'data' => $data['monitor']);
         } else {
             error_log("WPSpeedTestPro: Failed to create monitor. Status: " . ($data['stat'] ?? 'Unknown'));
             if (isset($data['error'])) {
                 error_log("WPSpeedTestPro: Error details: " . json_encode($data['error']));
+                if ($data['error']['type'] === 'already_exists') {
+                    return array('success' => false, 'message' => 'Monitor already exists. Please delete it manually from UptimeRobot before creating a new one.');
+                }
             }
-            return false;
+            return array('success' => false, 'message' => 'Failed to create monitor: ' . ($data['error']['message'] ?? 'Unknown error'));
         }
     }
+    
     public function uptimerobot_get_monitor_data() {
         $api_url = 'https://api.uptimerobot.com/v2/getMonitors';
         $body = array(
@@ -183,7 +179,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         );
     
         error_log('WPSpeedTestPro: Sending request to UptimeRobot API. URL: ' . $api_url);
-        error_log('WPSpeedTestPro: Request body: ' . json_encode($body));
     
         $response = wp_remote_post($api_url, array(
             'body' => $body,
@@ -195,9 +190,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
             return false;
         }
     
-        $response_code = wp_remote_retrieve_response_code($response);
         $response_body = wp_remote_retrieve_body($response);
-        error_log('WPSpeedTestPro: UptimeRobot API response code: ' . $response_code);
         error_log('WPSpeedTestPro: UptimeRobot API response body: ' . $response_body);
     
         $data = json_decode($response_body, true);
@@ -207,11 +200,18 @@ class Wpspeedtestpro_Uptime_Monitoring {
             return false;
         }
     
-        if ($data['stat'] === 'ok') {
-            error_log('WPSpeedTestPro: Successfully retrieved monitor data. Number of monitors: ' . count($data['monitors']));
-            return $data['monitors'];
+        if (isset($data['success']) && $data['success'] === true && isset($data['data'])) {
+            $monitors = $data['data'];
+            foreach ($monitors as &$monitor) {
+                // Ensure response_times is always an array
+                if (!isset($monitor['response_times']) || !is_array($monitor['response_times'])) {
+                    $monitor['response_times'] = [];
+                }
+            }
+            error_log('WPSpeedTestPro: Successfully retrieved monitor data. Number of monitors: ' . count($monitors));
+            return $monitors;
         } else {
-            error_log('WPSpeedTestPro: UptimeRobot API returned non-OK status: ' . ($data['stat'] ?? 'Unknown'));
+            error_log('WPSpeedTestPro: UptimeRobot API returned unexpected structure or error');
             if (isset($data['error'])) {
                 error_log('WPSpeedTestPro: UptimeRobot API error details: ' . json_encode($data['error']));
             }

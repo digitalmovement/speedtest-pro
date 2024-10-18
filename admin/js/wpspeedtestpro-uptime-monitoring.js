@@ -1,8 +1,6 @@
 (function($) {
     'use strict';
 
-    'use strict';
-
     const MIN_DATAPOINTS = 5;
 
     $(document).ready(function() {
@@ -41,17 +39,26 @@
     }
 
     function uptimerobot_updateMonitorDisplay(data) {
-        uptimerobot_updateGraph('ping-monitor-graph', data.ping_monitor.response_times);
-        uptimerobot_updateGraph('cron-monitor-graph', data.cron_monitor.response_times);
-        uptimerobot_updateLogs('ping-monitor-logs', data.ping_monitor.logs);
-        uptimerobot_updateLogs('cron-monitor-logs', data.cron_monitor.logs);
+        if (Array.isArray(data)) {
+            data.forEach(function(monitor) {
+                if (monitor.friendly_name.includes('Ping')) {
+                    uptimerobot_updateGraph('ping-monitor-graph', monitor.response_times || []);
+                    uptimerobot_updateLogs('ping-monitor-logs', monitor.logs || []);
+                } else if (monitor.friendly_name.includes('Cron')) {
+                    uptimerobot_updateGraph('cron-monitor-graph', monitor.response_times || []);
+                    uptimerobot_updateLogs('cron-monitor-logs', monitor.logs || []);
+                }
+            });
+        } else {
+            console.error('Unexpected data structure received:', data);
+        }
     }
 
     function uptimerobot_updateGraph(canvasId, responseTimes) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
 
-        if (responseTimes.length < MIN_DATAPOINTS) {
+        if (!responseTimes || responseTimes.length < MIN_DATAPOINTS) {
             $canvas.hide();
             let $message = $container.find('.not-enough-data');
             if ($message.length === 0) {
@@ -100,6 +107,10 @@
     function uptimerobot_updateLogs(tableId, logs) {
         var $table = $('#' + tableId);
         $table.empty();
+        if (!logs || logs.length === 0) {
+            $table.append('<tr><td colspan="4">No log data available yet.</td></tr>');
+            return;
+        }
         logs.forEach(function(log) {
             var $row = $('<tr>');
             $row.append($('<td>').text(new Date(log.datetime * 1000).toLocaleString()));
@@ -119,17 +130,7 @@
             default: return 'Unknown';
         }
     }
-    
 
-    function uptimerobot_getLogType(type) {
-        switch(type) {
-            case 1: return 'Down';
-            case 2: return 'Up';
-            case 98: return 'Started';
-            case 99: return 'Paused';
-            default: return 'Unknown';
-        }
-    }
 
     function uptimerobot_setupMonitors() {
         $.ajax({
@@ -144,7 +145,11 @@
                     alert('Monitors set up successfully. Reloading page...');
                     location.reload();
                 } else {
-                    alert('Error setting up monitors: ' + response.data);
+                    let errorMessage = 'Error setting up monitors: ' + (response.data || 'Unknown error');
+                    if (response.data && response.data.includes('already exists')) {
+                        errorMessage += '\n\nPlease go to your UptimeRobot account and manually delete any existing monitors for this site before trying again.';
+                    }
+                    alert(errorMessage);
                 }
             },
             error: function() {
@@ -152,6 +157,7 @@
             }
         });
     }
+    
 
     function uptimerobot_deleteMonitors() {
         if (confirm('Are you sure you want to delete the monitors?')) {
