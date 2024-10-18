@@ -324,15 +324,38 @@ class Wpspeedtestpro_DB {
         );
     }
 
-    private function speedvitals_calculate_next_run($frequency) {
+    private function speedvitals_calculate_next_run($frequency, $last_run = null) {
+        $now = new DateTime();
+        $last_run = $last_run ? new DateTime($last_run) : $now;
+    
         switch ($frequency) {
             case 'daily':
-                return date('Y-m-d H:i:s', strtotime('+1 day'));
+                $next_run = clone $last_run;
+                $next_run->modify('+1 day');
+                $next_run->setTime(0, 0, 0); // Set to midnight
+    
+                // If next run is in the past, set it to the next day
+                if ($next_run <= $now) {
+                    $next_run->modify('+1 day');
+                }
+                break;
+    
             case 'weekly':
-                return date('Y-m-d H:i:s', strtotime('+1 week'));
+                $next_run = clone $last_run;
+                $next_run->modify('+1 week');
+                $next_run->setTime(0, 0, 0); // Set to midnight
+    
+                // If next run is in the past, set it to the next week
+                if ($next_run <= $now) {
+                    $next_run->modify('+1 week');
+                }
+                break;
+    
             default:
                 return null;
         }
+    
+        return $next_run->format('Y-m-d H:i:s');
     }
 
     public function speedvitals_get_scheduled_tests() {
@@ -400,8 +423,9 @@ class Wpspeedtestpro_DB {
         if (!$scheduled_test) {
             return false;
         }
+        
 
-        $next_run = $this->speedvitals_calculate_next_run($scheduled_test['frequency']);
+        $next_run = $this->speedvitals_calculate_next_run($scheduled_test['frequency'], current_time('mysql'));
 
         return $wpdb->update(
             $table_name,
