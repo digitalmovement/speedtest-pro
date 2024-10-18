@@ -73,15 +73,13 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_setup_monitors() {
-        $upload_dir = wp_upload_dir();
-        $upload_url = $upload_dir['baseurl'];
 
         $ping_filename = $this->uptimerobot_create_ping_file();
         if (!$ping_filename) {
             return false;
         }
 
-        $ping_monitor = $this->uptimerobot_create_monitor($upload_url.'/' . $ping_filename, 'WPSpeedTestPro Ping Monitor');
+        $ping_monitor = $this->uptimerobot_create_monitor(site_url('/'.$ping_filename), 'WPSpeedTestPro Ping Monitor');
         $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor');
 
         if ($ping_monitor && $cron_monitor) {
@@ -94,10 +92,10 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     private function uptimerobot_create_ping_file() {
-        $upload_dir = wp_upload_dir();
+        $wordpress_base_dir = ABSPATH;
         $random_string = $this->uptimerobot_generate_random_string(6);
         $filename = 'wpspeedtestpro_ping_' . $random_string . '.php';
-        $filepath = $upload_dir['basedir'] . '/' . $filename;
+        $filepath = $wordpress_base_dir . '/' . $filename;
 
         $content = '<?php echo "pong"; ?>';
 
@@ -166,7 +164,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
             return array('success' => false, 'message' => 'Failed to create monitor: ' . ($data['error']['message'] ?? 'Unknown error'));
         }
     }
-    
+
     public function uptimerobot_get_monitor_data() {
         $api_url = 'https://api.uptimerobot.com/v2/getMonitors';
         $body = array(
