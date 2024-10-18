@@ -292,11 +292,12 @@ class Wpspeedtestpro_Uptime_Monitoring {
     public function uptimerobot_recreate_monitors_handler() {
         check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
 
-        $delete_result = $this->uptimerobot_delete_monitors();
+        /* $delete_result = $this->uptimerobot_delete_monitors();
         if (!$delete_result) {
             wp_send_json_error('Failed to delete existing monitors.');
             return;
         }
+            */
 
         $setup_result = $this->uptimerobot_setup_monitors();
         if ($setup_result) {
