@@ -1,8 +1,6 @@
-
 jQuery(document).ready(function($) {
     var countdownInterval;
     var isRunning = false;
-    var lastResults = {};
     var chartInstances = {};
 
     function updateButtonState(isRunning) {
@@ -138,9 +136,9 @@ jQuery(document).ready(function($) {
                                 type: 'time',
                                 time: {
                                     unit: 'hour',
-                                    tooltipFormat: 'MMM D, h:mm A',
+                                    tooltipFormat: 'yyyy-MM-dd HH:mm:ss',
                                     displayFormats: {
-                                        hour: 'h:mm A'
+                                        hour: 'HH:mm'
                                     }
                                 },
                                 ticks: {
@@ -159,7 +157,7 @@ jQuery(document).ready(function($) {
                             }
                         }
                     },
-                    plugins: [lastUpdatedTimePlugin] 
+                    plugins: [lastUpdatedTimePlugin]
                 });
             }
         });
@@ -282,94 +280,84 @@ jQuery(document).ready(function($) {
     }
 
     function updateResultsTable(results) {
-    var tableBody = $('#latency-results tbody');
-    tableBody.empty();
-    var regionData = {};
-    var selectedRegion = wpspeedtestpro_ajax.selected_region;
+        var tableBody = $('#latency-results tbody');
+        tableBody.empty();
+        var regionData = {};
+        var selectedRegion = wpspeedtestpro_ajax.selected_region;
 
-    function isValidLatency(value) {
-        var parsedValue = parseFloat(value);
-        return !isNaN(parsedValue) && isFinite(parsedValue);
+        function isValidLatency(value) {
+            var parsedValue = parseFloat(value);
+            return !isNaN(parsedValue) && isFinite(parsedValue);
+        }
+
+        results.forEach(function(result) {
+            if (!result || typeof result !== 'object') {
+                console.error('Invalid result:', result);
+                return; // Skip this result
+            }
+
+            var region = result.region_name;
+            if (!region) {
+                console.error('Invalid result: missing region_name', result);
+                return; // Skip this result
+            }
+
+            if (!('latency' in result) || !('fastest_latency' in result) || !('slowest_latency' in result)) {
+                console.error('Missing latency data for region:', region, result);
+                return; // Skip this result
+            }
+
+            if (!isValidLatency(result.latency) || !isValidLatency(result.fastest_latency) || !isValidLatency(result.slowest_latency)) {
+                console.error('Invalid latency data for region:', region, result);
+                return; // Skip this result
+            }
+
+            var latency = parseFloat(result.latency);
+            var fastestLatency = parseFloat(result.fastest_latency);
+            var slowestLatency = parseFloat(result.slowest_latency);
+            var testTime = result.test_time;
+
+            if (!regionData[region]) {
+                regionData[region] = {
+                    currentLatency: latency,
+                    fastestLatency: fastestLatency,
+                    slowestLatency: slowestLatency,
+                    lastUpdated: testTime
+                };
+            } else {
+                if (fastestLatency < regionData[region].fastestLatency) {
+                    regionData[region].fastestLatency = fastestLatency;
+                }
+                if (slowestLatency > regionData[region].slowestLatency) {
+                    regionData[region].slowestLatency = slowestLatency;
+                }
+                if (new Date(testTime) > new Date(regionData[region].lastUpdated)) {
+                    regionData[region].currentLatency = latency;
+                    regionData[region].lastUpdated = testTime;
+                }
+            }
+        });
+
+        Object.keys(regionData).forEach(function(region) {
+            var row = $('<tr>');
+
+            if (region === selectedRegion) {
+                row.addClass('highlight-row');
+            }
+
+            row.append($('<td>').text(region));
+            row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
+            row.append($('<td>').text(regionData[region].fastestLatency.toFixed(1) + ' ms'));
+            row.append($('<td>').text(regionData[region].slowestLatency.toFixed(1) + ' ms'));
+            row.append($('<td>').text(formatDate(regionData[region].lastUpdated)));
+            tableBody.append(row);
+        });
     }
-
-    results.forEach(function(result) {
-        if (!result || typeof result !== 'object') {
-            console.error('Invalid result:', result);
-            return; // Skip this result
-        }
-
-        var region = result.region_name;
-        if (!region) {
-            console.error('Invalid result: missing region_name', result);
-            return; // Skip this result
-        }
-
-        if (!('latency' in result) || !('fastest_latency' in result) || !('slowest_latency' in result)) {
-            console.error('Missing latency data for region:', region, result);
-            return; // Skip this result
-        }
-
-        if (!isValidLatency(result.latency) || !isValidLatency(result.fastest_latency) || !isValidLatency(result.slowest_latency)) {
-            console.error('Invalid latency data for region:', region, result);
-            return; // Skip this result
-        }
-
-        var latency = parseFloat(result.latency);
-        var fastestLatency = parseFloat(result.fastest_latency);
-        var slowestLatency = parseFloat(result.slowest_latency);
-        var testTime = result.test_time;
-
-        if (!regionData[region]) {
-            regionData[region] = {
-                currentLatency: latency,
-                fastestLatency: fastestLatency,
-                slowestLatency: slowestLatency,
-                lastUpdated: testTime
-            };
-        } else {
-            if (fastestLatency < regionData[region].fastestLatency) {
-                regionData[region].fastestLatency = fastestLatency;
-            }
-            if (slowestLatency > regionData[region].slowestLatency) {
-                regionData[region].slowestLatency = slowestLatency;
-            }
-            if (new Date(testTime) > new Date(regionData[region].lastUpdated)) {
-                regionData[region].currentLatency = latency;
-                regionData[region].lastUpdated = testTime;
-            }
-        }
-    });
-
-    Object.keys(regionData).forEach(function(region) {
-        var row = $('<tr>');
-
-        if (region === selectedRegion) {
-            row.addClass('highlight-row');
-        }
-
-        row.append($('<td>').text(region));
-        row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
-        row.append($('<td>').text(regionData[region].fastestLatency.toFixed(1) + ' ms'));
-        row.append($('<td>').text(regionData[region].slowestLatency.toFixed(1) + ' ms'));
-        row.append($('<td>').text(formatDate(regionData[region].lastUpdated)));
-        tableBody.append(row);
-    });
-}
-
 
     function formatDate(dateString) {
         var date = new Date(dateString);
         return date.toLocaleString();
     }
-
-    function isFloat(value) {
-    // Check if the value is a number and not NaN
-    if (typeof value === 'number' && !isNaN(value)) {
-        // Check if it's not an integer
-        return value % 1 !== 0;
-    }
-    return false;
-}
 
     checkTestStatus();
     updateResults();
