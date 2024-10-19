@@ -53,9 +53,6 @@ class Wpspeedtestpro_Server_Performance {
     private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
             $screen = get_current_screen();
-            echo "<pre>";
-            print_r($screen); 
-            echo "</pre>";
             return $screen && $screen->id === ' wp-speed-test-pro_page_wpspeedtestpro-server-performance';    
         }
     }
@@ -74,7 +71,9 @@ class Wpspeedtestpro_Server_Performance {
      * @since    1.0.0
      */
     public function enqueue_scripts() {
+        echo "enqueue_scripts";
         if ($this->is_this_the_right_plugin_page()) {
+            echo "enqueue_scripts - entered";
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-tabs');
             wp_enqueue_script('jquery-ui-dialog');
