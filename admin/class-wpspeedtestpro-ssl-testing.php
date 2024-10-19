@@ -66,12 +66,22 @@ class Wpspeedtestpro_SSL_Testing {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
 
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-ssl-testing';    
+        }
+    }
+
     /**
      * Register the stylesheets for the SSL testing area.
      *
      * @since    1.0.0
      */
     public function enqueue_styles() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         wp_enqueue_style($this->plugin_name . '-ssl-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-ssl-testing.css', array(), $this->version, 'all');
     }
 
@@ -81,6 +91,9 @@ class Wpspeedtestpro_SSL_Testing {
      * @since    1.0.0
      */
     public function enqueue_scripts() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         wp_enqueue_script($this->plugin_name . '-ssl-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-ssl-testing.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-ssl-testing', 'wpspeedtestpro_ssl', array(
             'ajax_url' => admin_url('admin-ajax.php'),

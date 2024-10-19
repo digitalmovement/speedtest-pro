@@ -112,7 +112,7 @@ class Wpspeedtestpro_Latency_Testing {
         wp_localize_script($this->plugin_name . '-latency-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-            'selected_region' => get_option('wp_hosting_benchmarking_selected_region') // Pass the selected region     
+            'selected_region' => get_option('wpspeedtestpro_selected_region') // Pass the selected region     
         ));        
     }
 

@@ -264,7 +264,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'wpspeedtestpro_get_latest_results',
+                action: 'wpspeedtestpro_get_results_for_time_range',
                 nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {

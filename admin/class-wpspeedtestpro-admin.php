@@ -143,7 +143,8 @@ class Wpspeedtestpro_Admin {
      *
      * @since    1.0.0
      */
-    public function enqueue_server_performance_scripts($hook) {
+    // The below function is not used in the plugin - canditate for removal
+     public function enqueue_server_performance_scripts($hook) {
         if ($hook === 'wpspeedtestpro_page_' . $this->plugin_name . '-server-performance') {
             wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery', 'chart-js' ), $this->version, false );
             wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
