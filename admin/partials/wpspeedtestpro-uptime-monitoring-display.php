@@ -15,8 +15,8 @@
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 <div class="wrap">
-    <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-    <p>Monitor your website's uptime and receive alerts for any downtime.</p>
+    <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+    
     <?php if (!$this->uptimerobot_check_api_key()): ?>
         <div class="notice notice-error">
             <p><?php _e('UptimeRobot API key is not set. Please configure it in the settings.', 'wpspeedtestpro'); ?></p>
@@ -33,15 +33,9 @@
                 <p><?php _e('Loading monitor data...', 'wpspeedtestpro'); ?></p>
             </div>
 
-            <div class="uptime-monitors-graphs">
-                <div class="uptime-monitor-graph">
-                    <h3><?php _e('Ping Monitor Response Times', 'wpspeedtestpro'); ?></h3>
-                    <canvas id="ping-monitor-graph"></canvas>
-                </div>
-                <div class="uptime-monitor-graph">
-                    <h3><?php _e('Cron Monitor Response Times', 'wpspeedtestpro'); ?></h3>
-                    <canvas id="cron-monitor-graph"></canvas>
-                </div>
+            <div class="uptime-monitors-graph">
+                <h3><?php _e('Ping and Cron Response Times', 'wpspeedtestpro'); ?></h3>
+                <canvas id="combined-monitor-graph"></canvas>
             </div>
 
             <div class="uptime-monitors-logs">

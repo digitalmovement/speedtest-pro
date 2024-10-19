@@ -40,32 +40,50 @@
 
     function uptimerobot_updateMonitorDisplay(data) {
         if (Array.isArray(data)) {
+            let pingData = null;
+            let cronData = null;
+
             data.forEach(function(monitor) {
                 if (monitor.friendly_name.includes('Ping')) {
-                    uptimerobot_updateGraph('ping-monitor-graph', monitor.response_times, monitor.average_response_time);
+                    pingData = monitor;
                     uptimerobot_updateLogs('ping-monitor-logs', monitor.logs);
                 } else if (monitor.friendly_name.includes('Cron')) {
-                    uptimerobot_updateGraph('cron-monitor-graph', monitor.response_times, monitor.average_response_time);
+                    cronData = monitor;
                     uptimerobot_updateLogs('cron-monitor-logs', monitor.logs);
                 }
             });
+
+            if (pingData && cronData) {
+                uptimerobot_updateCombinedGraph('combined-monitor-graph', pingData, cronData);
+            } else {
+                console.error('Missing ping or cron data');
+            }
         } else {
             console.error('Unexpected data structure received:', data);
         }
     }
 
-    function uptimerobot_updateGraph(canvasId, responseTimes, averageResponseTime) {
+    function uptimerobot_updateCombinedGraph(canvasId, pingData, cronData) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
 
-        if (!responseTimes || responseTimes.length < MIN_DATAPOINTS) {
+        if (!pingData.response_times || !cronData.response_times || 
+            (pingData.response_times.length < MIN_DATAPOINTS && cronData.response_times.length < MIN_DATAPOINTS)) {
             $canvas.hide();
             let $message = $container.find('.not-enough-data');
             if ($message.length === 0) {
-                $message = $('<p class="not-enough-data">').html('Not enough data to display the graph yet. Please wait for more data to be collected.<br>Average Response Time: ' + averageResponseTime + ' ms');
+                $message = $('<p class="not-enough-data">').html(
+                    'Not enough data to display the graph yet. Please wait for more data to be collected.<br>' +
+                    'Ping Average Response Time: ' + pingData.average_response_time + ' ms<br>' +
+                    'Cron Average Response Time: ' + cronData.average_response_time + ' ms'
+                );
                 $container.append($message);
             } else {
-                $message.html('Not enough data to display the graph yet. Please wait for more data to be collected.<br>Average Response Time: ' + averageResponseTime + ' ms');
+                $message.html(
+                    'Not enough data to display the graph yet. Please wait for more data to be collected.<br>' +
+                    'Ping Average Response Time: ' + pingData.average_response_time + ' ms<br>' +
+                    'Cron Average Response Time: ' + cronData.average_response_time + ' ms'
+                );
             }
             return;
         }
@@ -73,21 +91,33 @@
         $canvas.show();
         $container.find('.not-enough-data').remove();
 
+        const combinedData = [];
+        pingData.response_times.forEach(item => combinedData.push({...item, type: 'Ping'}));
+        cronData.response_times.forEach(item => combinedData.push({...item, type: 'Cron'}));
+
+        combinedData.sort((a, b) => a.datetime - b.datetime);
+
         var ctx = $canvas[0].getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: responseTimes.map(function(item) {
-                    return new Date(item.datetime * 1000).toLocaleString();
-                }),
-                datasets: [{
-                    label: 'Response Time (ms)',
-                    data: responseTimes.map(function(item) {
-                        return item.value;
-                    }),
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
+                labels: combinedData.map(item => new Date(item.datetime * 1000).toLocaleString()),
+                datasets: [
+                    {
+                        label: 'Ping Response Time (ms)',
+                        data: combinedData.map(item => item.type === 'Ping' ? item.value : null),
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Cron Response Time (ms)',
+                        data: combinedData.map(item => item.type === 'Cron' ? item.value : null),
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1,
+                        fill: false
+                    }
+                ]
             },
             options: {
                 responsive: true,
