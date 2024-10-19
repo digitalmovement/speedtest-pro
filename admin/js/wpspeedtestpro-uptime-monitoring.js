@@ -144,7 +144,7 @@
     
         const totalDuration = 4000; // 4 seconds
         const delayBetweenPoints = totalDuration / allTimestamps.length;
-        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(ctx.dataset.data[ctx.index]) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
         
         const animation = {
             x: {
@@ -216,7 +216,7 @@
             const chart = this.chart;
             const ctx = chart.ctx;
             ctx.save();
-            ctx.clearRect(0, 0, chart.width, chart.height);
+            ctx.globalCompositeOperation = 'destination-over';
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, chart.width, chart.height);
             ctx.restore();
