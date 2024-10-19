@@ -3,6 +3,7 @@
 
     const MIN_DATAPOINTS = 5;
     const REFRESH_INTERVAL = 1 * 60 * 1000; // 5 minutes in milliseconds
+    let combinedChart = null; // Global variable to store the chart instance
 
     $(document).ready(function() {
         if ($('#uptime-monitors-data').length) {
@@ -76,7 +77,7 @@
     function uptimerobot_updateCombinedGraph(canvasId, pingData, cronData) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
-    
+
         if (!pingData.response_times || !cronData.response_times || 
             (pingData.response_times.length < MIN_DATAPOINTS && cronData.response_times.length < MIN_DATAPOINTS)) {
             $canvas.hide();
@@ -97,15 +98,15 @@
             }
             return;
         }
-    
+
         $canvas.show();
         $container.find('.not-enough-data').remove();
-    
+
         // Combine and sort all timestamps
         const allTimestamps = [...pingData.response_times, ...cronData.response_times]
             .map(item => item.datetime)
             .sort((a, b) => a - b);
-    
+
         // Create datasets
         const pingDataset = {
             label: 'Ping Response Time (ms)',
@@ -118,7 +119,7 @@
             fill: false,
             spanGaps: true
         };
-    
+
         const cronDataset = {
             label: 'Cron Response Time (ms)',
             data: allTimestamps.map(timestamp => {
@@ -130,9 +131,14 @@
             fill: false,
             spanGaps: true
         };
-    
+
+        // Destroy existing chart if it exists
+        if (combinedChart) {
+            combinedChart.destroy();
+        }
+
         var ctx = $canvas[0].getContext('2d');
-        new Chart(ctx, {
+        combinedChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: allTimestamps.map(timestamp => new Date(timestamp * 1000).toLocaleString()),
@@ -165,6 +171,7 @@
             }
         });
     }
+
     function uptimerobot_updateLogs(tableId, logs) {
         var $table = $('#' + tableId);
         $table.empty();
@@ -217,7 +224,6 @@
             }
         });
     }
-    
 
     function uptimerobot_deleteMonitors() {
         if (confirm('Are you sure you want to delete the monitors?')) {
