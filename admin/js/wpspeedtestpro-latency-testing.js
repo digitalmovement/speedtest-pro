@@ -102,16 +102,31 @@ jQuery(document).ready(function($) {
                     ctx.save();
                     ctx.font = '12px Arial';
                     ctx.fillStyle = 'gray';
-                    ctx.textAlign = 'center';
+                    ctx.textAlign = 'right';
 
                     var formattedDate = new Date(lastUpdated).toLocaleString();
                     ctx.fillText("Last updated: " + formattedDate, 
-                        (chartArea.left + chartArea.right) / 2,
-                        chartArea.bottom + 20
+                        chartArea.right,
+                        chartArea.top - 10
                     );
                     ctx.restore();
                 }
             };
+
+            // Function to get evenly spaced sample dates
+            function getSampleDates(dates, numSamples) {
+                var result = [];
+                var step = Math.floor(dates.length / (numSamples - 1));
+                for (var i = 0; i < dates.length; i += step) {
+                    result.push(dates[Math.min(i, dates.length - 1)]);
+                }
+                if (result[result.length - 1] !== dates[dates.length - 1]) {
+                    result[result.length - 1] = dates[dates.length - 1];
+                }
+                return result;
+            }
+
+            var sampleDates = getSampleDates(regionData[region].labels, 5);
 
             chartInstances[region] = new Chart(ctx, {
                 type: 'line',
@@ -130,15 +145,19 @@ jQuery(document).ready(function($) {
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'category',
-                            labels: regionData[region].labels.map(date => date.toLocaleDateString()),
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    day: 'MMM d'
+                                }
+                            },
                             ticks: {
+                                source: 'auto',
                                 autoSkip: true,
-                                maxTicksLimit: 10,
+                                maxTicksLimit: 5,
                                 callback: function(value, index, values) {
-                                    // Display every nth label to ensure even spacing
-                                    const n = Math.ceil(values.length / 10);
-                                    return index % n === 0 ? value : '';
+                                    return sampleDates.find(date => date.getTime() === value) ? this.getLabelForValue(value) : '';
                                 }
                             }
                         },
@@ -169,9 +188,14 @@ jQuery(document).ready(function($) {
                         tooltip: {
                             callbacks: {
                                 title: function(tooltipItems) {
-                                    return new Date(regionData[region].labels[tooltipItems[0].dataIndex]).toLocaleString();
+                                    return new Date(tooltipItems[0].parsed.x).toLocaleString();
                                 }
                             }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 30  // Add padding to the top for the "Last updated" text
                         }
                     }
                 },
