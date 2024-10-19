@@ -93,19 +93,23 @@
                 responsive: true,
                 scales: {
                     x: {
-                        type: 'time',
-                        time: {
-                            unit: 'hour'
+                        type: 'category',
+                        title: {
+                            display: true,
+                            text: 'Time'
                         }
                     },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Response Time (ms)'
+                        }
                     }
                 }
             }
         });
     }
-
 
     function uptimerobot_updateLogs(tableId, logs) {
         var $table = $('#' + tableId);
