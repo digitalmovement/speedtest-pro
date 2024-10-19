@@ -71,16 +71,31 @@ class Wpspeedtestpro_Page_Speed_Testing {
 
 
     }
+
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-page-speed-testing';    
+        }
+    }
+
     /**
      * Register the stylesheets for the page speed testing area.
      *
      * @since    1.0.0
      */
     public function enqueue_styles() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         wp_enqueue_style($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing.css', array(), $this->version, 'all');
     }
 
     public function enqueue_scripts() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
+        
         wp_enqueue_script($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -96,7 +111,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         }
 
         $this->speedvitals_check_pending_tests(); // check for any results that are pending
-        
+
         $data = array(
             'pages_and_posts' => $this->speedvitals_get_pages_and_posts(),
             'locations' => $this->speedvitals_get_test_locations(),

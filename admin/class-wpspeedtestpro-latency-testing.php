@@ -60,8 +60,7 @@ class Wpspeedtestpro_Latency_Testing {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
-        $this->add_hooks();
-        
+        $this->add_hooks();        
     }
 
     /**
@@ -77,16 +76,25 @@ class Wpspeedtestpro_Latency_Testing {
         add_action('wp_ajax_wpspeedtestpro_get_results_for_time_range', array($this, 'get_results_for_time_range'));
         add_action('wp_ajax_wpspeedtestpro_delete_all_results', array($this, 'delete_all_results'));
         add_action('wpspeedtestpro_cron_hook', array($this, 'run_scheduled_test'));
-
-
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
 
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-latency-testing';    
+        }
+    }
     /**
      * Register the stylesheets for the latency testing area.
      *
      * @since    1.0.0
      */
     public function enqueue_styles() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         wp_enqueue_style($this->plugin_name . '-latency-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-latency-testing.css', array(), $this->version, 'all');
     }
 
@@ -96,6 +104,9 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function enqueue_scripts() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         wp_enqueue_script($this->plugin_name . '-latency-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-latency-testing.js', array('jquery'), $this->version, false);
 
         wp_localize_script($this->plugin_name . '-latency-testing', 'wpspeedtestpro_ajax', array(
@@ -111,8 +122,6 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function display_latency_testing() {
-        $this->enqueue_styles();
-        $this->enqueue_scripts();
         include_once(plugin_dir_path( dirname( __FILE__ ) ) . 'admin/partials/wpspeedtestpro-latency-testing-display.php');        
     }
 

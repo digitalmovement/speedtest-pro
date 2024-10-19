@@ -47,11 +47,25 @@ class Wpspeedtestpro_Uptime_Monitoring {
         add_action('admin_enqueue_scripts', array($this, 'uptimerobot_enqueue_scripts'));
     }
 
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-page-uptime-monitoring';    
+        }
+    }
+
     public function uptimerobot_enqueue_styles() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         wp_enqueue_style($this->plugin_name . '-uptime-monitoring', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-uptime-monitoring.css', array(), $this->version, 'all');
     }
 
     public function uptimerobot_enqueue_scripts() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
+        
         wp_enqueue_script($this->plugin_name . '-uptime-monitoring', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-uptime-monitoring.js', array('jquery', 'chart-js'), $this->version, false);
         wp_localize_script($this->plugin_name . '-uptime-monitoring', 'wpspeedtestpro_uptime', array(
             'ajax_url' => admin_url('admin-ajax.php'),

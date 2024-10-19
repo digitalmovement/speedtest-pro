@@ -34,7 +34,6 @@ class Wpspeedtestpro_Server_Performance {
         $this->version = $version;
         $this->core = $core;
         $this->add_hooks();
-        $this->create_benchmark_table();
         $this->schedule_continuous_test();
     }
 
@@ -103,10 +102,6 @@ class Wpspeedtestpro_Server_Performance {
                 )
             );
         }
-    }
-    private function create_benchmark_table() {
-        $db = new Wpspeedtestpro_DB();
-        $this->core->db->create_benchmark_table();
     }
 
     public function display_server_performance() {
