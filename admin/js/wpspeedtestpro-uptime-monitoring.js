@@ -2,10 +2,13 @@
     'use strict';
 
     const MIN_DATAPOINTS = 5;
+    const REFRESH_INTERVAL = 1 * 60 * 1000; // 5 minutes in milliseconds
 
     $(document).ready(function() {
         if ($('#uptime-monitors-data').length) {
             uptimerobot_loadMonitorData();
+            // Start automatic refreshing
+            setInterval(uptimerobot_loadMonitorData, REFRESH_INTERVAL);
         }
 
         $('#setup-monitors').on('click', uptimerobot_setupMonitors);
@@ -16,6 +19,9 @@
 
     function uptimerobot_loadMonitorData() {
         $('#uptime-monitors-data').addClass('loading');
+        $('#uptime-monitors-data .spinner').show();
+        $('#uptime-monitors-data p').text('Loading monitor data...');
+
         $.ajax({
             url: wpspeedtestpro_uptime.ajax_url,
             type: 'POST',
@@ -25,15 +31,19 @@
             },
             success: function(response) {
                 $('#uptime-monitors-data').removeClass('loading');
+                $('#uptime-monitors-data .spinner').hide();
+                $('#uptime-monitors-data p').text(''); // Clear the loading text
+
                 if (response.success) {
                     uptimerobot_updateMonitorDisplay(response.data);
                 } else {
-                    alert('Error loading monitor data: ' + response.data);
+                    $('#uptime-monitors-data p').text('Error loading monitor data: ' + response.data);
                 }
             },
             error: function() {
                 $('#uptime-monitors-data').removeClass('loading');
-                alert('Error loading monitor data. Please try again.');
+                $('#uptime-monitors-data .spinner').hide();
+                $('#uptime-monitors-data p').text('Error loading monitor data. Please try again.');
             }
         });
     }

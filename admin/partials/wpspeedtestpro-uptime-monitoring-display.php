@@ -28,8 +28,8 @@
             </div>
             <button id="setup-monitors" class="button button-primary"><?php _e('Setup Monitors', 'wpspeedtestpro'); ?></button>
         <?php else: ?>
-            <div id="uptime-monitors-data" class="loading">
-                <div class="spinner is-active"></div>
+            <div id="uptime-monitors-data">
+                <div class="spinner is-active" style="float: none;"></div>
                 <p><?php _e('Loading monitor data...', 'wpspeedtestpro'); ?></p>
             </div>
 
