@@ -3,6 +3,13 @@ jQuery(document).ready(function($) {
     var isRunning = false;
     var chartInstances = {};
 
+    const regionGroups = {
+        'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris'],
+        'US': ['Montréal', 'Toronto', 'Iowa', 'South Carolina', 'North Virginia', 'Columbus', 'Dallas', 'Oregon', 'Los Angeles', 'Salt Lake City', 'Las Vegas'],
+        'Asia': ['Taiwan', 'Hong Kong', 'Tokyo', 'Osaka', 'Seoul', 'Mumbai', 'Delhi', 'Singapore', 'Jakarta'],
+        'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
+    };
+
     function updateButtonState(isRunning) {
         $('#start-test').prop('disabled', isRunning);
         $('#start-test').toggle(!isRunning);
@@ -45,19 +52,16 @@ jQuery(document).ready(function($) {
         }
     }
 
-    function createGraphContainer(regionName) {
-        var container = $('<div>').attr('id', 'graph-container-' + regionName).css({
-            height: '300px',
+    function createGraphContainer(regionName, groupName) {
+        var containerId = 'graph-container-' + regionName.replace(/\s+/g, '-').toLowerCase();
+        var container = $('<div>').attr('id', containerId).addClass('graph-container').css({
             width: '100%',
-            margin: '20px 0'
+            marginBottom: '40px'  // Add margin to the bottom of each graph container
         });
 
-        var title = $('<h3>').text('Graph for ' + regionName);
-        var canvas = $('<canvas>').attr('id', 'graph-' + regionName);
-
-        container.append(title);
+        var canvas = $('<canvas>').attr('id', 'graph-' + regionName.replace(/\s+/g, '-').toLowerCase());
         container.append(canvas);
-        $('#graphs-container').append(container);
+        $('#graphs-' + groupName.toLowerCase()).append(container);
     }
 
     function renderGraphs(results) {
@@ -78,88 +82,92 @@ jQuery(document).ready(function($) {
         });
 
         Object.keys(regionData).forEach(function(region) {
-            if (!document.getElementById('graph-' + region)) {
-                createGraphContainer(region);
+            var groupName = Object.keys(regionGroups).find(group => regionGroups[group].includes(region)) || 'Other';
+            if (!document.getElementById('graph-' + region.replace(/\s+/g, '-').toLowerCase())) {
+                createGraphContainer(region, groupName);
             }
 
-            if (regionData[region].latencies.length < 10) {
-                var ctx = document.getElementById('graph-' + region).getContext('2d');
-                var message = "Awaiting more data for " + region;
+            var ctx = document.getElementById('graph-' + region.replace(/\s+/g, '-').toLowerCase()).getContext('2d');
 
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-                ctx.font = "16px Arial";
-                ctx.fillStyle = "black";
-                ctx.textAlign = "center";
-                ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2);
-            } else {
-                var ctx = document.getElementById('graph-' + region).getContext('2d');
+            if (chartInstances[region]) {
+                chartInstances[region].destroy();
+            }
 
-                if (chartInstances[region]) {
-                    chartInstances[region].destroy();
+            var lastUpdatedTimePlugin = {
+                id: 'lastUpdatedTimePlugin',
+                afterDraw: function(chart) {
+                    var ctx = chart.ctx;
+                    var chartArea = chart.chartArea;
+                    var lastUpdated = regionData[region].lastUpdated;
+                    ctx.save();
+                    ctx.font = '12px Arial';
+                    ctx.fillStyle = 'gray';
+                    ctx.textAlign = 'center';
+
+                    var formattedDate = new Date(lastUpdated).toLocaleString();
+                    ctx.fillText("Last updated: " + formattedDate, 
+                        (chartArea.left + chartArea.right) / 2,
+                        chartArea.bottom + 20
+                    );
+                    ctx.restore();
                 }
+            };
 
-                var lastUpdatedTimePlugin = {
-                    id: 'lastUpdatedTimePlugin',
-                    afterDraw: function(chart) {
-                        var ctx = chart.ctx;
-                        var chartArea = chart.chartArea;
-                        var lastUpdated = regionData[region].lastUpdated;
-                        ctx.save();
-                        ctx.font = '12px Arial';
-                        ctx.fillStyle = 'gray';
-                        ctx.textAlign = 'center';
-
-                        var formattedDate = new Date(lastUpdated).toLocaleString();
-                        ctx.fillText("Last updated: " + formattedDate, 
-                            (chartArea.left + chartArea.right) / 2,
-                            chartArea.bottom + 30
-                        );
-                        ctx.restore();
-                    }
-                };
-
-                chartInstances[region] = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: regionData[region].labels,
-                        datasets: [{
-                            label: 'Latency (ms) for ' + region,
-                            data: regionData[region].latencies,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 2,
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'hour',
-                                    tooltipFormat: 'yyyy-MM-dd HH:mm:ss',
-                                    displayFormats: {
-                                        hour: 'HH:mm'
-                                    }
-                                },
-                                ticks: {
-                                    autoSkip: true,
-                                    maxTicksLimit: 6,
-                                    source: 'auto',
+            chartInstances[region] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: regionData[region].labels,
+                    datasets: [{
+                        label: 'Latency (ms) for ' + region,
+                        data: regionData[region].latencies,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                tooltipFormat: 'yyyy-MM-dd HH:mm:ss',
+                                displayFormats: {
+                                    hour: 'HH:mm'
                                 }
                             },
-                            y: {
-                                beginAtZero: true
+                            ticks: {
+                                autoSkip: true,
+                                maxTicksLimit: 6,
+                                source: 'auto',
                             }
                         },
-                        plugins: {
-                            legend: {
-                                display: true
-                            }
+                        y: {
+                            beginAtZero: true
                         }
                     },
-                    plugins: [lastUpdatedTimePlugin]
-                });
-            }
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: region,
+                            font: {
+                                size: 16
+                            },
+                            padding: {
+                                top: 10,
+                                bottom: 30
+                            }
+                        }
+                    }
+                },
+                plugins: [lastUpdatedTimePlugin]
+            });
         });
     }
 
@@ -279,6 +287,7 @@ jQuery(document).ready(function($) {
         });
     }
 
+
     function updateResultsTable(results) {
         var tableBody = $('#latency-results tbody');
         tableBody.empty();
@@ -358,6 +367,10 @@ jQuery(document).ready(function($) {
         var date = new Date(dateString);
         return date.toLocaleString();
     }
+
+    $(function() {
+        $("#tabs").tabs();
+    });
 
     checkTestStatus();
     updateResults();
