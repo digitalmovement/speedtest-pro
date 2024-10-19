@@ -299,13 +299,22 @@ jQuery(document).ready(function($) {
         });
     });
 
-    function updateResults() {
+    function saveTimeRange(timeRange) {
+        localStorage.setItem('wpspeedtestpro_time_range', timeRange);
+    }
+
+    function getStoredTimeRange() {
+        return localStorage.getItem('wpspeedtestpro_time_range') || '24_hours';
+    }
+
+    function updateResults(timeRange) {
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_results_for_time_range',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: wpspeedtestpro_ajax.nonce,
+                time_range: timeRange
             },
             success: function(response) {
                 if (response.success) {
@@ -320,6 +329,13 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+    $('#time-range').on('change', function() {
+        var timeRange = $(this).val();
+        saveTimeRange(timeRange);
+        updateResults(timeRange);
+    });
+
 
 
     function updateResultsTable(results) {
@@ -402,11 +418,21 @@ jQuery(document).ready(function($) {
         return date.toLocaleString();
     }
 
+
+    function initializeTimeRange() {
+        var storedTimeRange = getStoredTimeRange();
+        $('#time-range').val(storedTimeRange);
+        updateResults(storedTimeRange);
+    }
+
     $(function() {
         $("#tabs").tabs();
     });
 
+    
     checkTestStatus();
-    updateResults();
-    setInterval(updateResults, 60000);
+    initializeTimeRange();
+    setInterval(function() {
+        updateResults(getStoredTimeRange());
+    }, 60000);
 });
