@@ -130,22 +130,24 @@ jQuery(document).ready(function($) {
                     maintainAspectRatio: false,
                     scales: {
                         x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                tooltipFormat: 'yyyy-MM-dd HH:mm:ss',
-                                displayFormats: {
-                                    hour: 'HH:mm'
-                                }
-                            },
+                            type: 'category',
+                            labels: regionData[region].labels.map(date => date.toLocaleDateString()),
                             ticks: {
                                 autoSkip: true,
-                                maxTicksLimit: 6,
-                                source: 'auto',
+                                maxTicksLimit: 10,
+                                callback: function(value, index, values) {
+                                    // Display every nth label to ensure even spacing
+                                    const n = Math.ceil(values.length / 10);
+                                    return index % n === 0 ? value : '';
+                                }
                             }
                         },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Latency (ms)'
+                            }
                         }
                     },
                     plugins: {
@@ -163,6 +165,13 @@ jQuery(document).ready(function($) {
                                 top: 10,
                                 bottom: 30
                             }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return new Date(regionData[region].labels[tooltipItems[0].dataIndex]).toLocaleString();
+                                }
+                            }
                         }
                     }
                 },
@@ -170,6 +179,7 @@ jQuery(document).ready(function($) {
             });
         });
     }
+
 
     $('#time-range').on('change', function() {
         var timeRange = $(this).val();
