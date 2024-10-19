@@ -77,7 +77,7 @@
     function uptimerobot_updateCombinedGraph(canvasId, pingData, cronData) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
-
+    
         if (!pingData.response_times || !cronData.response_times || 
             (pingData.response_times.length < MIN_DATAPOINTS && cronData.response_times.length < MIN_DATAPOINTS)) {
             $canvas.hide();
@@ -98,15 +98,15 @@
             }
             return;
         }
-
+    
         $canvas.show();
         $container.find('.not-enough-data').remove();
-
+    
         // Combine and sort all timestamps
         const allTimestamps = [...pingData.response_times, ...cronData.response_times]
             .map(item => item.datetime)
             .sort((a, b) => a - b);
-
+    
         // Create datasets
         const pingDataset = {
             label: 'Ping Response Time (ms)',
@@ -119,7 +119,7 @@
             fill: false,
             spanGaps: true
         };
-
+    
         const cronDataset = {
             label: 'Cron Response Time (ms)',
             data: allTimestamps.map(timestamp => {
@@ -131,12 +131,12 @@
             fill: false,
             spanGaps: true
         };
-
+    
         // Destroy existing chart if it exists
         if (combinedChart) {
             combinedChart.destroy();
         }
-
+    
         var ctx = $canvas[0].getContext('2d');
         combinedChart = new Chart(ctx, {
             type: 'line',
@@ -167,6 +167,10 @@
                         mode: 'index',
                         intersect: false
                     }
+                },
+                animation: {
+                    duration: 4000, // 4 seconds
+                    easing: 'linear'
                 }
             }
         });
