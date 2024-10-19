@@ -22,7 +22,7 @@
         $('#uptime-monitors-data').addClass('loading');
         $('#uptime-monitors-data .spinner').show();
         $('#uptime-monitors-data p').text('Loading monitor data...');
-
+    
         $.ajax({
             url: wpspeedtestpro_uptime.ajax_url,
             type: 'POST',
@@ -34,7 +34,7 @@
                 $('#uptime-monitors-data').removeClass('loading');
                 $('#uptime-monitors-data .spinner').hide();
                 $('#uptime-monitors-data p').text(''); // Clear the loading text
-
+    
                 if (response.success) {
                     uptimerobot_updateMonitorDisplay(response.data);
                 } else {
@@ -45,6 +45,15 @@
                 $('#uptime-monitors-data').removeClass('loading');
                 $('#uptime-monitors-data .spinner').hide();
                 $('#uptime-monitors-data p').text('Error loading monitor data. Please try again.');
+            },
+            complete: function() {
+                // Schedule the next refresh after the animation is complete
+                setTimeout(function() {
+                    if (window.uptimeRefreshInterval) {
+                        clearTimeout(window.uptimeRefreshInterval);
+                    }
+                    window.uptimeRefreshInterval = setTimeout(uptimerobot_loadMonitorData, REFRESH_INTERVAL);
+                }, 4100); // 4 seconds for animation + 100ms buffer
             }
         });
     }
@@ -168,12 +177,63 @@
                         intersect: false
                     }
                 },
-                animation: {
-                    duration: 4000, // 4 seconds
-                    easing: 'linear'
-                }
+                animation: false // Disable default animation
             }
         });
+    
+        // Custom progressive animation
+        const originalDraw = combinedChart.draw;
+        combinedChart.draw = function() {
+            const chart = this;
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, chart.width, chart.height);
+            ctx.restore();
+        };
+    
+        const totalDuration = 4000; // 4 seconds
+        const delayBetweenPoints = totalDuration / allTimestamps.length;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(ctx.dataset.data[ctx.index]) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        const animation = {
+            x: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.xStarted) {
+                        return 0;
+                    }
+                    ctx.xStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            },
+            y: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.yStarted) {
+                        return 0;
+                    }
+                    ctx.yStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            }
+        };
+    
+        // Animate the chart
+        combinedChart.options.animation = animation;
+        combinedChart.update('none');
+    
+        // After animation, restore original draw function
+        setTimeout(() => {
+            combinedChart.draw = originalDraw;
+            combinedChart.update();
+        }, totalDuration + 100);
     }
 
     function uptimerobot_updateLogs(tableId, logs) {
