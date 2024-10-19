@@ -66,7 +66,7 @@
     function uptimerobot_updateCombinedGraph(canvasId, pingData, cronData) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
-
+    
         if (!pingData.response_times || !cronData.response_times || 
             (pingData.response_times.length < MIN_DATAPOINTS && cronData.response_times.length < MIN_DATAPOINTS)) {
             $canvas.hide();
@@ -87,37 +87,46 @@
             }
             return;
         }
-
+    
         $canvas.show();
         $container.find('.not-enough-data').remove();
-
-        const combinedData = [];
-        pingData.response_times.forEach(item => combinedData.push({...item, type: 'Ping'}));
-        cronData.response_times.forEach(item => combinedData.push({...item, type: 'Cron'}));
-
-        combinedData.sort((a, b) => a.datetime - b.datetime);
-
+    
+        // Combine and sort all timestamps
+        const allTimestamps = [...pingData.response_times, ...cronData.response_times]
+            .map(item => item.datetime)
+            .sort((a, b) => a - b);
+    
+        // Create datasets
+        const pingDataset = {
+            label: 'Ping Response Time (ms)',
+            data: allTimestamps.map(timestamp => {
+                const dataPoint = pingData.response_times.find(item => item.datetime === timestamp);
+                return dataPoint ? dataPoint.value : null;
+            }),
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+            fill: false,
+            spanGaps: true
+        };
+    
+        const cronDataset = {
+            label: 'Cron Response Time (ms)',
+            data: allTimestamps.map(timestamp => {
+                const dataPoint = cronData.response_times.find(item => item.datetime === timestamp);
+                return dataPoint ? dataPoint.value : null;
+            }),
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1,
+            fill: false,
+            spanGaps: true
+        };
+    
         var ctx = $canvas[0].getContext('2d');
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: combinedData.map(item => new Date(item.datetime * 1000).toLocaleString()),
-                datasets: [
-                    {
-                        label: 'Ping Response Time (ms)',
-                        data: combinedData.map(item => item.type === 'Ping' ? item.value : null),
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1,
-                        fill: false
-                    },
-                    {
-                        label: 'Cron Response Time (ms)',
-                        data: combinedData.map(item => item.type === 'Cron' ? item.value : null),
-                        borderColor: 'rgb(255, 99, 132)',
-                        tension: 0.1,
-                        fill: false
-                    }
-                ]
+                labels: allTimestamps.map(timestamp => new Date(timestamp * 1000).toLocaleString()),
+                datasets: [pingDataset, cronDataset]
             },
             options: {
                 responsive: true,
@@ -136,11 +145,16 @@
                             text: 'Response Time (ms)'
                         }
                     }
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
                 }
             }
         });
     }
-
     function uptimerobot_updateLogs(tableId, logs) {
         var $table = $('#' + tableId);
         $table.empty();
