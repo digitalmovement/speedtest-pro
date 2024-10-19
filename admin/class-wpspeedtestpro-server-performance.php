@@ -53,6 +53,7 @@ class Wpspeedtestpro_Server_Performance {
     private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
             $screen = get_current_screen();
+            print_r($screen);
             return $screen && $screen->id === 'wpspeedtestpro_page_wpspeedtestpro-server-performance';    
         }
     }
