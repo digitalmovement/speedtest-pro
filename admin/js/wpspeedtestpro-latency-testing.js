@@ -371,34 +371,6 @@ jQuery(document).ready(function($) {
     return false;
 }
 
-var lastUpdatedTimePlugin = {
-    id: 'lastUpdatedTimePlugin',
-    afterDraw: function(chart) {
-        var ctx = chart.ctx;
-        var chartArea = chart.chartArea;
-        var lastUpdated = regionData[region].lastUpdated;
-        ctx.save();
-        ctx.font = '12px Arial';
-        ctx.fillStyle = 'gray';
-        ctx.textAlign = 'center';
-
-        var formattedDate = new Date(lastUpdated).toLocaleString(undefined, {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-        ctx.fillText("Last updated: " + formattedDate, 
-            (chartArea.left + chartArea.right) / 2,
-            chartArea.bottom + 30
-        );
-        ctx.restore();
-    }
-};
-
-
     checkTestStatus();
     updateResults();
     setInterval(updateResults, 60000);
