@@ -8,10 +8,8 @@
     $(document).ready(function() {
         if ($('#uptime-monitors-data').length) {
             uptimerobot_loadMonitorData();
-            // Start automatic refreshing
-            setInterval(uptimerobot_loadMonitorData, REFRESH_INTERVAL);
         }
-
+    
         $('#setup-monitors').on('click', uptimerobot_setupMonitors);
         $('#refresh-monitors').on('click', uptimerobot_loadMonitorData);
         $('#delete-monitors').on('click', uptimerobot_deleteMonitors);
@@ -48,12 +46,10 @@
             },
             complete: function() {
                 // Schedule the next refresh after the animation is complete
-                setTimeout(function() {
-                    if (window.uptimeRefreshInterval) {
-                        clearTimeout(window.uptimeRefreshInterval);
-                    }
-                    window.uptimeRefreshInterval = setTimeout(uptimerobot_loadMonitorData, REFRESH_INTERVAL);
-                }, 4100); // 4 seconds for animation + 100ms buffer
+                if (window.uptimeRefreshInterval) {
+                    clearTimeout(window.uptimeRefreshInterval);
+                }
+                window.uptimeRefreshInterval = setTimeout(uptimerobot_loadMonitorData, REFRESH_INTERVAL + 4100); // REFRESH_INTERVAL + 4 seconds for animation + 100ms buffer
             }
         });
     }
@@ -146,6 +142,39 @@
             combinedChart.destroy();
         }
     
+        const totalDuration = 4000; // 4 seconds
+        const delayBetweenPoints = totalDuration / allTimestamps.length;
+        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(ctx.dataset.data[ctx.index]) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+        
+        const animation = {
+            x: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: NaN, // the point is initially skipped
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.xStarted) {
+                        return 0;
+                    }
+                    ctx.xStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            },
+            y: {
+                type: 'number',
+                easing: 'linear',
+                duration: delayBetweenPoints,
+                from: previousY,
+                delay(ctx) {
+                    if (ctx.type !== 'data' || ctx.yStarted) {
+                        return 0;
+                    }
+                    ctx.yStarted = true;
+                    return ctx.index * delayBetweenPoints;
+                }
+            }
+        };
+    
         var ctx = $canvas[0].getContext('2d');
         combinedChart = new Chart(ctx, {
             type: 'line',
@@ -177,62 +206,26 @@
                         intersect: false
                     }
                 },
-                animation: false // Disable default animation
+                animation
             }
         });
     
-        // Custom progressive animation
-        const originalDraw = combinedChart.draw;
-        combinedChart.draw = function() {
-            const chart = this;
+        // Custom draw function to ensure white background during animation
+        const originalDraw = Chart.controllers.line.prototype.draw;
+        Chart.controllers.line.prototype.draw = function() {
+            const chart = this.chart;
             const ctx = chart.ctx;
             ctx.save();
-            ctx.globalCompositeOperation = 'destination-over';
+            ctx.clearRect(0, 0, chart.width, chart.height);
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, chart.width, chart.height);
             ctx.restore();
+            originalDraw.apply(this, arguments);
         };
     
-        const totalDuration = 4000; // 4 seconds
-        const delayBetweenPoints = totalDuration / allTimestamps.length;
-        const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(ctx.dataset.data[ctx.index]) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
-        const animation = {
-            x: {
-                type: 'number',
-                easing: 'linear',
-                duration: delayBetweenPoints,
-                from: NaN, // the point is initially skipped
-                delay(ctx) {
-                    if (ctx.type !== 'data' || ctx.xStarted) {
-                        return 0;
-                    }
-                    ctx.xStarted = true;
-                    return ctx.index * delayBetweenPoints;
-                }
-            },
-            y: {
-                type: 'number',
-                easing: 'linear',
-                duration: delayBetweenPoints,
-                from: previousY,
-                delay(ctx) {
-                    if (ctx.type !== 'data' || ctx.yStarted) {
-                        return 0;
-                    }
-                    ctx.yStarted = true;
-                    return ctx.index * delayBetweenPoints;
-                }
-            }
-        };
-    
-        // Animate the chart
-        combinedChart.options.animation = animation;
-        combinedChart.update('none');
-    
-        // After animation, restore original draw function
+        // Reset draw function after animation completes
         setTimeout(() => {
-            combinedChart.draw = originalDraw;
-            combinedChart.update();
+            Chart.controllers.line.prototype.draw = originalDraw;
         }, totalDuration + 100);
     }
 

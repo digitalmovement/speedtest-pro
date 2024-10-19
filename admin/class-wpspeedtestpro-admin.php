@@ -101,8 +101,7 @@ class Wpspeedtestpro_Admin {
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         $this->page_speed_testing   = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
 
-        $this->register_hooks();
-        
+
     }
 
     /**
