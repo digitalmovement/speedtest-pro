@@ -2,6 +2,49 @@ jQuery(document).ready(function($) {
     var testInProgress = false;
     var statusCheckInterval;
 
+    
+    $('#auth-action').on('change', function() {
+        var action = $(this).val();
+        if (action === 'register') {
+            $('#first-name, #last-name, #organization').show();
+        } else {
+            $('#first-name, #last-name, #organization').hide();
+        }
+    });
+
+    $('#auth-submit').on('click', function(e) {
+        e.preventDefault();
+        var action = $('#auth-action').val();
+        var data = {
+            action: action === 'login' ? 'login_user' : 'register_user',
+            nonce: wpspeedtestpro_ssl.nonce,
+            email: $('#email').val()
+        };
+
+        if (action === 'register') {
+            data.first_name = $('#first-name').val();
+            data.last_name = $('#last-name').val();
+            data.organization = $('#organization').val();
+        }
+
+        $.ajax({
+            url: wpspeedtestpro_ssl.ajax_url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    $('#auth-message').text(response.data).show();
+                }
+            },
+            error: function() {
+                $('#auth-message').text('An error occurred. Please try again.').show();
+            }
+        });
+    });
+
+    
     $('#start-ssl-test').on('click', function(e) {
         e.preventDefault();
         if (testInProgress) {

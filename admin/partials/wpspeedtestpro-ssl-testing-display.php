@@ -18,22 +18,32 @@
     <p>Test your website's SSL configuration and security.</p>
     
     <div class="wpspeedtestpro-ssl-testing">
-        <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
+        <?php if (empty($user_details)): ?>
+            <div id="user-auth-form">
+                <select id="auth-action">
+                    <option value="login">Login</option>
+                    <option value="register">Register</option>
+                </select>
+                <input type="text" id="first-name" placeholder="First Name" style="display:none;">
+                <input type="text" id="last-name" placeholder="Last Name" style="display:none;">
+                <input type="email" id="email" placeholder="Email">
+                <input type="text" id="organization" placeholder="Organization" style="display:none;">
+                <button id="auth-submit" class="button button-secondary">Submit</button>
+            </div>
+            <p id="auth-message" style="color: red;">Please login or register to use the SSL testing feature.</p>
+        <?php else: ?>
+            <p>Welcome, <?php echo esc_html($user_details['first_name']); ?>!</p>
+            <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
+        <?php endif; ?>
         
         <div id="ssl-test-results">
             <?php
             if ($cached_result) {
                 echo $this->format_ssl_test_results($cached_result);
-            } else {
+            } elseif (!empty($user_details)) {
                 echo '<p>No SSL test results available. Click "Start SSL Test" to begin.</p>';
             }
             ?>
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    jQuery(document).ready(function($) {
-
-    });
-</script>

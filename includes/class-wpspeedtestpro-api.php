@@ -44,6 +44,48 @@ class Wpspeedtestpro_API {
         return $ping_time;
     }
 
+    public function register_ssl_user($first_name, $last_name, $email, $organization) {
+        $api_url = 'https://api.ssllabs.com/api/v4/register';
+        
+        $body = json_encode([
+            'firstName' => $first_name,
+            'lastName' => $last_name,
+            'email' => $email,
+            'organization' => $organization
+        ]);
+
+        $response = wp_remote_post($api_url, [
+            'headers' => [
+                'Content-Type' => 'application/json'
+            ],
+            'body' => $body,
+            'timeout' => 30
+        ]);
+
+        if (is_wp_error($response)) {
+            return [
+                'success' => false,
+                'message' => $response->get_error_message()
+            ];
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (wp_remote_retrieve_response_code($response) === 200) {
+            return [
+                'success' => true,
+                'message' => 'User registered successfully'
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => isset($data['message']) ? $data['message'] : 'Unknown error occurred'
+            ];
+        }
+    }
+
+
     public function test_ssl_certificate($domain, $email) {
         error_log('WPSpeedTestPro: Starting test_ssl_certificate() for domain: ' . $domain);
         $api_url = 'https://api.ssllabs.com/api/v4/analyze';

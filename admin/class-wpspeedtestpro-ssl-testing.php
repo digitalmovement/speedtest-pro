@@ -61,9 +61,14 @@ class Wpspeedtestpro_SSL_Testing {
     private function init_components() {
         add_action('wp_ajax_start_ssl_test', array($this, 'start_ssl_test'));
         add_action('wp_ajax_check_ssl_test_status', array($this, 'check_ssl_test_status'));
-        add_action('wp_ajax_nopriv_check_ssl_test_status', array($this, 'check_ssl_test_status'));
+   //     add_action('wp_ajax_nopriv_check_ssl_test_status', array($this, 'check_ssl_test_status'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('wp_ajax_register_user', array($this, 'ssl_egister_user'));
+   //     add_action('wp_ajax_nopriv_register_user', array($this, 'register_user'));
+        add_action('wp_ajax_login_user', array($this, 'login_user'));
+     //   add_action('wp_ajax_nopriv_login_user', array($this, 'login_user'));
+
     }
 
     private function is_this_the_right_plugin_page() {
@@ -107,9 +112,47 @@ class Wpspeedtestpro_SSL_Testing {
      * @since    1.0.0
      */
     public function display_ssl_testing() {
+        $user_details = get_option('wpspeedtestpro_user_details', array());
         $cached_result = get_transient($this->transient_key);
         include_once('partials/wpspeedtestpro-ssl-testing-display.php');
     }
+
+    public function ssl_register_user() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+
+        $first_name = sanitize_text_field($_POST['first_name']);
+        $last_name = sanitize_text_field($_POST['last_name']);
+        $email = sanitize_email($_POST['email']);
+        $organization = sanitize_text_field($_POST['organization']);
+
+        // TODO: Implement API call to register user
+        $api_response = $this->core->api->ssl_register_user($first_name, $last_name, $email, $organization);
+
+        if ($api_response['success']) {
+            $user_details = array(
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'email' => $email,
+                'organization' => $organization
+            );
+            update_option('wpspeedtestpro_user_details', $user_details);
+            wp_send_json_success('User registered successfully');
+        } else {
+            wp_send_json_error($api_response['message']);
+        }
+    }
+
+    public function ssl_login_user() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+
+        $email = sanitize_email($_POST['email']);
+
+        // TODO: Implement API call to login user
+        $api_response = $this->core->api->login_user($email);
+
+    }
+
+
 
     public function start_ssl_test() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
