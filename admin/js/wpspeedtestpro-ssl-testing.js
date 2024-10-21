@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         var action = $('#auth-action').val();
         var data = {
-            action: action === 'login' ? 'login_user' : 'register_user',
+            action: action === 'login' ? 'ssl_login_user' : 'ssl_register_user',
             nonce: wpspeedtestpro_ssl.nonce,
             email: $('#email').val()
         };
@@ -44,7 +44,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    
+
     $('#start-ssl-test').on('click', function(e) {
         e.preventDefault();
         if (testInProgress) {
