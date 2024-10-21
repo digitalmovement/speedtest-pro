@@ -35,10 +35,11 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     location.reload();
                 } else {
-                    $('#auth-message').text(response.data).show();
+                    $('#auth-message').text(response.data.message || 'An error occurred.').show();
                 }
             },
-            error: function() {
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, errorThrown);
                 $('#auth-message').text('An error occurred. Please try again.').show();
             }
         });

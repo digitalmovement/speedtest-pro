@@ -142,7 +142,7 @@ class Wpspeedtestpro_SSL_Testing {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
         $email = sanitize_email($_POST['email']);
         update_option('wpspeedtestpro_user_ssl_details', $email);
-        wp_send_json_success('User saved successfully');
+        wp_send_json_success(array('message' => 'User saved successfully'));
     }
 
 
