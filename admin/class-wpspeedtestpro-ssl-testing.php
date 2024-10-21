@@ -120,7 +120,7 @@ class Wpspeedtestpro_SSL_Testing {
 
 
         // EMail must changed. 
-        $email = "jdoe@digitalmovement.co.uk";
+        $email = "ssltesting@digitalmovement.co.uk";
 
         $result = $this->core->api->test_ssl_certificate(home_url(), $email);
 
