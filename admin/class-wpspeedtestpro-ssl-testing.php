@@ -61,14 +61,10 @@ class Wpspeedtestpro_SSL_Testing {
     private function init_components() {
         add_action('wp_ajax_start_ssl_test', array($this, 'start_ssl_test'));
         add_action('wp_ajax_check_ssl_test_status', array($this, 'check_ssl_test_status'));
-   //     add_action('wp_ajax_nopriv_check_ssl_test_status', array($this, 'check_ssl_test_status'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_ajax_register_user', array($this, 'ssl_register_user'));
-   //     add_action('wp_ajax_nopriv_register_user', array($this, 'register_user'));
         add_action('wp_ajax_login_user', array($this, 'login_user'));
-     //   add_action('wp_ajax_nopriv_login_user', array($this, 'login_user'));
-
     }
 
     private function is_this_the_right_plugin_page() {
@@ -126,7 +122,7 @@ class Wpspeedtestpro_SSL_Testing {
         $organization = sanitize_text_field($_POST['organization']);
 
         // TODO: Implement API call to register user
-        $api_response = $this->core->api->ssl_register_user($first_name, $last_name, $email, $organization);
+        $api_response = $this->core->api->register_ssl_user($first_name, $last_name, $email, $organization);
 
         if ($api_response['success']) {
             $user_details = array(
