@@ -18,7 +18,7 @@
     <p>Test your website's SSL configuration and security.</p>
     
     <div class="wpspeedtestpro-ssl-testing">
-        <?php if (empty($user_details)): ?>
+        <?php if (empty($user_email)): ?>
             <div id="user-auth-form">
                 <select id="auth-action">
                     <option value="login">Login</option>
@@ -32,7 +32,7 @@
             </div>
             <p id="auth-message" style="color: red;">Please login or register to use the SSL testing feature.</p>
         <?php else: ?>
-            <p>Welcome, <?php echo esc_html($user_details['first_name']); ?>!</p>
+            <p>SSL Testing will use, <?php echo esc_html($user_email); ?>!</p>
             <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
         <?php endif; ?>
         

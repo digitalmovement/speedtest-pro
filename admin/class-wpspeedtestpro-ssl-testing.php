@@ -108,7 +108,7 @@ class Wpspeedtestpro_SSL_Testing {
      * @since    1.0.0
      */
     public function display_ssl_testing() {
-        $user_details = get_option('wpspeedtestpro_user_details', array());
+        $users_email = get_option('wpspeedtestpro_user_ssl_details');
         $cached_result = get_transient($this->transient_key);
         include_once('partials/wpspeedtestpro-ssl-testing-display.php');
     }
@@ -131,7 +131,7 @@ class Wpspeedtestpro_SSL_Testing {
                 'email' => $email,
                 'organization' => $organization
             );
-            update_option('wpspeedtestpro_user_details', $user_details);
+            update_option('wpspeedtestpro_user_ssl_details', $user_details['email']);
             wp_send_json_success('User registered successfully');
         } else {
             wp_send_json_error($api_response['message']);
@@ -140,10 +140,9 @@ class Wpspeedtestpro_SSL_Testing {
 
     public function ssl_login_user() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
-
         $email = sanitize_email($_POST['email']);
-
-
+        update_option('wpspeedtestpro_user_ssl_details', $email);
+        wp_send_json_success('User saved successfully');
     }
 
 
@@ -152,12 +151,8 @@ class Wpspeedtestpro_SSL_Testing {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
 
-        $registered_user = get_option('wpspeedtestpro_registered_user');
-        $email = isset($registered_user['email']) ? $registered_user['email'] : 'default@example.com';
-
-
-        // EMail must changed. 
-        $email = "ssltesting@digitalmovement.co.uk";
+        $registered_user_email = get_option('wpspeedtestpro_user_ssl_details');
+        $email = isset($registered_user_email) ? $registered_user_email : 'default@example.com';
 
         $result = $this->core->api->test_ssl_certificate(home_url(), $email);
 
