@@ -64,7 +64,7 @@ class Wpspeedtestpro_SSL_Testing {
    //     add_action('wp_ajax_nopriv_check_ssl_test_status', array($this, 'check_ssl_test_status'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('wp_ajax_register_user', array($this, 'ssl_egister_user'));
+        add_action('wp_ajax_register_user', array($this, 'ssl_register_user'));
    //     add_action('wp_ajax_nopriv_register_user', array($this, 'register_user'));
         add_action('wp_ajax_login_user', array($this, 'login_user'));
      //   add_action('wp_ajax_nopriv_login_user', array($this, 'login_user'));
@@ -147,8 +147,6 @@ class Wpspeedtestpro_SSL_Testing {
 
         $email = sanitize_email($_POST['email']);
 
-        // TODO: Implement API call to login user
-        $api_response = $this->core->api->login_user($email);
 
     }
 
