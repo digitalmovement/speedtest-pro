@@ -64,7 +64,7 @@ class Wpspeedtestpro_SSL_Testing {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('wp_ajax_register_user', array($this, 'ssl_register_user'));
-        add_action('wp_ajax_login_user', array($this, 'login_user'));
+        add_action('wp_ajax_login_user', array($this, 'ssl_login_user'));
     }
 
     private function is_this_the_right_plugin_page() {
