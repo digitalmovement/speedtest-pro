@@ -107,7 +107,7 @@ class Wpspeedtestpro_SSL_Testing {
      * @since    1.0.0
      */
     public function display_ssl_testing() {
-        $users_email = get_option('wpspeedtestpro_user_ssl_details');
+        $user_email = get_option('wpspeedtestpro_user_ssl_email');
         $cached_result = get_transient($this->transient_key);
         include_once('partials/wpspeedtestpro-ssl-testing-display.php');
     }
@@ -118,7 +118,7 @@ class Wpspeedtestpro_SSL_Testing {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
 
-        $registered_user_email = get_option('wpspeedtestpro_user_ssl_details');
+        $registered_user_email = get_option('wpspeedtestpro_user_ssl_email');
         $email = isset($registered_user_email) ? $registered_user_email : 'default@example.com';
 
         $result = $this->core->api->test_ssl_certificate(home_url(), $email);

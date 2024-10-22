@@ -389,7 +389,7 @@ class Wpspeedtestpro_Settings {
                 'email' => $email,
                 'organization' => $organization
             );
-            update_option('wpspeedtestpro_user_ssl_details', $user_details['email']);
+            update_option('wpspeedtestpro_user_ssl_email', $user_details['email']);
             wp_send_json_success('User registered successfully');
         } else {
             wp_send_json_error($api_response['message']);
@@ -399,7 +399,7 @@ class Wpspeedtestpro_Settings {
     public function ajax_ssl_login_user() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
         $email = sanitize_email($_POST['email']);
-        update_option('wpspeedtestpro_user_ssl_details', $email);
+        update_option('wpspeedtestpro_user_ssl_email', $email);
         wp_send_json_success(array('message' => 'User saved successfully'));
     }
 

@@ -18,10 +18,10 @@
     <p>Test your website's SSL configuration and security.</p>
     
     <div class="wpspeedtestpro-ssl-testing">
-        <?php if (empty($users_email)): ?>
+        <?php if (empty($user_email)): ?>
             <p>SSL Testing requires an email address to send the results to. Please enter your email address in the settings.</p>
         <?php else: ?>
-            <p>SSL Testing will use, <?php echo esc_html($users_email); ?>!</p>
+            <p>SSL Testing will use, <?php echo esc_html($user_email); ?>!</p>
             <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
         <?php endif; ?>
         
@@ -29,7 +29,7 @@
             <?php
             if ($cached_result) {
                 echo $this->format_ssl_test_results($cached_result);
-            } elseif (!empty($user_details)) {
+            } elseif (!empty($user_email)) {
                 echo '<p>No SSL test results available. Click "Start SSL Test" to begin.</p>';
             }
             ?>
