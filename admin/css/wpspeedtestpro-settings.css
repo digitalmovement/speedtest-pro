@@ -40,3 +40,27 @@
     color: #2e7d32;
     border: 1px solid #c8e6c9;
 }
+
+#user-auth-form {
+    margin: 15px 0;
+    max-width: 500px;
+}
+
+#user-auth-form input {
+    padding: 5px 8px;
+}
+
+#user-auth-form select {
+    margin-bottom: 10px;
+}
+
+#auth-message {
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.auth-fields {
+    margin-bottom: 15px;
+}
+

@@ -86,7 +86,7 @@ class Wpspeedtestpro_API {
     }
 
 
-    public function test_ssl_certificate($domain, $email) {
+    public function test_ssl_certificate($domain, $email, $getStatus="on") {
         error_log('WPSpeedTestPro: Starting test_ssl_certificate() for domain: ' . $domain);
         $api_url = 'https://api.ssllabs.com/api/v4/analyze';
         $host = parse_url($domain, PHP_URL_HOST);
@@ -98,9 +98,9 @@ class Wpspeedtestpro_API {
             ),
             'body' => array(
                 'host' => $host,
-                'fromCache' => 'on',
+                'fromCache' => 'off',
                 'ignoreMismatch' => 'on',
-                'all' => 'on',
+                'all' => $getStatus,
                 'maxAge' => '1'
             )
         );
