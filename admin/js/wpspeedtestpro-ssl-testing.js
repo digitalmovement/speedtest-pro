@@ -103,4 +103,6 @@ jQuery(document).ready(function($) {
     if ($('.ssl-tabs').length > 0) {
        initializeTabs();
    }
+
+   startStatusCheck();
 });
