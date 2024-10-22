@@ -117,6 +117,7 @@ class Wpspeedtestpro_SSL_Testing {
     public function start_ssl_test() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
+        delete_transient($this->transient_key);
 
         $registered_user_email = get_option('wpspeedtestpro_user_ssl_email');
         $email = isset($registered_user_email) ? $registered_user_email : 'default@example.com';
@@ -153,9 +154,6 @@ class Wpspeedtestpro_SSL_Testing {
             }
             return;
         }
-
-        // $result = $this->core->api->check_ssl_test_status($in_progress_result);
-        //$result = $in_progress_result;
 
         if (is_array($result) && isset($result['status']) && $result['status'] === 'READY') {
             delete_transient($this->in_progress_key);
