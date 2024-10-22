@@ -427,7 +427,7 @@ class Wpspeedtestpro_Settings {
             </select>
             <input type="text" id="first-name" placeholder="First Name" style="display:none;">
             <input type="text" id="last-name" placeholder="Last Name" style="display:none;">
-            <input type="email" id="email" placeholder="Email">
+            <input type="email" id="email" placeholder="Email" value="'. $user_email .'">
             <input type="text" id="organization" placeholder="Organization" style="display:none;">
             <button id="auth-submit" class="button button-secondary">Submit</button>
         </div>
