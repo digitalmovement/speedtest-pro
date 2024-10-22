@@ -433,7 +433,7 @@ class Wpspeedtestpro_Settings {
         </div>
         <p id="auth-message" style="color: red;">Please login or register to use the SSL testing feature.</p>
         ';
-        echo '<p class="description">The information for SSL testing is send to the SSLLabs.com <a href="https://www.qualys.com/company/privacy" target="_blank">View thier Privacy Policy</a>. <br /></p>';
+        echo '<p class="description">The information for SSL testing is send to the SSLLabs.com <a href="https://www.qualys.com/company/privacy" target="_blank">View their Privacy Policy</a>. <br /></p>';
 
     }
 
