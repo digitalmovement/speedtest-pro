@@ -445,7 +445,7 @@ class Wpspeedtestpro_Settings {
         try {
             // You might want to verify the email exists in your system here
             update_option('wpspeedtestpro_user_ssl_email', $email);
-            wp_send_json_success('Login successful!');
+            wp_send_json_success('Email Saved! ');
         } catch (Exception $e) {
             wp_send_json_error('An error occurred during login. Please try again.');
         }
@@ -466,23 +466,43 @@ class Wpspeedtestpro_Settings {
     }
 
     public function ssl_register_callback() {
-        $user_email = get_option('wpspeedtestpro_ssl_user_email');
-        echo '
-            <div id="user-auth-form">
-            <select id="auth-action">
-                <option value="login">Login</option>
-                <option value="register">Register</option>
-            </select>
-            <input type="text" id="first-name" placeholder="First Name" style="display:none;">
-            <input type="text" id="last-name" placeholder="Last Name" style="display:none;">
-            <input type="email" id="email" placeholder="Email" value="'. $user_email .'">
-            <input type="text" id="organization" placeholder="Organization" style="display:none;">
-            <button id="auth-submit" class="button button-secondary">Submit</button>
-        </div>
-        <p id="auth-message" style="color: red;">Please login or register to use the SSL testing feature.</p>
-        ';
-        echo '<p class="description">The information for SSL testing is send to the SSLLabs.com <a href="https://www.qualys.com/company/privacy" target="_blank">View their Privacy Policy</a>. <br /></p>';
-
-    }
-
+        $user_email = get_option('wpspeedtestpro_user_ssl_email', '');
+    
+        // If we have a saved email, default to login view, otherwise show register
+        $default_view = !empty($user_email) ? 'login' : 'register';
+        
+        echo '<div id="user-auth-form">';
+        echo '<select id="auth-action">';
+        echo '<option value="login" ' . selected($default_view, 'login', false) . '>Login</option>';
+        echo '<option value="register" ' . selected($default_view, 'register', false) . '>Register</option>';
+        echo '</select>';
+        
+        // Add proper spacing and styling
+        echo '<div class="auth-fields" style="margin-top: 10px;">';
+        
+        // Registration fields - hidden by default if we have an email
+        $reg_style = ($default_view === 'login') ? 'display:none;' : '';
+        echo '<input type="text" id="first-name" placeholder="First Name" style="' . $reg_style . 'margin-bottom: 5px; width: 100%; max-width: 25em;">';
+        echo '<input type="text" id="last-name" placeholder="Last Name" style="' . $reg_style . 'margin-bottom: 5px; width: 100%; max-width: 25em;">';
+        echo '<input type="text" id="organization" placeholder="Organization" style="' . $reg_style . 'margin-bottom: 5px; width: 100%; max-width: 25em;">';
+        
+        // Email field - always visible with saved value
+        echo '<input type="email" id="email" placeholder="Email" value="' . esc_attr($user_email) . '" style="margin-bottom: 5px; width: 100%; max-width: 25em;">';
+        
+        echo '</div>';
+        
+        // Submit button
+        echo '<button id="auth-submit" class="button button-secondary">' . 
+             ($default_view === 'login' ? 'Login' : 'Register') . 
+             '</button>';
+        
+        // Message container
+        echo '<p id="auth-message" style="display: none;"></p>';
+        echo '</div>';
+        
+        // Description
+        echo '<p class="description">The information for SSL testing is sent to SSLLabs.com. ' .
+             '<a href="https://www.qualys.com/company/privacy" target="_blank">View their Privacy Policy</a>.</p>';
+    }   
 }
+

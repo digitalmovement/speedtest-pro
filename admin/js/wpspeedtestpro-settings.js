@@ -51,6 +51,50 @@ jQuery(document).ready(function($) {
         // Show loading state
         $('#auth-submit').prop('disabled', true).text('Processing...');
 
+        function initializeFormState() {
+            var action = $('#auth-action').val();
+            var hasEmail = $('#email').val().trim() !== '';
+            
+            if (action === 'register') {
+                $('#first-name, #last-name, #organization').show();
+                $('#auth-submit').text('Register');
+            } else {
+                $('#first-name, #last-name, #organization').hide();
+                $('#auth-submit').text('Login');
+            }
+    
+            // If we have an email, show it as readonly in login mode
+            if (hasEmail && action === 'login') {
+                $('#email').prop('readonly', true);
+            } else {
+                $('#email').prop('readonly', false);
+            }
+        }
+    
+        // Initialize on page load
+        initializeFormState();
+    
+        // Update form state when switching between login/register
+        $('#auth-action').on('change', function() {
+            initializeFormState();
+        });
+    
+        // Clear readonly when switching to register
+        $('#auth-action').on('change', function() {
+            var action = $(this).val();
+            if (action === 'register') {
+                $('#email').prop('readonly', false);
+            } else {
+                // Only set readonly if we have a saved email
+                if ($('#email').val().trim() !== '') {
+                    $('#email').prop('readonly', true);
+                }
+            }
+        });
+
+
+        
+
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
@@ -62,7 +106,7 @@ jQuery(document).ready(function($) {
                     
                     // Optionally reload after successful authentication
                     setTimeout(function() {
-                        location.reload();
+                        //location.reload();
                     }, 1500);
                 } else {
                     $message.addClass('error')
@@ -86,7 +130,7 @@ jQuery(document).ready(function($) {
     function isValidEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
-    
+
 
     function populateProviders() {
         var currentProvider = $providerSelect.val();
