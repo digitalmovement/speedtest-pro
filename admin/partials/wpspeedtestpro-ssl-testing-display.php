@@ -19,18 +19,7 @@
     
     <div class="wpspeedtestpro-ssl-testing">
         <?php if (empty($users_email)): ?>
-            <div id="user-auth-form">
-                <select id="auth-action">
-                    <option value="login">Login</option>
-                    <option value="register">Register</option>
-                </select>
-                <input type="text" id="first-name" placeholder="First Name" style="display:none;">
-                <input type="text" id="last-name" placeholder="Last Name" style="display:none;">
-                <input type="email" id="email" placeholder="Email">
-                <input type="text" id="organization" placeholder="Organization" style="display:none;">
-                <button id="auth-submit" class="button button-secondary">Submit</button>
-            </div>
-            <p id="auth-message" style="color: red;">Please login or register to use the SSL testing feature.</p>
+            <p>SSL Testing requires an email address to send the results to. Please enter your email address in the settings.</p>
         <?php else: ?>
             <p>SSL Testing will use, <?php echo esc_html($users_email); ?>!</p>
             <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>

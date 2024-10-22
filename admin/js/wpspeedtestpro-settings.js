@@ -3,6 +3,49 @@ jQuery(document).ready(function($) {
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var hostingProviders = JSON.parse(wpspeedtestpro_ajax.hosting_providers);
 
+        
+    $('#auth-action').on('change', function() {
+        var action = $(this).val();
+        if (action === 'register') {
+            $('#first-name, #last-name, #organization').show();
+        } else {
+            $('#first-name, #last-name, #organization').hide();
+        }
+    });
+
+    $('#auth-submit').on('click', function(e) {
+        e.preventDefault();
+        var action = $('#auth-action').val();
+        var data = {
+            action: action === 'login' ? 'ssl_login_user' : 'ssl_register_user',
+            nonce: wpspeedtestpro_ssl.nonce,
+            email: $('#email').val()
+        };
+
+        if (action === 'register') {
+            data.first_name = $('#first-name').val();
+            data.last_name = $('#last-name').val();
+            data.organization = $('#organization').val();
+        }
+
+        $.ajax({
+            url: wpspeedtestpro_ssl.ajax_url,
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    $('#auth-message').text(response.data.message || 'An error occurred.').show();
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error('AJAX error:', textStatus, errorThrown);
+                $('#auth-message').text('An error occurred. Please try again.').show();
+            }
+        });
+    });
+
     function populateProviders() {
         var currentProvider = $providerSelect.val();
         $providerSelect.empty().append('<option value="">Select a provider</option>');

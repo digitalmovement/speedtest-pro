@@ -64,6 +64,8 @@ class Wpspeedtestpro_Settings {
 
     private function add_hooks() {
         add_action('wp_ajax_wpspeedtestpro_get_provider_packages', array($this, 'ajax_get_provider_packages'));
+        add_action('wp_ajax_ssl_register_user', array($this, 'ajax_ssl_register_user'));
+        add_action('wp_ajax_ssl_login_user', array($this, 'ajax_ssl_login_user'));
     }
 
     private function is_this_the_right_plugin_page() {
@@ -200,6 +202,13 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
 
+        add_settings_field(
+            'wpspeedtestpro_ssl_user_email',
+            'SSL Credentials',
+            array($this, 'ssl_register_callback'),
+            'wpspeedtestpro-settings',
+            'wpspeedtestpro_section'
+        );
 
     }
 
@@ -362,6 +371,39 @@ class Wpspeedtestpro_Settings {
 
         wp_send_json_success($packages);
     }
+    public function ajax_ssl_register_user() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+
+        $first_name = sanitize_text_field($_POST['first_name']);
+        $last_name = sanitize_text_field($_POST['last_name']);
+        $email = sanitize_email($_POST['email']);
+        $organization = sanitize_text_field($_POST['organization']);
+
+        // TODO: Implement API call to register user
+        $api_response = $this->core->api->register_ssl_user($first_name, $last_name, $email, $organization);
+
+        if ($api_response['success']) {
+            $user_details = array(
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'email' => $email,
+                'organization' => $organization
+            );
+            update_option('wpspeedtestpro_user_ssl_details', $user_details['email']);
+            wp_send_json_success('User registered successfully');
+        } else {
+            wp_send_json_error($api_response['message']);
+        }
+    }
+
+    public function ajax_ssl_login_user() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        $email = sanitize_email($_POST['email']);
+        update_option('wpspeedtestpro_user_ssl_details', $email);
+        wp_send_json_success(array('message' => 'User saved successfully'));
+    }
+
+
 
     public function speedvitals_api_key_callback() {
         $api_key = get_option('wpspeedtestpro_speedvitals_api_key');
@@ -373,6 +415,26 @@ class Wpspeedtestpro_Settings {
         $api_key = get_option('wpspeedtestpro_uptimerobot_api_key');
         echo '<input type="text" id="wpspeedtestpro_uptimerobot_api_key" name="wpspeedtestpro_uptimerobot_api_key" value="' . esc_attr($api_key) . '" class="regular-text">';
         echo '<p class="description">Enter your UptimeRobot API key. You can find your API key in your <a href="https://dashboard.uptimerobot.com/integrations?rid=97f3dfd4e3a8a6" target="_blank">Uptime account settings</a>. <br /> Please create a <b>Main API key</b></p>';
+    }
+
+    public function ssl_register_callback() {
+        $user_email = get_option('wpspeedtestpro_ssl_user_email');
+        echo '
+            <div id="user-auth-form">
+            <select id="auth-action">
+                <option value="login">Login</option>
+                <option value="register">Register</option>
+            </select>
+            <input type="text" id="first-name" placeholder="First Name" style="display:none;">
+            <input type="text" id="last-name" placeholder="Last Name" style="display:none;">
+            <input type="email" id="email" placeholder="Email">
+            <input type="text" id="organization" placeholder="Organization" style="display:none;">
+            <button id="auth-submit" class="button button-secondary">Submit</button>
+        </div>
+        <p id="auth-message" style="color: red;">Please login or register to use the SSL testing feature.</p>
+        ';
+        echo '<p class="description">The information for SSL testing is send to the SSLLabs.com <a href="https://www.qualys.com/company/privacy" target="_blank">View thier Privacy Policy</a>. <br /></p>';
+
     }
 
 }
