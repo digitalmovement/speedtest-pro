@@ -49,13 +49,14 @@ class Wpspeedtestpro_Settings {
      * @param      string    $plugin_name       The name of this plugin.
      * @param      string    $version    The version of this plugin.
      */
-    public function __construct( $plugin_name, $version, $core ) {
+    public function __construct($plugin_name, $version, $core) {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
         $this->init_components();
+        $this->add_hooks(); // Make sure add_hooks is called
     }
-
+    
     private function init_components() {
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
@@ -94,16 +95,22 @@ class Wpspeedtestpro_Settings {
      */
     public function enqueue_scripts() {
         if ($this->is_this_the_right_plugin_page()) {
-            wp_enqueue_script( $this->plugin_name . '-settings', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-settings.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script($this->plugin_name . '-settings', 
+                plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-settings.js', 
+                array('jquery'), 
+                $this->version, 
+                false
+            );
+            
             wp_localize_script($this->plugin_name . '-settings', 'wpspeedtestpro_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-                'selected_region' => get_option('wp_hosting_benchmarking_selected_region'), // Pass the selected region    
-                'hosting_providers' => $this->core->api->get_hosting_providers_json() 
-            )); 
+                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                'selected_region' => get_option('wp_hosting_benchmarking_selected_region'),
+                'hosting_providers' => $this->core->api->get_hosting_providers_json()
+            ));
         }
     }
-
+    
 
 
     /**
@@ -372,35 +379,76 @@ class Wpspeedtestpro_Settings {
         wp_send_json_success($packages);
     }
     public function ajax_ssl_register_user() {
-        check_ajax_referer('ssl_testing_nonce', 'nonce');
-
-        $first_name = sanitize_text_field($_POST['first_name']);
-        $last_name = sanitize_text_field($_POST['last_name']);
-        $email = sanitize_email($_POST['email']);
-        $organization = sanitize_text_field($_POST['organization']);
-
-        // TODO: Implement API call to register user
-        $api_response = $this->core->api->register_ssl_user($first_name, $last_name, $email, $organization);
-
-        if ($api_response['success']) {
-            $user_details = array(
-                'first_name' => $first_name,
-                'last_name' => $last_name,
-                'email' => $email,
-                'organization' => $organization
+        // Verify nonce
+        if (!check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce', false)) {
+            wp_send_json_error('Invalid security token.');
+            return;
+        }
+    
+        // Validate required fields
+        $required_fields = array('first_name', 'last_name', 'email', 'organization');
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                wp_send_json_error("$field is required.");
+                return;
+            }
+        }
+    
+        // Sanitize input
+        $user_data = array(
+            'first_name' => sanitize_text_field($_POST['first_name']),
+            'last_name' => sanitize_text_field($_POST['last_name']),
+            'email' => sanitize_email($_POST['email']),
+            'organization' => sanitize_text_field($_POST['organization'])
+        );
+    
+        // Validate email
+        if (!is_email($user_data['email'])) {
+            wp_send_json_error('Invalid email address.');
+            return;
+        }
+    
+        try {
+            // Attempt to register user via API
+            $api_response = $this->core->api->register_ssl_user(
+                $user_data['first_name'],
+                $user_data['last_name'],
+                $user_data['email'],
+                $user_data['organization']
             );
-            update_option('wpspeedtestpro_user_ssl_email', $user_details['email']);
-            wp_send_json_success('User registered successfully');
-        } else {
-            wp_send_json_error($api_response['message']);
+    
+            if ($api_response['success']) {
+                update_option('wpspeedtestpro_user_ssl_email', $user_data['email']);
+                wp_send_json_success('Registration successful!');
+            } else {
+                wp_send_json_error($api_response['message'] ?? 'Registration failed.');
+            }
+        } catch (Exception $e) {
+            wp_send_json_error('An error occurred during registration. Please try again.');
         }
     }
-
+    
     public function ajax_ssl_login_user() {
-        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        // Verify nonce
+        if (!check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce', false)) {
+            wp_send_json_error('Invalid security token.');
+            return;
+        }
+    
+        // Validate email
         $email = sanitize_email($_POST['email']);
-        update_option('wpspeedtestpro_user_ssl_email', $email);
-        wp_send_json_success(array('message' => 'User saved successfully'));
+        if (!is_email($email)) {
+            wp_send_json_error('Invalid email address.');
+            return;
+        }
+    
+        try {
+            // You might want to verify the email exists in your system here
+            update_option('wpspeedtestpro_user_ssl_email', $email);
+            wp_send_json_success('Login successful!');
+        } catch (Exception $e) {
+            wp_send_json_error('An error occurred during login. Please try again.');
+        }
     }
 
 

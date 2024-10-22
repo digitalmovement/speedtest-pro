@@ -22,3 +22,21 @@
 .modal-buttons button {
     margin-left: 10px;
 }
+
+#auth-message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#auth-message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+#auth-message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}

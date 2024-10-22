@@ -8,25 +8,48 @@ jQuery(document).ready(function($) {
         var action = $(this).val();
         if (action === 'register') {
             $('#first-name, #last-name, #organization').show();
+            $('#auth-submit').text('Register');
         } else {
             $('#first-name, #last-name, #organization').hide();
+            $('#auth-submit').text('Login');
         }
     });
 
     $('#auth-submit').on('click', function(e) {
         e.preventDefault();
         var action = $('#auth-action').val();
+        var $message = $('#auth-message');
+        
+        // Reset message
+        $message.removeClass('error success').hide();
+
         var data = {
             action: action === 'login' ? 'ssl_login_user' : 'ssl_register_user',
             nonce: wpspeedtestpro_ajax.nonce,
-            email: $('#email').val()
+            email: $('#email').val().trim()
         };
 
-        if (action === 'register') {
-            data.first_name = $('#first-name').val();
-            data.last_name = $('#last-name').val();
-            data.organization = $('#organization').val();
+        // Validate email
+        if (!isValidEmail(data.email)) {
+            $message.addClass('error').text('Please enter a valid email address.').show();
+            return;
         }
+
+        if (action === 'register') {
+            // Add registration fields
+            data.first_name = $('#first-name').val().trim();
+            data.last_name = $('#last-name').val().trim();
+            data.organization = $('#organization').val().trim();
+
+            // Validate required fields
+            if (!data.first_name || !data.last_name || !data.organization) {
+                $message.addClass('error').text('All fields are required for registration.').show();
+                return;
+            }
+        }
+
+        // Show loading state
+        $('#auth-submit').prop('disabled', true).text('Processing...');
 
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
@@ -34,18 +57,36 @@ jQuery(document).ready(function($) {
             data: data,
             success: function(response) {
                 if (response.success) {
-                    //location.reload();
-                    console.log('Reg Success:', response.data);
+                    $message.removeClass('error').addClass('success')
+                        .text(response.data).show();
+                    
+                    // Optionally reload after successful authentication
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1500);
                 } else {
-                    $('#auth-message').text(response.data.message || 'An error occurred.').show();
+                    $message.addClass('error')
+                        .text(response.data || 'An error occurred.').show();
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error('AJAX error:', textStatus, errorThrown);
-                $('#auth-message').text('An error occurred. Please try again.').show();
+                $message.addClass('error')
+                    .text('An error occurred. Please try again.').show();
+            },
+            complete: function() {
+                // Reset button state
+                $('#auth-submit').prop('disabled', false)
+                    .text(action === 'register' ? 'Register' : 'Login');
             }
         });
     });
+
+    // Email validation helper
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    
 
     function populateProviders() {
         var currentProvider = $providerSelect.val();
