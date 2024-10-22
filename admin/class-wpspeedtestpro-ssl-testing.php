@@ -41,7 +41,7 @@ class Wpspeedtestpro_SSL_Testing {
 
     private $core;
 
-    private $transient_key = 'wpspeedtestpro_ssl_results';
+    private $ssl_cached_results = 'wpspeedtestpro_ssl_results';
     private $in_progress_key = 'wpspeedtestpro_ssl_test_in_progress';
 
     /**
@@ -108,7 +108,7 @@ class Wpspeedtestpro_SSL_Testing {
      */
     public function display_ssl_testing() {
         $user_email = get_option('wpspeedtestpro_user_ssl_email');
-        $cached_result = get_transient($this->transient_key);
+        $cached_result = get_transient($this->ssl_cached_results);
         include_once('partials/wpspeedtestpro-ssl-testing-display.php');
     }
 
@@ -117,7 +117,7 @@ class Wpspeedtestpro_SSL_Testing {
     public function start_ssl_test() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
 
-        delete_transient($this->transient_key);
+        delete_transient($this->ssl_cached_results);
 
         $registered_user_email = get_option('wpspeedtestpro_user_ssl_email');
         $email = isset($registered_user_email) ? $registered_user_email : 'default@example.com';
@@ -146,7 +146,7 @@ class Wpspeedtestpro_SSL_Testing {
         $in_progress_result = get_transient($this->in_progress_key);
 
         if (false === $in_progress_result) {
-            $cached_result = get_transient($this->transient_key);
+            $cached_result = get_transient($this->ssl_cached_results);
             if (false !== $cached_result) {
                 wp_send_json_success(array('status' => 'completed', 'data' => $this->format_ssl_test_results($cached_result)));
             } else {
@@ -167,11 +167,11 @@ class Wpspeedtestpro_SSL_Testing {
     }
 
     private function cache_ssl_results($result) {
-        set_transient($this->transient_key, $result, HOUR_IN_SECONDS);
+        set_transient($this->ssl_cached_results, $result, HOUR_IN_SECONDS);
     }
 
     public function get_cached_results() {
-        return get_transient($this->transient_key);
+        return get_transient($this->ssl_cached_results);
     }
 
     public function format_ssl_test_results($result) {
