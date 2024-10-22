@@ -155,7 +155,7 @@ class Wpspeedtestpro_SSL_Testing {
         }
 
         // $result = $this->core->api->check_ssl_test_status($in_progress_result);
-        $result = $in_progress_result;
+        //$result = $in_progress_result;
 
         if (is_array($result) && isset($result['status']) && $result['status'] === 'READY') {
             delete_transient($this->in_progress_key);
