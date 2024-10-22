@@ -18,7 +18,7 @@ jQuery(document).ready(function($) {
         var action = $('#auth-action').val();
         var data = {
             action: action === 'login' ? 'ssl_login_user' : 'ssl_register_user',
-            nonce: wpspeedtestpro_ssl.nonce,
+            nonce: wpspeedtestpro_settings.nonce,
             email: $('#email').val()
         };
 
@@ -29,12 +29,13 @@ jQuery(document).ready(function($) {
         }
 
         $.ajax({
-            url: wpspeedtestpro_ssl.ajax_url,
+            url: wpspeedtestpro_settings.ajax_url,
             type: 'POST',
             data: data,
             success: function(response) {
                 if (response.success) {
-                    location.reload();
+                    //location.reload();
+                    console.log('Reg Success:', response.data);
                 } else {
                     $('#auth-message').text(response.data.message || 'An error occurred.').show();
                 }
