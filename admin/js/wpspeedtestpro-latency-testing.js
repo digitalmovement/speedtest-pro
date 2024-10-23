@@ -525,6 +525,7 @@ jQuery(document).ready(function($) {
                         renderGraphs(response.data);
                     }
                 } else {
+                    updateGraphVisibility(response.data);
                     console.error('Error in server response:', response);
                 }
             },
