@@ -21,39 +21,16 @@ jQuery(document).ready(function($) {
 
     function showContinuousWarning() {
         return new Promise((resolve, reject) => {
-            $('<div>').dialog({
-                title: 'Warning',
-                modal: true,
-                width: 400,
-                closeOnEscape: true,
-                draggable: false,
-                content: `
-                    <p>Running continuous latency tests can affect server performance. 
-                    This feature should not be used on production websites.</p>
-                `,
-                buttons: [
-                    {
-                        text: "Cancel",
-                        class: "button button-secondary",
-                        click: function() {
-                            $(this).dialog('close');
-                            reject();
-                        }
-                    },
-                    {
-                        text: "Continue",
-                        class: "button button-primary",
-                        click: function() {
-                            $(this).dialog('close');
-                            resolve();
-                        }
-                    }
-                ],
-                create: function() {
-                    $(this).closest('.ui-dialog')
-                        .find('.ui-dialog-buttonpane')
-                        .css('text-align', 'right');
-                }
+            $('#continuousModal').css('display', 'block');
+
+            $('#cancelContinuous').on('click', function() {
+                $('#continuousModal').css('display', 'none');
+                reject();
+            });
+
+            $('#confirmContinuous').on('click', function() {
+                $('#continuousModal').css('display', 'none');
+                resolve();
             });
         });
     }
@@ -129,7 +106,7 @@ jQuery(document).ready(function($) {
                 }
             });
         }).catch(() => {
-            // User cancelled
+            // User cancelled - no action needed
         });
     });
 
@@ -152,7 +129,6 @@ jQuery(document).ready(function($) {
             }
         });
     });
-
     // Check continuous testing status on page load
     function checkContinuousTestingStatus() {
         $.ajax({
@@ -173,8 +149,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // Initialize
-    checkContinuousTestingStatus();
+
 
     function startCountdown(duration, startTime) {
         var timer = duration - (Math.floor(Date.now() / 1000) - startTime), minutes, seconds;
@@ -451,7 +426,8 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     $('#deleteModal').css('display', 'none');
                     alert('All latency data discarded');
-                    updateResults();
+                    //updateResults();
+                    location.reload();
                 } else {
                     alert('Error discarding results');
                 }
@@ -589,7 +565,8 @@ jQuery(document).ready(function($) {
         $("#tabs").tabs();
     });
 
-
+    // Initialize
+    checkContinuousTestingStatus();
     checkTestStatus();
     initializeTimeRange();
     setInterval(function() {

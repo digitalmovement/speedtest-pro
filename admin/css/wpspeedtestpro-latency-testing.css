@@ -1,77 +1,59 @@
-
-#wpspeedtestpro .latency-faster { color: green!important; } /* For negative differences (improved latency) */
-#wpspeedtestpro .latency-slower { color: red!important; }   /* For positive differences (worsened latency) */
+#wpspeedtestpro .latency-faster { color: green!important; }
+#wpspeedtestpro .latency-slower { color: red!important; }
 #latency-results th, #latency-results td { padding: 8px; }
 
 #wpspeedtestpro .delete-button {
-   background-color: #d9534f; /* Bootstrap red color */
-   color: white;
-   border: none;
+    background-color: #d9534f;
+    color: white;
+    border: none;
 }
 
 #wpspeedtestpro .delete-button:hover {
-   background-color: #c9302c; /* Darker red on hover */
+    background-color: #c9302c;
 }
 
-   /* Modal styling */
-#deleteModal.modal {
-       display: none; /* Hidden by default */
-       position: fixed;
-       z-index: 1000;
-       left: 0;
-       top: 0;
-       width: 100%;
-       height: 100%;
-       background-color: rgba(0, 0, 0, 0.4); /* Black with transparency */
+/* Modal styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-#deleteModal .modal-content {
-       position: relative;
-       margin: 15% auto;
-       padding: 20px;
-       width: 300px;
-       background-color: white;
-       border-radius: 5px;
+.modal-content {
+    position: relative;
+    margin: 15% auto;
+    padding: 20px;
+    width: 400px;
+    background-color: white;
+    border-radius: 5px;
 }
 
-#deleteModal .modal-footer {
-       text-align: right;
+.modal-footer {
+    text-align: right;
+    margin-top: 20px;
 }
 
-#deleteModal .modal-footer button {
-       margin-left: 10px;
+.modal-footer button {
+    margin-left: 10px;
 }
 
-#deleteModal .discard-button {
-       background-color: #d9534f;
-       color: white;
-}
-
-#deleteModal .discard-button:hover {
-   background-color: #c9302c;
+.modal h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
 #wpspeedtestpro .highlight-row {
-   background-color: #f5f1ca; /* Light yellow background */
-   font-weight: bold;
-}
-
-.ui-dialog-buttonpane {
-   border-top: 1px solid #ddd;
-   padding: 10px;
-   margin-top: 10px;
-}
-
-.ui-dialog-buttonset {
-   float: right;
-}
-
-.ui-dialog-buttonset button {
-   margin-left: 10px;
+    background-color: #f5f1ca;
+    font-weight: bold;
 }
 
 #next-test-countdown {
-   margin-top: 10px;
-   color: #666;
-   font-style: italic;
+    margin-top: 10px;
+    color: #666;
+    font-style: italic;
 }

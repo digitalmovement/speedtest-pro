@@ -69,17 +69,29 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="modal">
-    <div class="modal-content">
-        <h2>Discard all latency Data?</h2>
-        <p>This cannot be undone.</p>
-        <div class="modal-footer">
-            <button id="cancelButton" class="button button-secondary">Cancel</button>
-            <button id="confirmDelete" class="button discard-button">Discard</button>
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <h2>Discard all latency Data?</h2>
+            <p>This cannot be undone.</p>
+            <div class="modal-footer">
+                <button id="cancelButton" class="button button-secondary">Cancel</button>
+                <button id="confirmDelete" class="button discard-button">Discard</button>
+            </div>
         </div>
     </div>
-</div>
 
+    <!-- Continuous Testing Warning Modal -->
+    <div id="continuousModal" class="modal">
+        <div class="modal-content">
+            <h2>Warning</h2>
+            <p>Running continuous latency tests can affect server performance. This feature should not be used on production websites.</p>
+            <div class="modal-footer">
+                <button id="cancelContinuous" class="button button-secondary">Cancel</button>
+                <button id="confirmContinuous" class="button button-primary">Continue</button>
+            </div>
+        </div>
+    </div>
 <style>
     .graph-container {
         height: 400px;
