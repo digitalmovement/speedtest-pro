@@ -3,13 +3,61 @@ jQuery(document).ready(function($) {
     var nextTestCountdownInterval;
     var isRunning = false;
     var chartInstances = {};
+    const MIN_DATA_POINTS = 5;
 
-    const regionGroups = {
-        'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris'],
-        'US': ['Montréal', 'Toronto', 'Iowa', 'South Carolina', 'North Virginia', 'Columbus', 'Dallas', 'Oregon', 'Los Angeles', 'Salt Lake City', 'Las Vegas'],
-        'Asia': ['Taiwan', 'Hong Kong', 'Tokyo', 'Osaka', 'Seoul', 'Mumbai', 'Delhi', 'Singapore', 'Jakarta'],
-        'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
-    };
+  function updateGraphVisibility(results) {
+        const regionGroups = {
+            'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris'],
+            'US': ['Montréal', 'Toronto', 'Iowa', 'South Carolina', 'North Virginia', 'Columbus', 'Dallas', 'Oregon', 'Los Angeles', 'Salt Lake City', 'Las Vegas'],
+            'Asia': ['Taiwan', 'Hong Kong', 'Tokyo', 'Osaka', 'Seoul', 'Mumbai', 'Delhi', 'Singapore', 'Jakarta'],
+            'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
+        };
+
+        // Group results by region
+        let regionData = {};
+        results.forEach(result => {
+            if (!regionData[result.region_name]) {
+                regionData[result.region_name] = [];
+            }
+            regionData[result.region_name].push(result);
+        });
+
+        // Check each region group for sufficient data
+        let hasEnoughData = false;
+        Object.keys(regionGroups).forEach(group => {
+            let groupHasData = false;
+            regionGroups[group].forEach(region => {
+                if (regionData[region] && regionData[region].length >= MIN_DATA_POINTS) {
+                    groupHasData = true;
+                }
+            });
+            
+            const tabIndex = Object.keys(regionGroups).indexOf(group) + 1;
+            if (groupHasData) {
+                hasEnoughData = true;
+                $(`#tabs-${tabIndex}`).show();
+                $(`#tabs ul li:nth-child(${tabIndex})`).show();
+            } else {
+                $(`#tabs-${tabIndex}`).hide();
+                $(`#tabs ul li:nth-child(${tabIndex})`).hide();
+            }
+        });
+
+        if (!hasEnoughData) {
+            $('#tabs').hide();
+            if (!$('#graphs-message').length) {
+                $('#results-container').append(
+                    '<div id="graphs-message" class="notice notice-info">' +
+                    '<p>Waiting for more test results before displaying graphs. At least 5 data points are needed for each region.</p>' +
+                    '</div>'
+                );
+            }
+        } else {
+            $('#tabs').show();
+            $('#graphs-message').remove();
+        }
+    }
+
 
     function updateButtonState(isRunning, isContinuous) {
         $('#run-once-test').prop('disabled', isRunning);
@@ -35,31 +83,48 @@ jQuery(document).ready(function($) {
         });
     }
 
-    function startNextTestCountdown() {
+   function startNextTestCountdown() {
         clearInterval(nextTestCountdownInterval);
-        var nextTestTime = new Date();
-        nextTestTime.setHours(nextTestTime.getHours() + 1);
-        nextTestTime.setMinutes(0);
-        nextTestTime.setSeconds(0);
+        
+        // Get next scheduled time from WordPress
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_get_next_test_time',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success && response.data.next_test_time) {
+                    const nextTestTime = new Date(response.data.next_test_time * 1000);
+                    
+                    nextTestCountdownInterval = setInterval(function() {
+                        const now = new Date();
+                        let diff = nextTestTime - now;
 
-        nextTestCountdownInterval = setInterval(function() {
-            var now = new Date();
-            var diff = nextTestTime - now;
+                        if (diff <= 0) {
+                            $('#next-test-countdown').text('Running test...');
+                            clearInterval(nextTestCountdownInterval);
+                            // Refresh status after a short delay
+                            setTimeout(checkContinuousTestingStatus, 5000);
+                            return;
+                        }
 
-            if (diff <= 0) {
-                nextTestTime.setHours(nextTestTime.getHours() + 1);
-                diff = nextTestTime - now;
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                        const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+                        const formattedSeconds = seconds < 10 ? "0" + seconds : seconds;
+
+                        $('#next-test-countdown').text(`Next test in: ${formattedMinutes}:${formattedSeconds}`);
+                    }, 1000);
+                } else {
+                    $('#next-test-countdown').text('');
+                }
             }
-
-            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-
-            $('#next-test-countdown').text(`Next test in: ${minutes}:${seconds}`);
-        }, 1000);
+        });
     }
+
 
     $('#run-once-test').on('click', function() {
         isRunning = true;
@@ -443,7 +508,7 @@ jQuery(document).ready(function($) {
         return localStorage.getItem('wpspeedtestpro_time_range') || '24_hours';
     }
 
-    function updateResults(timeRange) {
+   function updateResults(timeRange) {
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
@@ -455,7 +520,10 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     updateResultsTable(response.data);
-                    renderGraphs(response.data);
+                    updateGraphVisibility(response.data);
+                    if ($('#tabs').is(':visible')) {
+                        renderGraphs(response.data);
+                    }
                 } else {
                     console.error('Error in server response:', response);
                 }

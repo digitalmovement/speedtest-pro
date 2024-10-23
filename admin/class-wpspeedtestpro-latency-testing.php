@@ -80,6 +80,7 @@ class Wpspeedtestpro_Latency_Testing {
         add_action('wp_ajax_wpspeedtestpro_get_latest_results', array($this, 'get_latest_results'));
         add_action('wp_ajax_wpspeedtestpro_get_results_for_time_range', array($this, 'get_results_for_time_range'));
         add_action('wp_ajax_wpspeedtestpro_delete_all_results', array($this, 'delete_all_results'));
+        add_action('wp_ajax_wpspeedtestpro_get_next_test_time', array($this, 'get_next_test_time'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
@@ -146,9 +147,11 @@ class Wpspeedtestpro_Latency_Testing {
 
         update_option('wpspeedtestpro_continuous_testing', true);
         
-        if (!wp_next_scheduled('wpspeedtestpro_hourly_test')) {
-            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_hourly_test');
-        }
+        // Clear any existing schedule
+        wp_clear_scheduled_hook('wpspeedtestpro_hourly_test');
+        
+        // Schedule next test one hour from now
+        wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', 'wpspeedtestpro_hourly_test');
 
         // Run first test immediately
         $this->run_scheduled_test();
@@ -311,4 +314,21 @@ class Wpspeedtestpro_Latency_Testing {
             }
         }
     }
+
+    public function get_next_test_time() {
+        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        
+        $next_scheduled = wp_next_scheduled('wpspeedtestpro_hourly_test');
+        
+        if ($next_scheduled) {
+            wp_send_json_success(array(
+                'next_test_time' => $next_scheduled
+            ));
+        } else {
+            wp_send_json_error('No test scheduled');
+        }
+    }
+
+
+
 }
