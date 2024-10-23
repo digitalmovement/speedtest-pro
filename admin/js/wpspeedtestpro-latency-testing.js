@@ -12,6 +12,17 @@ jQuery(document).ready(function($) {
         'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
     };
 
+    function hideAllTabs() {
+        $('#tabs').hide();
+        if (!$('#graphs-message').length) {
+            $('#results-container').append(
+                '<div id="graphs-message" class="notice notice-info">' +
+                '<p>Waiting for more test results before displaying graphs. At least 5 data points are needed for each region.</p>' +
+                '</div>'
+            );
+        }
+    }
+
     function updateGraphVisibility(results) {
         // Group results by region
         let regionData = {};
@@ -44,14 +55,7 @@ jQuery(document).ready(function($) {
         });
 
         if (!hasEnoughData) {
-            $('#tabs').hide();
-            if (!$('#graphs-message').length) {
-                $('#results-container').append(
-                    '<div id="graphs-message" class="notice notice-info">' +
-                    '<p>Waiting for more test results before displaying graphs. At least 5 data points are needed for each region.</p>' +
-                    '</div>'
-                );
-            }
+            hideAllTabs();
         } else {
             $('#tabs').show();
             $('#graphs-message').remove();
@@ -525,7 +529,7 @@ jQuery(document).ready(function($) {
                         renderGraphs(response.data);
                     }
                 } else {
-                    updateGraphVisibility(response.data);
+                    hideAllTabs();
                     console.error('Error in server response:', response);
                 }
             },
