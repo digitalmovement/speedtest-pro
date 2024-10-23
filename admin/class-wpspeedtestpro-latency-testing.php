@@ -69,13 +69,17 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     private function add_hooks() {
+        add_action('wp_ajax_wpspeedtestpro_run_once_test', array($this, 'run_once_test'));
+        add_action('wp_ajax_wpspeedtestpro_start_continuous_test', array($this, 'start_continuous_test'));
+        add_action('wp_ajax_wpspeedtestpro_stop_continuous_test', array($this, 'stop_continuous_test'));
+        add_action('wp_ajax_wpspeedtestpro_get_continuous_status', array($this, 'get_continuous_status'));
+        add_action('wpspeedtestpro_hourly_test', array($this, 'run_scheduled_test'));
         add_action('wp_ajax_wpspeedtestpro_start_latency_test', array($this, 'start_latency_test'));
         add_action('wp_ajax_wpspeedtestpro_reset_latency_test', array($this, 'reset_latency_test'));
         add_action('wp_ajax_wpspeedtestpro_stop_latency_test', array($this, 'stop_latency_test'));
         add_action('wp_ajax_wpspeedtestpro_get_latest_results', array($this, 'get_latest_results'));
         add_action('wp_ajax_wpspeedtestpro_get_results_for_time_range', array($this, 'get_results_for_time_range'));
         add_action('wp_ajax_wpspeedtestpro_delete_all_results', array($this, 'delete_all_results'));
-        add_action('wpspeedtestpro_cron_hook', array($this, 'run_scheduled_test'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
@@ -130,6 +134,49 @@ class Wpspeedtestpro_Latency_Testing {
      *
      * @since    1.0.0
      */
+
+     public function run_once_test() {
+        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        $this->run_scheduled_test();
+        wp_send_json_success('Test completed successfully');
+    }
+
+    public function start_continuous_test() {
+        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+
+        update_option('wpspeedtestpro_continuous_testing', true);
+        
+        if (!wp_next_scheduled('wpspeedtestpro_hourly_test')) {
+            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_hourly_test');
+        }
+
+        // Run first test immediately
+        $this->run_scheduled_test();
+
+        wp_send_json_success('Continuous testing started');
+    }
+
+    public function stop_continuous_test() {
+        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+
+        update_option('wpspeedtestpro_continuous_testing', false);
+        wp_clear_scheduled_hook('wpspeedtestpro_hourly_test');
+
+        wp_send_json_success('Continuous testing stopped');
+    }
+
+    public function get_continuous_status() {
+        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        
+        $is_continuous = get_option('wpspeedtestpro_continuous_testing', false);
+        
+        wp_send_json_success(array(
+            'is_continuous' => $is_continuous
+        ));
+    }
+
+
+
     public function start_latency_test() {
         check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
 

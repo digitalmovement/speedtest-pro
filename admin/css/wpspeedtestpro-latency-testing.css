@@ -55,3 +55,23 @@
    background-color: #f5f1ca; /* Light yellow background */
    font-weight: bold;
 }
+
+.ui-dialog-buttonpane {
+   border-top: 1px solid #ddd;
+   padding: 10px;
+   margin-top: 10px;
+}
+
+.ui-dialog-buttonset {
+   float: right;
+}
+
+.ui-dialog-buttonset button {
+   margin-left: 10px;
+}
+
+#next-test-countdown {
+   margin-top: 10px;
+   color: #666;
+   font-style: italic;
+}

@@ -1,5 +1,6 @@
 jQuery(document).ready(function($) {
     var countdownInterval;
+    var nextTestCountdownInterval;
     var isRunning = false;
     var chartInstances = {};
 
@@ -10,11 +11,170 @@ jQuery(document).ready(function($) {
         'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
     };
 
-    function updateButtonState(isRunning) {
-        $('#start-test').prop('disabled', isRunning);
-        $('#start-test').toggle(!isRunning);
-        $('#stop-test').toggle(isRunning);
+    function updateButtonState(isRunning, isContinuous) {
+        $('#run-once-test').prop('disabled', isRunning);
+        $('#continuous-test').prop('disabled', isRunning);
+        $('#run-once-test').toggle(!isRunning);
+        $('#continuous-test').toggle(!isRunning);
+        $('#stop-test').toggle(isRunning && isContinuous);
     }
+
+    function showContinuousWarning() {
+        return new Promise((resolve, reject) => {
+            $('<div>').dialog({
+                title: 'Warning',
+                modal: true,
+                width: 400,
+                closeOnEscape: true,
+                draggable: false,
+                content: `
+                    <p>Running continuous latency tests can affect server performance. 
+                    This feature should not be used on production websites.</p>
+                `,
+                buttons: [
+                    {
+                        text: "Cancel",
+                        class: "button button-secondary",
+                        click: function() {
+                            $(this).dialog('close');
+                            reject();
+                        }
+                    },
+                    {
+                        text: "Continue",
+                        class: "button button-primary",
+                        click: function() {
+                            $(this).dialog('close');
+                            resolve();
+                        }
+                    }
+                ],
+                create: function() {
+                    $(this).closest('.ui-dialog')
+                        .find('.ui-dialog-buttonpane')
+                        .css('text-align', 'right');
+                }
+            });
+        });
+    }
+
+    function startNextTestCountdown() {
+        clearInterval(nextTestCountdownInterval);
+        var nextTestTime = new Date();
+        nextTestTime.setHours(nextTestTime.getHours() + 1);
+        nextTestTime.setMinutes(0);
+        nextTestTime.setSeconds(0);
+
+        nextTestCountdownInterval = setInterval(function() {
+            var now = new Date();
+            var diff = nextTestTime - now;
+
+            if (diff <= 0) {
+                nextTestTime.setHours(nextTestTime.getHours() + 1);
+                diff = nextTestTime - now;
+            }
+
+            var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            $('#next-test-countdown').text(`Next test in: ${minutes}:${seconds}`);
+        }, 1000);
+    }
+
+    $('#run-once-test').on('click', function() {
+        isRunning = true;
+        updateButtonState(true, false);
+
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_run_once_test',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#test-status').text('Running one-time test...');
+                    setTimeout(function() {
+                        isRunning = false;
+                        updateButtonState(false, false);
+                        $('#test-status').text('Test completed.');
+                        updateResults(getStoredTimeRange());
+                    }, 30000); // Wait 30 seconds for test to complete
+                }
+            }
+        });
+    });
+
+    $('#continuous-test').on('click', function() {
+        showContinuousWarning().then(() => {
+            isRunning = true;
+            updateButtonState(true, true);
+
+            $.ajax({
+                url: wpspeedtestpro_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'wpspeedtestpro_start_continuous_test',
+                    nonce: wpspeedtestpro_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#test-status').text('Continuous testing enabled.');
+                        startNextTestCountdown();
+                    }
+                }
+            });
+        }).catch(() => {
+            // User cancelled
+        });
+    });
+
+    $('#stop-test').on('click', function() {
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_stop_continuous_test',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $('#test-status').text('Continuous testing stopped.');
+                    clearInterval(nextTestCountdownInterval);
+                    $('#next-test-countdown').text('');
+                    isRunning = false;
+                    updateButtonState(false, false);
+                }
+            }
+        });
+    });
+
+    // Check continuous testing status on page load
+    function checkContinuousTestingStatus() {
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_get_continuous_status',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success && response.data.is_continuous) {
+                    isRunning = true;
+                    updateButtonState(true, true);
+                    $('#test-status').text('Continuous testing enabled.');
+                    startNextTestCountdown();
+                }
+            }
+        });
+    }
+
+    // Initialize
+    checkContinuousTestingStatus();
 
     function startCountdown(duration, startTime) {
         var timer = duration - (Math.floor(Date.now() / 1000) - startTime), minutes, seconds;
@@ -429,7 +589,7 @@ jQuery(document).ready(function($) {
         $("#tabs").tabs();
     });
 
-    
+
     checkTestStatus();
     initializeTimeRange();
     setInterval(function() {

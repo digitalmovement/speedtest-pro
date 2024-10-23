@@ -14,11 +14,12 @@
 <div id="wpspeedtestpro" class="wrap">
     <h1>Google Data Center Latency Testing</h1>
     <div id="latency-test-container">
-        <button id="start-test" class="button button-primary">Start Latency Test</button>
-        <button id="stop-test" class="button button-secondary" style="display:none;">Stop Latency Test</button>
+        <button id="run-once-test" class="button button-primary">Run Once</button>
+        <button id="continuous-test" class="button button-primary">Start Continuous Testing</button>
+        <button id="stop-test" class="button button-secondary" style="display:none;">Stop Continuous Testing</button>
         <button id="delete-results" class="button button-secondary delete-button">Delete All Results</button>
         <p id="test-status"></p>
-        <div id="countdown"></div>
+        <div id="next-test-countdown"></div>
     </div>
     <div id="results-container">
         <div>
