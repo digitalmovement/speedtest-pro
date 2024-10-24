@@ -138,7 +138,7 @@ class Wpspeedtestpro_Latency_Testing {
 
      public function run_once_test() {
         check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
-        $this->run_scheduled_test();
+        $this->execute_test();
         wp_send_json_success('Test completed successfully');
     }
 
@@ -154,7 +154,7 @@ class Wpspeedtestpro_Latency_Testing {
         wp_schedule_event(time() + HOUR_IN_SECONDS, 'hourly', 'wpspeedtestpro_hourly_test');
 
         // Run first test immediately
-        $this->run_scheduled_test();
+        $this->execute_test();
 
         wp_send_json_success('Continuous testing started');
     }
@@ -305,7 +305,7 @@ class Wpspeedtestpro_Latency_Testing {
      *
      * @since    1.0.0
      */
-    public function run_scheduled_test() {
+    public function execute_test() {
         $endpoints = $this->core->api->get_gcp_endpoints();
         foreach ($endpoints as $endpoint) {
             $latency = $this->core->api->ping_endpoint($endpoint['url']);
@@ -314,6 +314,14 @@ class Wpspeedtestpro_Latency_Testing {
             }
         }
     }
+
+    public function run_scheduled_test() {
+        // Only execute if continuous testing is enabled
+        if (get_option('wpspeedtestpro_continuous_testing', false)) {
+            $this->execute_test();
+        }
+    }
+    
 
     public function get_next_test_time() {
         check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
