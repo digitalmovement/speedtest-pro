@@ -8,7 +8,7 @@ jQuery(document).ready(function($) {
     const modalHtml = `
         <div id="wpspeedtestpro-deactivate-modal" style="display:none;" class="wpspeedtestpro-modal">
             <div class="wpspeedtestpro-modal-content">
-                <h2>Plugin Deactivation</h2>
+                <h2>WPSpeedTestPro Plugin Deactivation</h2>
                 <p>Would you like to delete all plugin data? This includes:</p>
                 <ul>
                     <li>All database tables</li>
@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
                 <div class="wpspeedtestpro-modal-footer">
                     <label>
                         <input type="checkbox" id="wpspeedtestpro-delete-data" name="delete_data">
-                        Yes, delete all plugin data
+                        <p class="deepred">Yes, delete ALL plugin data<p>
                     </label>
                     <div class="wpspeedtestpro-modal-buttons">
                         <button type="button" class="button button-secondary wpspeedtestpro-modal-cancel">Cancel</button>

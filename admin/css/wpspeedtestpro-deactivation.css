@@ -55,3 +55,8 @@
     border-color: #a02222 !important;
     color: #fff !important;
 }
+
+.wpspeedtestpro-modal-deactivate p .deepred {
+    color: #a02222;
+    font-weight: bold; 
+}
