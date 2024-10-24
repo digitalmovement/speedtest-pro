@@ -141,7 +141,7 @@ class Wpspeedtestpro {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-cron.php';
 
 
-		$this->loader = new Wpspeedtestpro_Loader();
+		//$this->loader = new Wpspeedtestpro_Loader();
 
 	}
 
