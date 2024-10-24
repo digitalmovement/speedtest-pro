@@ -122,7 +122,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
             'credits' => $this->speedvitals_get_account_credits()
         );
 
-       if ($data['credits'] === false) {
+       if (isset($data['credits']['errors'])) {
             echo '<div class="notice notice-error"><p>Failed to retrieve account information. Please check your API key in the <a href="' . admin_url('admin.php?page=wpspeedtestpro-settings') . '">settings page</a>.</p></div>';
             return;
         }
