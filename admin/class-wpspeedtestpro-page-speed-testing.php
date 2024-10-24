@@ -122,8 +122,21 @@ class Wpspeedtestpro_Page_Speed_Testing {
             'credits' => $this->speedvitals_get_account_credits()
         );
 
-       if (isset($data['credits']['errors'])) {
-            echo '<div class="notice notice-error"><p>Failed to retrieve account information. Please check your API key in the <a href="' . admin_url('admin.php?page=wpspeedtestpro-settings') . '">settings page</a>.</p></div>';
+        if (is_wp_error($data['credits'])) {
+            $error_message = $data['credits']->get_error_message();
+            echo '<div class="notice notice-error"><p>Failed to retrieve account information: ' . 
+                 esc_html($error_message) . 
+                 '. Please check your API key in the <a href="' . 
+                 esc_url(admin_url('admin.php?page=wpspeedtestpro-settings')) . 
+                 '">settings page</a>.</p></div>';
+            return;
+        }
+        
+        // Then check for other potential error conditions
+        if (!isset($data['credits']) || empty($data['credits']) || isset($data['credits']['errors'])) {
+            echo '<div class="notice notice-error"><p>Failed to retrieve account information. Please check your API key in the <a href="' . 
+                 esc_url(admin_url('admin.php?page=wpspeedtestpro-settings')) . 
+                 '">settings page</a>.</p></div>';
             return;
         }
 
