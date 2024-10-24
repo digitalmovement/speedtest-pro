@@ -95,7 +95,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         if (!$this->is_this_the_right_plugin_page()) {
             return;
         }
-        
+
         wp_enqueue_script($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -121,6 +121,8 @@ class Wpspeedtestpro_Page_Speed_Testing {
             'scheduled_tests' => $this->core->db->speedvitals_get_scheduled_tests(),
             'credits' => $this->speedvitals_get_account_credits()
         );
+
+        print_r($data);
 
         include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
     }
