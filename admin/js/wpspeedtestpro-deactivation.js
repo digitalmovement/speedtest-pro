@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
                 <div class="wpspeedtestpro-modal-footer">
                     <label>
                         <input type="checkbox" id="wpspeedtestpro-delete-data" name="delete_data">
-                        <p class="deepred">Yes, delete ALL plugin data<p>
+                        <i class="deepred">Yes, delete ALL plugin data<i>
                     </label>
                     <div class="wpspeedtestpro-modal-buttons">
                         <button type="button" class="button button-secondary wpspeedtestpro-modal-cancel">Cancel</button>

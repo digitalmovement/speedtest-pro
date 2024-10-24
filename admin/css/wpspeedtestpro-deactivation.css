@@ -56,7 +56,7 @@
     color: #fff !important;
 }
 
-.wpspeedtestpro-modal-deactivate p .deepred {
+i.deepred {
     color: #a02222;
     font-weight: bold; 
 }
