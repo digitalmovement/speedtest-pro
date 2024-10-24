@@ -32,7 +32,7 @@ jQuery(document).ready(function($) {
     $('body').append(modalHtml);
 
     // Get the deactivation link
-    const deactivateLink = $('tr[data-plugin="wp-speed-test-pro/wpspeedtestpro.php"] .deactivate a');
+    const deactivateLink = $('tr[data-plugin="wpspeedtestpro/wpspeedtestpro.php"] .deactivate a');
     const originalLink = deactivateLink.attr('href');
 
     // Override the deactivation link click
