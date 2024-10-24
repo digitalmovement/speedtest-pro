@@ -63,10 +63,17 @@ class Wpspeedtestpro_Loader {
 	 * @param    int                  $priority         Optional. The priority at which the function should be fired. Default is 10.
 	 * @param    int                  $accepted_args    Optional. The number of arguments that should be passed to the $callback. Default is 1.
 	 */
-	public function add_action( $hook, $component, $callback, $priority = 10, $accepted_args = 1 ) {
-		$this->actions = $this->add( $this->actions, $hook, $component, $callback, $priority, $accepted_args );
-	}
-
+    public function add_action($hook, $component, $callback, $priority = 10, $accepted_args = 1) {
+        $hook_key = $this->get_hook_key($hook, $component, $callback, $priority);
+        
+        // Check if this exact hook combination has already been registered
+        if (!isset($this->registered_hooks[$hook_key])) {
+            $this->actions = $this->add($this->actions, $hook, $component, $callback, $priority, $accepted_args);
+            $this->registered_hooks[$hook_key] = true;
+        } else {
+            error_log("WPSpeedTestPro: Prevented duplicate action registration for hook: {$hook_key}");
+        }
+    }
 	/**
 	 * Add a new filter to the collection to be registered with WordPress.
 	 *
@@ -77,9 +84,26 @@ class Wpspeedtestpro_Loader {
 	 * @param    int                  $priority         Optional. The priority at which the function should be fired. Default is 10.
 	 * @param    int                  $accepted_args    Optional. The number of arguments that should be passed to the $callback. Default is 1
 	 */
-	public function add_filter( $hook, $component, $callback, $priority = 10, $accepted_args = 1 ) {
-		$this->filters = $this->add( $this->filters, $hook, $component, $callback, $priority, $accepted_args );
-	}
+    public function add_filter($hook, $component, $callback, $priority = 10, $accepted_args = 1) {
+        $hook_key = $this->get_hook_key($hook, $component, $callback, $priority);
+        
+        // Check if this exact hook combination has already been registered
+        if (!isset($this->registered_hooks[$hook_key])) {
+            $this->filters = $this->add($this->filters, $hook, $component, $callback, $priority, $accepted_args);
+            $this->registered_hooks[$hook_key] = true;
+        } else {
+            error_log("WPSpeedTestPro: Prevented duplicate filter registration for hook: {$hook_key}");
+        }
+    }
+    private function get_hook_key($hook, $component, $callback, $priority) {
+        return sprintf(
+            '%s_%s_%s_%d',
+            $hook,
+            get_class($component),
+            (is_string($callback) ? $callback : get_class($component) . ':' . $callback[1]),
+            $priority
+        );
+    }
 
 	/**
 	 * A utility function that is used to register the actions and hooks into a single
