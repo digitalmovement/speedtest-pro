@@ -85,7 +85,7 @@
     <div id="continuousModal" class="modal">
         <div class="modal-content">
             <h2>Warning</h2>
-            <p>Running continuous latency tests can affect server performance. This feature should not be used on production websites.</p>
+            <p>Running continuous latency tests can affect server performance. This feature should not be used on production websites. This will execute once every hour until terminated!</p>
             <div class="modal-footer">
                 <button id="cancelContinuous" class="button button-secondary">Cancel</button>
                 <button id="confirmContinuous" class="button button-primary">Continue</button>

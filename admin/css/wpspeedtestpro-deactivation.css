@@ -1,0 +1,57 @@
+
+.wpspeedtestpro-modal {
+    position: fixed;
+    z-index: 100000;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wpspeedtestpro-modal-content {
+    background: #fff;
+    padding: 25px;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.wpspeedtestpro-modal h2 {
+    margin-top: 0;
+    color: #23282d;
+}
+
+.wpspeedtestpro-modal ul {
+    list-style: disc;
+    margin-left: 20px;
+}
+
+.wpspeedtestpro-modal-footer {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.wpspeedtestpro-modal-buttons {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.wpspeedtestpro-modal-buttons button {
+    margin-left: 10px;
+}
+
+#wpspeedtestpro-delete-data {
+    margin-right: 8px;
+}
+
+.wpspeedtestpro-modal-deactivate {
+    background-color: #dc3232 !important;
+    border-color: #a02222 !important;
+    color: #fff !important;
+}
