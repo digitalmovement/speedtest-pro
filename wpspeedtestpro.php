@@ -51,17 +51,20 @@ function activate_wpspeedtestpro() {
  * This action is documented in includes/class-wpspeedtestpro-deactivator.php
  */
 function deactivate_wpspeedtestpro() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpspeedtestpro-deactivator.php';
-//	Wpspeedtestpro_Deactivator::deactivate();
-//	register_deactivation_hook(__FILE__, array('Wpspeedtestpro_Deactivator', 'deactivate'));
-//	add_action('init', array('Wpspeedtestpro_Deactivator', 'init'));
-
+    require_once plugin_dir_path(__FILE__) . 'includes/class-wpspeedtestpro-deactivator.php';
+    Wpspeedtestpro_Deactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_wpspeedtestpro' );
 register_deactivation_hook( __FILE__, 'deactivate_wpspeedtestpro' );
-register_deactivation_hook(__FILE__, array('Wpspeedtestpro_Deactivator', 'deactivate'));
-add_action('init', array('Wpspeedtestpro_Deactivator', 'init'));
+
+function wpspeedtestpro_init() {
+    require_once plugin_dir_path(__FILE__) . 'includes/class-wpspeedtestpro-deactivator.php';
+    Wpspeedtestpro_Deactivator::init();
+}
+add_action('init', 'wpspeedtestpro_init');
+
+
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
