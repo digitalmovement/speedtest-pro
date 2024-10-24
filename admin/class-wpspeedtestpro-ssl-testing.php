@@ -108,6 +108,10 @@ class Wpspeedtestpro_SSL_Testing {
      */
     public function display_ssl_testing() {
         $user_email = get_option('wpspeedtestpro_user_ssl_email');
+        if (empty($user_email)) {
+            echo '<div class="notice notice-error"><p>Please register with SSL Chcker <a href="' . admin_url('admin.php?page=wpspeedtestpro-settings') . '">settings page</a> before running tests.</p></div>';
+            return;
+        }
         $cached_result = get_transient($this->ssl_cached_results);
         include_once('partials/wpspeedtestpro-ssl-testing-display.php');
     }

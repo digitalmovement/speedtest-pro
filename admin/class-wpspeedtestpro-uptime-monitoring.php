@@ -75,8 +75,8 @@ class Wpspeedtestpro_Uptime_Monitoring {
 
     public function display_uptime_monitoring() {
         if (!$this->uptimerobot_check_api_key()) {
-            wp_redirect(admin_url('admin.php?page=wpspeedtestpro-settings'));
-            exit;
+            echo '<div class="notice notice-error"><p>Please add your UptimeRobot API Key <a href="' . admin_url('admin.php?page=wpspeedtestpro-settings') . '">settings page</a> before running tests.</p></div>';
+            return;
         }
 
         include_once('partials/wpspeedtestpro-uptime-monitoring-display.php');
