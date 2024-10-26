@@ -1,0 +1,67 @@
+.wpspeedtestpro-server-tabs .ui-tabs-nav {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0;
+}
+
+.phpinfo-wrapper {
+    margin-top: 20px;
+}
+
+.phpinfo-wrapper table {
+    margin-bottom: 20px;
+}
+
+.phpinfo-wrapper table td {
+    padding: 8px;
+}
+
+.phpinfo-wrapper table th {
+    padding: 8px;
+    font-weight: 600;
+}
+
+.phpinfo-wrapper h1,
+.phpinfo-wrapper h2 {
+    margin: 20px 0;
+    padding: 0;
+    font-size: 1.3em;
+}
+
+#wpspeedtestpro-server-tabs {
+    margin-top: 20px;
+}
+
+#wpspeedtestpro-server-tabs .ui-tabs-nav {
+    border-bottom: 1px solid #ccc;
+    padding: 0;
+    margin: 0;
+}
+
+#wpspeedtestpro-server-tabs .ui-tabs-nav li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+#wpspeedtestpro-server-tabs .ui-tabs-nav li a {
+    padding: 10px 15px;
+    display: block;
+    text-decoration: none;
+    color: #444;
+    border: 1px solid transparent;
+    border-bottom: none;
+}
+
+#wpspeedtestpro-server-tabs .ui-tabs-nav li.ui-tabs-active a {
+    border-color: #ccc;
+    background: #fff;
+    margin-bottom: -1px;
+    border-bottom: 1px solid #fff;
+}
+
+#wpspeedtestpro-server-tabs .ui-tabs-panel {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+}

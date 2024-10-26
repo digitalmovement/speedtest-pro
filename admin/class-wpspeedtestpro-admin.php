@@ -87,6 +87,8 @@ class Wpspeedtestpro_Admin {
          * core plugin.
          */
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-dashboard.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-server-information.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-latency-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-latency-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-server-performance.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-ssl-testing.php';
@@ -167,6 +169,7 @@ class Wpspeedtestpro_Admin {
         add_menu_page( 'WP Speed Test Pro', 'WP Speed Test Pro', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page'), 'dashicons-performance', 99 );
        
         add_submenu_page( $this->plugin_name, 'Dashboard', 'Dashboard', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page') );
+        add_submenu_page( $this->plugin_name, 'Server Information','Server Information','manage_options',$this->plugin_name . '-server-information',array($this, 'display_plugin_server_information_page'));
         add_submenu_page( $this->plugin_name, 'Latency Testing', 'Latency Testing', 'manage_options', $this->plugin_name . '-latency-testing', array($this, 'display_plugin_latency_testing_page') );
         add_submenu_page( $this->plugin_name, 'Server Performance', 'Server Performance', 'manage_options', $this->plugin_name . '-server-performance', array($this, 'display_plugin_server_performance_page') );
         add_submenu_page( $this->plugin_name, 'SSL Testing', 'SSL Testing', 'manage_options', $this->plugin_name . '-ssl-testing', array($this, 'display_plugin_ssl_testing_page') );
@@ -184,6 +187,12 @@ class Wpspeedtestpro_Admin {
         $dashboard = new Wpspeedtestpro_Dashboard( $this->plugin_name, $this->version, $this->core );
         $dashboard->display_dashboard();
     }
+
+    public function display_plugin_server_information_page() {
+        $server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
+        $server_information->display_server_information();
+    }
+
 
     public function change_plugin_icon() {
         echo '<style>
