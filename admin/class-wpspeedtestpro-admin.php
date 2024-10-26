@@ -65,6 +65,7 @@ class Wpspeedtestpro_Admin {
     private $uptime_monitoring;
     private $page_speed_testing;
 
+    private $server_information;
 
     public function __construct( $plugin_name, $version, $core ) {
 
@@ -89,7 +90,6 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-dashboard.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-server-information.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-latency-testing.php';
-        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-latency-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-server-performance.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-ssl-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-uptime-monitoring.php';
@@ -102,7 +102,8 @@ class Wpspeedtestpro_Admin {
         $this->server_performance   = new Wpspeedtestpro_Server_Performance( $this->plugin_name, $this->version, $this->core );
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         $this->page_speed_testing   = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
-
+        $this->server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
+   
 
     }
 
@@ -189,8 +190,7 @@ class Wpspeedtestpro_Admin {
     }
 
     public function display_plugin_server_information_page() {
-        $server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
-        $server_information->display_server_information();
+        $this->server_information->display_server_information();
     }
 
 
