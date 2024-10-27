@@ -389,17 +389,30 @@ class Wpspeedtestpro_Server_Performance {
                 'loops' => 0,
                 'conditionals' => 0,
                 'mysql' => 0,
-                'wordpress_performance' => array('time' => 0, 'queries' => 0)
+                'wordpress_performance' => array('time' => 0, 'queries' => 0),
+                'speed_test' => array(
+                    'upload_10k' => 0,
+                    'upload_100k' => 0,
+                    'upload_1mb' => 0,
+                    'upload_10mb' => 0,
+                    'download_10k' => 0,
+                    'download_100k' => 0,
+                    'download_1mb' => 0,
+                    'download_10mb' => 0,
+                    'ping_latency' => 0,
+                    'ip_address' => '',
+                    'location' => ''
+                )
             ),
             'math' => array(),
             'string' => array(),
             'loops' => array(),
             'conditionals' => array(),
             'mysql' => array(),
-            'wordpress_performance' => array()
+            'wordpress_performance' => array(),
+            'speed_test' => array()
         ));
     }
-
     private function get_industry_averages() {
         $response = wp_remote_get('https://assets.wpspeedtestpro.com/performance-test-averages.json');
         
@@ -412,6 +425,108 @@ class Wpspeedtestpro_Server_Performance {
             'wordpress_performance' => array(
                 'time' => 0.5,
                 'queries' => 3000
+            ),
+            'speed_tests' => array(
+                'download' => array(
+                    '10K' => array(
+                        'excellent' => 100,
+                        'good' => 50,
+                        'average' => 25,
+                        'poor' => 10,
+                        'latency' => array(
+                            'excellent' => 50,
+                            'good' => 100,
+                            'average' => 200,
+                            'poor' => 300
+                        )
+                    ),
+                    '100K' => array(
+                        'excellent' => 95,
+                        'good' => 45,
+                        'average' => 20,
+                        'poor' => 8,
+                        'latency' => array(
+                            'excellent' => 75,
+                            'good' => 150,
+                            'average' => 250,
+                            'poor' => 350
+                        )
+                    ),
+                    '1MB' => array(
+                        'excellent' => 90,
+                        'good' => 40,
+                        'average' => 15,
+                        'poor' => 5,
+                        'latency' => array(
+                            'excellent' => 100,
+                            'good' => 200,
+                            'average' => 300,
+                            'poor' => 400
+                        )
+                    ),
+                    '10MB' => array(
+                        'excellent' => 85,
+                        'good' => 35,
+                        'average' => 10,
+                        'poor' => 3,
+                        'latency' => array(
+                            'excellent' => 150,
+                            'good' => 250,
+                            'average' => 350,
+                            'poor' => 450
+                        )
+                    )
+                ),
+                'upload' => array(
+                    '10K' => array(
+                        'excellent' => 50,
+                        'good' => 25,
+                        'average' => 10,
+                        'poor' => 5,
+                        'latency' => array(
+                            'excellent' => 50,
+                            'good' => 100,
+                            'average' => 200,
+                            'poor' => 300
+                        )
+                    ),
+                    '100K' => array(
+                        'excellent' => 45,
+                        'good' => 20,
+                        'average' => 8,
+                        'poor' => 4,
+                        'latency' => array(
+                            'excellent' => 75,
+                            'good' => 150,
+                            'average' => 250,
+                            'poor' => 350
+                        )
+                    ),
+                    '1MB' => array(
+                        'excellent' => 40,
+                        'good' => 15,
+                        'average' => 6,
+                        'poor' => 3,
+                        'latency' => array(
+                            'excellent' => 100,
+                            'good' => 200,
+                            'average' => 300,
+                            'poor' => 400
+                        )
+                    ),
+                    '10MB' => array(
+                        'excellent' => 35,
+                        'good' => 10,
+                        'average' => 4,
+                        'poor' => 2,
+                        'latency' => array(
+                            'excellent' => 150,
+                            'good' => 250,
+                            'average' => 350,
+                            'poor' => 450
+                        )
+                    )
+                )
             )
         );
         
@@ -426,12 +541,8 @@ class Wpspeedtestpro_Server_Performance {
             return $default_averages;
         }
         
-        // If the data is already in the correct format, use it directly
-        if (isset($data['math']) && isset($data['wordpress_performance'])) {
-            $averages = $data;
-        } 
         // If the data has an 'industry_avg' key, use that
-        elseif (isset($data['industry_avg'])) {
+        if (isset($data['industry_avg'])) {
             $averages = $data['industry_avg'];
         } 
         // Otherwise, assume the whole data is the averages
@@ -440,19 +551,10 @@ class Wpspeedtestpro_Server_Performance {
         }
         
         // Ensure all required keys are present
-        $required_keys = array('math', 'string', 'loops', 'conditionals', 'mysql', 'wordpress_performance');
-        foreach ($required_keys as $key) {
+        foreach ($default_averages as $key => $value) {
             if (!isset($averages[$key])) {
                 $averages[$key] = $default_averages[$key];
             }
-        }
-        
-        // Ensure WordPress performance has both time and queries
-        if (!isset($averages['wordpress_performance']['time'])) {
-            $averages['wordpress_performance']['time'] = $default_averages['wordpress_performance']['time'];
-        }
-        if (!isset($averages['wordpress_performance']['queries'])) {
-            $averages['wordpress_performance']['queries'] = $default_averages['wordpress_performance']['queries'];
         }
         
         return $averages;
@@ -480,32 +582,48 @@ class Wpspeedtestpro_Server_Performance {
         }
     }
 */
-    private function get_historical_results($test_type, $limit = 30) {
-        try {
-            //$db = new Wpspeedtestpro_DB();
-            $results = $this->core->db->get_benchmark_results($limit);
-            
-            return array_map(function($result) use ($test_type) {
-                if ($test_type === 'wordpress_performance') {
-                    return [
-                        'test_date' => $result['test_date'],
-                        'wordpress_performance' => [
-                            'time' => $result['wordpress_performance_time'],
-                            'queries' => $result['wordpress_performance_queries']
-                        ]
-                    ];
-                } else {
-                    return [
-                        'test_date' => $result['test_date'],
-                        $test_type => $result[$test_type]
-                    ];
-                }
-            }, $results);
-        } catch (Exception $e) {
-            error_log('Error getting historical results: ' . $e->getMessage());
-            return array();
-        }
+private function get_historical_results($test_type, $limit = 30) {
+    try {
+        $results = $this->core->db->get_benchmark_results($limit);
+        
+        return array_map(function($result) use ($test_type) {
+            if ($test_type === 'wordpress_performance') {
+                return [
+                    'test_date' => $result['test_date'],
+                    'wordpress_performance' => [
+                        'time' => $result['wordpress_performance_time'],
+                        'queries' => $result['wordpress_performance_queries']
+                    ]
+                ];
+            } elseif ($test_type === 'speed_test') {
+                return [
+                    'test_date' => $result['test_date'],
+                    'speed_test' => [
+                        'upload_10k' => $result['upload_10k'],
+                        'upload_100k' => $result['upload_100k'],
+                        'upload_1mb' => $result['upload_1mb'],
+                        'upload_10mb' => $result['upload_10mb'],
+                        'download_10k' => $result['download_10k'],
+                        'download_100k' => $result['download_100k'],
+                        'download_1mb' => $result['download_1mb'],
+                        'download_10mb' => $result['download_10mb'],
+                        'ping_latency' => $result['ping_latency'],
+                        'ip_address' => $result['ip_address'],
+                        'location' => $result['location']
+                    ]
+                ];
+            } else {
+                return [
+                    'test_date' => $result['test_date'],
+                    $test_type => $result[$test_type]
+                ];
+            }
+        }, $results);
+    } catch (Exception $e) {
+        error_log('Error getting historical results: ' . $e->getMessage());
+        return array();
     }
+}
 
     private function log_message($message) {
         $log_file = WP_CONTENT_DIR . '/wpspeedtestpro-performance.log';

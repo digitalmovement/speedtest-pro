@@ -35,3 +35,32 @@
 .modal-buttons button {
     margin-left: 10px;
 }
+
+.speed-test-info {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.speed-test-info p {
+    margin: 5px 0;
+}
+
+.speed-test-legend {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #007bff;
+}
+
+.speed-test-legend p {
+    margin: 0;
+    color: #666;
+}
+
+#tab-speed-test .chart-container {
+    margin: 20px 0;
+    min-height: 400px;
+}
