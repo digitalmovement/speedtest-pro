@@ -50,6 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
             <li><a href="#tab-conditionals">Conditionals</a></li>
             <li><a href="#tab-mysql">MySQL</a></li>
             <li><a href="#tab-wordpress">WordPress Performance</a></li>
+            <li><a href="#tab-speed-test">Network Performance</a></li>
         </ul>
         
         <div id="tab-latest-results">
@@ -100,6 +101,14 @@ if ( ! defined( 'ABSPATH' ) ) exit;
                 <canvas id="wordpress-performance-chart"></canvas>
             </div>
         </div>
+
+        <div id="tab-speed-test">
+            <h2>Speed Test Performance</h2>
+            <div class="chart-container">
+                <canvas id="speed-test-chart"></canvas>
+            </div>
+        </div>
+
     </div>
     <div class="performance-note">
         <p><strong>Note:</strong> Historical charts will be displayed once at least 5 test results have been collected. Run multiple tests to see the performance trends over time.</p>

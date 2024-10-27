@@ -240,6 +240,7 @@ class Wpspeedtestpro_Server_Performance {
         try {
             update_option('wpspeedtestpro_performance_test_status', 'running');
             
+            // Run existing performance tests
             $results = array(
                 'latest_results' => array(
                     'math' => $this->test_math(),
@@ -250,28 +251,38 @@ class Wpspeedtestpro_Server_Performance {
                     'wordpress_performance' => $this->test_wordpress_performance()
                 )
             );
-
+    
+            // Run speed tests
+            $speed_test = new Wpspeedtestpro_Speed_Test();
+            $speed_results = $speed_test->run_speed_tests();
+            if ($speed_results) {
+                $results['latest_results']['speed_test'] = $speed_results;
+            }
+    
             $save_result = $this->save_test_results($results['latest_results']);
             if ($save_result !== true) {
                 throw new Exception('Failed to save test results: ' . $save_result);
             }
-
+    
+            // Get historical results
             $results['math'] = $this->get_historical_results('math');
             $results['string'] = $this->get_historical_results('string');
             $results['loops'] = $this->get_historical_results('loops');
             $results['conditionals'] = $this->get_historical_results('conditionals');
             $results['mysql'] = $this->get_historical_results('mysql');
             $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
-
+            $results['speed_test'] = $this->get_historical_results('speed_test');
+    
             update_option('wpspeedtestpro_performance_test_results', $results);
             update_option('wpspeedtestpro_performance_test_status', 'stopped');
-
+    
             return true;
         } catch (Exception $e) {
             update_option('wpspeedtestpro_performance_test_status', 'error');
             return 'Error running performance tests: ' . $e->getMessage();
         }
     }
+
 
     private function test_math($count = 99999) {
         $time_start = microtime(true);
@@ -504,4 +515,103 @@ class Wpspeedtestpro_Server_Performance {
     }
 
 
+}
+
+
+class Wpspeedtestpro_Speed_Test {
+    private $trace_url = 'https://www.cloudflare.com/cdn-cgi/trace';
+    private $upload_url = 'https://h3.speed.cloudflare.com/__up';
+    private $download_url = 'https://h3.speed.cloudflare.com/__down';
+
+    public function run_speed_tests() {
+        $trace_info = $this->get_trace_info();
+        if (!$trace_info) {
+            return false;
+        }
+
+        $results = array(
+            'ip_address' => $trace_info['ip'],
+            'location' => $trace_info['loc'],
+            'ping_latency' => $this->test_ping(),
+            'upload_10k' => $this->test_upload(10000),
+            'upload_100k' => $this->test_upload(100000),
+            'upload_1mb' => $this->test_upload(1000000),
+            'upload_10mb' => $this->test_upload(10000000),
+            'download_10k' => $this->test_download(10000),
+            'download_100k' => $this->test_download(100000),
+            'download_1mb' => $this->test_download(1000000),
+            'download_10mb' => $this->test_download(10000000)
+        );
+
+        return $results;
+    }
+
+    private function get_trace_info() {
+        $response = wp_remote_get($this->trace_url);
+        if (is_wp_error($response)) {
+            return false;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $lines = explode("\n", $body);
+        $trace_info = array();
+
+        foreach ($lines as $line) {
+            if (empty($line)) continue;
+            list($key, $value) = explode('=', $line, 2);
+            $trace_info[$key] = trim($value);
+        }
+
+        return $trace_info;
+    }
+
+    private function test_ping() {
+        $start_time = microtime(true);
+        $response = wp_remote_get($this->trace_url);
+        $end_time = microtime(true);
+
+        if (is_wp_error($response)) {
+            return null;
+        }
+
+        return ($end_time - $start_time) * 1000; // Convert to milliseconds
+    }
+
+    private function test_upload($bytes) {
+        $meas_id = uniqid();
+        $data = str_repeat('X', $bytes);
+        $url = $this->upload_url . "?measId={$meas_id}";
+
+        $start_time = microtime(true);
+        $response = wp_remote_post($url, array(
+            'body' => $data,
+            'timeout' => 30
+        ));
+        $end_time = microtime(true);
+
+        if (is_wp_error($response)) {
+            return null;
+        }
+
+        $time_taken = $end_time - $start_time;
+        return ($bytes / $time_taken) / 1000000; // Convert to MB/s
+    }
+
+    private function test_download($bytes) {
+        $meas_id = uniqid();
+        $url = $this->download_url . "?measId={$meas_id}&bytes={$bytes}";
+
+        $start_time = microtime(true);
+        $response = wp_remote_get($url, array(
+            'timeout' => 30
+        ));
+        $end_time = microtime(true);
+
+        if (is_wp_error($response)) {
+            return null;
+        }
+
+        $time_taken = $end_time - $start_time;
+        return ($bytes / $time_taken) / 1000000; // Convert to MB/s
+    }
 }
