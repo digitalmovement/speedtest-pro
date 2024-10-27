@@ -49,6 +49,17 @@ class Wpspeedtestpro_DB {
             mysql float NOT NULL,
             wordpress_performance_time float NOT NULL,
             wordpress_performance_queries float NOT NULL,
+            upload_10k float NULL,
+            upload_100k float NULL,
+            upload_1mb float NULL,
+            upload_10mb float NULL,
+            download_10k float NULL,
+            download_100k float NULL,
+            download_1mb float NULL,
+            download_10mb float NULL,
+            ping_latency float NULL,
+            ip_address varchar(45) NULL,
+            location varchar(2) NULL,
             PRIMARY KEY  (id),
             KEY test_date (test_date)
         ) $charset_collate;";
@@ -94,7 +105,18 @@ class Wpspeedtestpro_DB {
                 'conditionals' => $results['conditionals'],
                 'mysql' => $results['mysql'],
                 'wordpress_performance_time' => $results['wordpress_performance']['time'],
-                'wordpress_performance_queries' => $results['wordpress_performance']['queries']
+                'wordpress_performance_queries' => $results['wordpress_performance']['queries'],
+                'upload_10k' => $results['speed_test']['upload_10k'],
+                'upload_100k' => $results['speed_test']['upload_100k'],
+                'upload_1mb' => $results['speed_test']['upload_1mb'],
+                'upload_10mb' => $results['speed_test']['upload_10mb'],
+                'download_10k' => $results['speed_test']['download_10k'],
+                'download_100k' => $results['speed_test']['download_100k'],
+                'download_1mb' => $results['speed_test']['download_1mb'],
+                'download_10mb' => $results['speed_test']['download_10mb'],
+                'ping_latency' => $results['speed_test']['ping_latency'],
+                'ip_address' => $results['speed_test']['ip_address'],
+                'location' => $results['speed_test']['location']
             )
         );
     }

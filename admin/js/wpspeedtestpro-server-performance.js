@@ -231,8 +231,9 @@ jQuery(document).ready(function($) {
         displayHistoricalResults('conditionals', data.conditionals, data.industry_avg);
         displayHistoricalResults('mysql', data.mysql, data.industry_avg);
         displayWordPressPerformance(data.wordpress_performance, data.industry_avg);
+        displaySpeedTestResults(data.latest_results.speed_test, data.industry_avg.speed_tests);
     }
-
+    
     function displayLatestResults(data, industryAvg) {
         var ctx = document.getElementById('latest-results-chart').getContext('2d');
     
@@ -309,6 +310,99 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+    function displaySpeedTestResults(data, industryAvg) {
+        const ctx = document.getElementById('speed-test-chart').getContext('2d');
+        
+        if (charts.speedTest) {
+            charts.speedTest.destroy();
+        }
+    
+        const labels = ['10K', '100K', '1MB', '10MB'];
+        const uploadData = [
+            data.upload_10k,
+            data.upload_100k,
+            data.upload_1mb,
+            data.upload_10mb
+        ];
+        const downloadData = [
+            data.download_10k,
+            data.download_100k,
+            data.download_1mb,
+            data.download_10mb
+        ];
+        const industryUploadData = [
+            industryAvg.upload['10K'].excellent,
+            industryAvg.upload['100K'].excellent,
+            industryAvg.upload['1MB'].excellent,
+            industryAvg.upload['10MB'].excellent
+        ];
+        const industryDownloadData = [
+            industryAvg.download['10K'].excellent,
+            industryAvg.download['100K'].excellent,
+            industryAvg.download['1MB'].excellent,
+            industryAvg.download['10MB'].excellent
+        ];
+    
+        charts.speedTest = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Your Upload Speed (MB/s)',
+                        data: uploadData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Your Download Speed (MB/s)',
+                        data: downloadData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Industry Upload Average (MB/s)',
+                        data: industryUploadData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Industry Download Average (MB/s)',
+                        data: industryDownloadData,
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Speed (MB/s)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Speed Test Results'
+                    }
+                }
+            }
+        });
+    }
+    
 
     function displayHistoricalResults(testType, data, industryAvg) {
         var ctx = document.getElementById(testType + '-chart').getContext('2d');
