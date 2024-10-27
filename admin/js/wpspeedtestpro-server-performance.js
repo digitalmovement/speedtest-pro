@@ -231,178 +231,225 @@ jQuery(document).ready(function($) {
         displayHistoricalResults('conditionals', data.conditionals, data.industry_avg);
         displayHistoricalResults('mysql', data.mysql, data.industry_avg);
         displayWordPressPerformance(data.wordpress_performance, data.industry_avg);
-        displaySpeedTestResults(data.latest_results.speed_test, data.industry_avg.speed_tests);
-    }
-    
-    function displayLatestResults(data, industryAvg) {
-        var ctx = document.getElementById('latest-results-chart').getContext('2d');
-    
-        if (charts.latestResults) {
-            charts.latestResults.destroy();
-        }
-    
-        const labels = ['Math', 'String', 'Loops', 'Conditionals', 'MySQL', 'WordPress Time'];
-        const latestData = [
-            data.math,
-            data.string,
-            data.loops,
-            data.conditionals,
-            data.mysql,
-            data.wordpress_performance.time
-        ];
-        const avgData = [
-            industryAvg.math,
-            industryAvg.string,
-            industryAvg.loops,
-            industryAvg.conditionals,
-            industryAvg.mysql,
-            industryAvg.wordpress_performance.time
-        ];
-    
-        charts.latestResults = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Your Results',
-                        data: latestData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Industry Average',
-                        data: avgData,
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        stacked: false,
-                        title: {
-                            display: true,
-                            text: 'Performance Metrics'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Time (seconds)'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Latest Results vs Industry Average'
-                    }
-                }
-            }
-        });
+        displaySpeedTestHistory(data.speed_test, data.industry_avg.speed_tests);
     }
 
-    function displaySpeedTestResults(data, industryAvg) {
-        const ctx = document.getElementById('speed-test-chart').getContext('2d');
-        
-        if (charts.speedTest) {
-            charts.speedTest.destroy();
-        }
-    
-        const labels = ['10K', '100K', '1MB', '10MB'];
-        const uploadData = [
-            data.upload_10k,
-            data.upload_100k,
-            data.upload_1mb,
-            data.upload_10mb
-        ];
-        const downloadData = [
-            data.download_10k,
-            data.download_100k,
-            data.download_1mb,
-            data.download_10mb
-        ];
-        const industryUploadData = [
-            industryAvg.upload['10K'].excellent,
-            industryAvg.upload['100K'].excellent,
-            industryAvg.upload['1MB'].excellent,
-            industryAvg.upload['10MB'].excellent
-        ];
-        const industryDownloadData = [
-            industryAvg.download['10K'].excellent,
-            industryAvg.download['100K'].excellent,
-            industryAvg.download['1MB'].excellent,
-            industryAvg.download['10MB'].excellent
-        ];
-    
-        charts.speedTest = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Your Upload Speed (MB/s)',
-                        data: uploadData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Your Download Speed (MB/s)',
-                        data: downloadData,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Industry Upload Average (MB/s)',
-                        data: industryUploadData,
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    },
-                    {
-                        label: 'Industry Download Average (MB/s)',
-                        data: industryDownloadData,
-                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        borderWidth: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Speed (MB/s)'
-                        }
-                    }
+function displayLatestResults(data, industryAvg) {
+    var ctx = document.getElementById('latest-results-chart').getContext('2d');
+
+    if (charts.latestResults) {
+        charts.latestResults.destroy();
+    }
+
+    // Add speed test metrics to the latest results
+    const labels = [
+        'Math', 'String', 'Loops', 'Conditionals', 'MySQL', 'WordPress Time',
+        'Upload 10K', 'Upload 1MB', 'Upload 10MB',
+        'Download 10K', 'Download 1MB', 'Download 10MB'
+    ];
+
+    const latestData = [
+        data.math,
+        data.string,
+        data.loops,
+        data.conditionals,
+        data.mysql,
+        data.wordpress_performance.time,
+        data.speed_test.upload_10k,
+        data.speed_test.upload_1mb,
+        data.speed_test.upload_10mb,
+        data.speed_test.download_10k,
+        data.speed_test.download_1mb,
+        data.speed_test.download_10mb
+    ];
+
+    const avgData = [
+        industryAvg.math,
+        industryAvg.string,
+        industryAvg.loops,
+        industryAvg.conditionals,
+        industryAvg.mysql,
+        industryAvg.wordpress_performance.time,
+        industryAvg.speed_tests.upload['10K'].excellent,
+        industryAvg.speed_tests.upload['1MB'].excellent,
+        industryAvg.speed_tests.upload['10MB'].excellent,
+        industryAvg.speed_tests.download['10K'].excellent,
+        industryAvg.speed_tests.download['1MB'].excellent,
+        industryAvg.speed_tests.download['10MB'].excellent
+    ];
+
+    charts.latestResults = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Your Results',
+                    data: latestData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
                 },
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
+                {
+                    label: 'Industry Average',
+                    data: avgData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    stacked: false,
                     title: {
                         display: true,
-                        text: 'Speed Test Results'
+                        text: 'Performance Metrics'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Time / Speed (seconds / MB/s)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Latest Results vs Industry Average'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            const index = context.dataIndex;
+                            // Add MB/s to speed test metrics
+                            if (index >= 6) { // Speed test metrics start at index 6
+                                return `${label}: ${value.toFixed(2)} MB/s`;
+                            }
+                            return `${label}: ${value.toFixed(3)} s`;
+                        }
                     }
                 }
             }
-        });
-    }
+        }
+    });
+
+    // Update speed test info display
+    document.getElementById('speed-test-location').textContent = data.speed_test.location || 'N/A';
+    document.getElementById('speed-test-ip').textContent = data.speed_test.ip_address || 'N/A';
+    document.getElementById('speed-test-ping').textContent = 
+        data.speed_test.ping_latency ? data.speed_test.ping_latency.toFixed(2) : 'N/A';
+}
     
+function displaySpeedTestHistory(data, industryAvg) {
+    var ctx = document.getElementById('speed-test-chart').getContext('2d');
+
+    if (charts.speedTest) {
+        charts.speedTest.destroy();
+    }
+
+    // Process the data to extract dates and values
+    const processedData = data.map(item => ({
+        x: new Date(item.test_date),
+        upload10k: item.speed_test.upload_10k,
+        upload1m: item.speed_test.upload_1mb,
+        upload10m: item.speed_test.upload_10mb,
+        download10k: item.speed_test.download_10k,
+        download1m: item.speed_test.download_1mb,
+        download10m: item.speed_test.download_10mb
+    }));
+
+    charts.speedTest = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+                {
+                    label: 'Upload 10KB',
+                    data: processedData.map(item => ({ x: item.x, y: item.upload10k })),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Upload 1MB',
+                    data: processedData.map(item => ({ x: item.x, y: item.upload1m })),
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Upload 10MB',
+                    data: processedData.map(item => ({ x: item.x, y: item.upload10m })),
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Download 10KB',
+                    data: processedData.map(item => ({ x: item.x, y: item.download10k })),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Download 1MB',
+                    data: processedData.map(item => ({ x: item.x, y: item.download1m })),
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Download 10MB',
+                    data: processedData.map(item => ({ x: item.x, y: item.download10m })),
+                    borderColor: 'rgba(255, 205, 86, 1)',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'minute'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Test Time'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Speed (MB/s)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Speed Test History'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.dataset.label}: ${context.parsed.y.toFixed(2)} MB/s`;
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
 
     function displayHistoricalResults(testType, data, industryAvg) {
         var ctx = document.getElementById(testType + '-chart').getContext('2d');
