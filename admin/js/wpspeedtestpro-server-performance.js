@@ -224,7 +224,8 @@ jQuery(document).ready(function($) {
     }
 
     function displayResults(data) {
-        displayLatestResults(data.latest_results, data.industry_avg);
+        displayLatestPerformanceResults(data.latest_results, data.industry_avg);
+        displayLatestNetworkResults(data.latest_results, data.industry_avg);
         displayHistoricalResults('math', data.math, data.industry_avg);
         displayHistoricalResults('string', data.string, data.industry_avg);
         displayHistoricalResults('loops', data.loops, data.industry_avg);
@@ -233,6 +234,182 @@ jQuery(document).ready(function($) {
         displayWordPressPerformance(data.wordpress_performance, data.industry_avg);
         displaySpeedTestHistory(data.speed_test, data.industry_avg.speed_tests);
     }
+
+    function displayLatestNetworkResults(data, industryAvg) {
+        var ctx = document.getElementById('latest-network-chart').getContext('2d');
+    
+        if (charts.latestNetwork) {
+            charts.latestNetwork.destroy();
+        }
+    
+        const labels = [
+            'Upload 10K', 'Upload 100K', 'Upload 1MB', 'Upload 10MB',
+            'Download 10K', 'Download 100K', 'Download 1MB', 'Download 10MB'
+        ];
+    
+        const latestData = [
+            data.speed_test.upload_10k,
+            data.speed_test.upload_100k,
+            data.speed_test.upload_1mb,
+            data.speed_test.upload_10mb,
+            data.speed_test.download_10k,
+            data.speed_test.download_100k,
+            data.speed_test.download_1mb,
+            data.speed_test.download_10mb
+        ];
+    
+        const avgData = [
+            industryAvg.speed_tests.upload['10K'].excellent,
+            industryAvg.speed_tests.upload['100K'].excellent,
+            industryAvg.speed_tests.upload['1MB'].excellent,
+            industryAvg.speed_tests.upload['10MB'].excellent,
+            industryAvg.speed_tests.download['10K'].excellent,
+            industryAvg.speed_tests.download['100K'].excellent,
+            industryAvg.speed_tests.download['1MB'].excellent,
+            industryAvg.speed_tests.download['10MB'].excellent
+        ];
+    
+        charts.latestNetwork = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Your Results',
+                        data: latestData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Industry Average',
+                        data: avgData,
+                        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Network Speed Tests'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Speed (MB/s)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Latest Network Performance'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.dataset.label}: ${context.parsed.y.toFixed(2)} MB/s`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+
+    function displayLatestPerformanceResults(data, industryAvg) {
+        var ctx = document.getElementById('latest-performance-chart').getContext('2d');
+    
+        if (charts.latestPerformance) {
+            charts.latestPerformance.destroy();
+        }
+    
+        const labels = [
+            'Math', 'String', 'Loops', 'Conditionals', 'MySQL', 'WordPress Time'
+        ];
+    
+        const latestData = [
+            data.math,
+            data.string,
+            data.loops,
+            data.conditionals,
+            data.mysql,
+            data.wordpress_performance.time
+        ];
+    
+        const avgData = [
+            industryAvg.math,
+            industryAvg.string,
+            industryAvg.loops,
+            industryAvg.conditionals,
+            industryAvg.mysql,
+            industryAvg.wordpress_performance.time
+        ];
+    
+        charts.latestPerformance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Your Results',
+                        data: latestData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Industry Average',
+                        data: avgData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Performance Metrics'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Time (seconds)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Latest Performance Results'
+                    }
+                }
+            }
+        });
+    }
+
 
 function displayLatestResults(data, industryAvg) {
     var ctx = document.getElementById('latest-results-chart').getContext('2d');
@@ -357,13 +534,14 @@ function displaySpeedTestHistory(data, industryAvg) {
         charts.speedTest.destroy();
     }
 
-    // Process the data to extract dates and values
     const processedData = data.map(item => ({
         x: new Date(item.test_date),
         upload10k: item.speed_test.upload_10k,
+        upload100k: item.speed_test.upload_100k,
         upload1m: item.speed_test.upload_1mb,
         upload10m: item.speed_test.upload_10mb,
         download10k: item.speed_test.download_10k,
+        download100k: item.speed_test.download_100k,
         download1m: item.speed_test.download_1mb,
         download10m: item.speed_test.download_10mb
     }));
@@ -376,6 +554,12 @@ function displaySpeedTestHistory(data, industryAvg) {
                     label: 'Upload 10KB',
                     data: processedData.map(item => ({ x: item.x, y: item.upload10k })),
                     borderColor: 'rgba(75, 192, 192, 1)',
+                    fill: false
+                },
+                {
+                    label: 'Upload 100KB',
+                    data: processedData.map(item => ({ x: item.x, y: item.upload100k })),
+                    borderColor: 'rgba(153, 102, 255, 1)',
                     fill: false
                 },
                 {
@@ -397,15 +581,21 @@ function displaySpeedTestHistory(data, industryAvg) {
                     fill: false
                 },
                 {
+                    label: 'Download 100KB',
+                    data: processedData.map(item => ({ x: item.x, y: item.download100k })),
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    fill: false
+                },
+                {
                     label: 'Download 1MB',
                     data: processedData.map(item => ({ x: item.x, y: item.download1m })),
-                    borderColor: 'rgba(255, 159, 64, 1)',
+                    borderColor: 'rgba(255, 205, 86, 1)',
                     fill: false
                 },
                 {
                     label: 'Download 10MB',
                     data: processedData.map(item => ({ x: item.x, y: item.download10m })),
-                    borderColor: 'rgba(255, 205, 86, 1)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
                     fill: false
                 }
             ]

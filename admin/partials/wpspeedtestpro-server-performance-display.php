@@ -53,12 +53,26 @@ if ( ! defined( 'ABSPATH' ) ) exit;
             <li><a href="#tab-speed-test">Network Performance</a></li>
         </ul>
         
-        <div id="tab-latest-results">
+    <div id="tab-latest-results">
             <h2>Latest Benchmark Results</h2>
-            <div id="latest-results-chart-container" class="chart-container">
-                <canvas id="latest-results-chart"></canvas>
+            
+            <!-- System Performance Results -->
+            <div class="chart-container">
+                <canvas id="latest-performance-chart"></canvas>
             </div>
-        </div>
+            
+            <!-- Network Performance Results -->
+            <div class="chart-container">
+                <canvas id="latest-network-chart"></canvas>
+            </div>
+            
+            <!-- Network Information -->
+            <div class="speed-test-info">
+                <p><strong>Location:</strong> <span id="speed-test-location"></span></p>
+                <p><strong>IP Address:</strong> <span id="speed-test-ip"></span></p>
+                <p><strong>Ping Latency:</strong> <span id="speed-test-ping"></span> ms</p>
+            </div>
+    </div>
         
         <div id="tab-math">
             <h2>Math Performance</h2>
