@@ -47,7 +47,7 @@ class Wpspeedtestpro_Server_Performance {
         add_action('wpspeedtestpro_continuous_test', array($this, 'run_continuous_test'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
-    }
+     }
 
     private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
@@ -123,14 +123,14 @@ class Wpspeedtestpro_Server_Performance {
 
     public function ajax_start_continuous_test() {
        // check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
-        if (!current_user_can('manage_options')) {
+     /*   if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
 
         update_option('wpspeedtestpro_continuous_test_status', 'running');
         update_option('wpspeedtestpro_continuous_test_start_time', current_time('timestamp'));
         $this->schedule_continuous_test();
-
+*/
         wp_send_json_success();
     }
 
