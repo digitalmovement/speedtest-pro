@@ -238,12 +238,6 @@ jQuery(document).ready(function($) {
         if (data.conditionals) displayHistoricalResults('conditionals', data.conditionals, data.industry_avg || {});
         if (data.mysql) displayHistoricalResults('mysql', data.mysql, data.industry_avg || {});
         if (data.wordpress_performance) displayWordPressPerformance(data.wordpress_performance, data.industry_avg || {});
-
-        console.log("Speed");
-        console.log(data);
-        console.log("Speed Test");
-
-        console.log(data.speed_test);
         if (data.speed_test) displaySpeedTestHistory(data.speed_test, (data.industry_avg || {}).speed_tests || {});
     }
 
@@ -253,6 +247,12 @@ jQuery(document).ready(function($) {
         if (charts.latestNetwork) {
             charts.latestNetwork.destroy();
         }
+
+        document.getElementById('speed-test-location').textContent = data.speed_test.location || 'N/A';
+        document.getElementById('speed-test-ip').textContent = data.speed_test.ip_address || 'N/A';
+        document.getElementById('speed-test-ping').textContent = data.speed_test.ping_latency ? data.speed_test.ping_latency.toFixed(2) : 'N/A';
+
+
     
         const labels = [
             'Upload 10K', 'Upload 100K', 'Upload 1MB', 'Upload 10MB',
