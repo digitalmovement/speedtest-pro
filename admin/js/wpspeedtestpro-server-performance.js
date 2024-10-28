@@ -265,14 +265,14 @@ jQuery(document).ready(function($) {
         ];
     
         const avgData = [
-            industryAvg.speed_tests.upload['10K'].excellent,
-            industryAvg.speed_tests.upload['100K'].excellent,
-            industryAvg.speed_tests.upload['1MB'].excellent,
-            industryAvg.speed_tests.upload['10MB'].excellent,
-            industryAvg.speed_tests.download['10K'].excellent,
-            industryAvg.speed_tests.download['100K'].excellent,
-            industryAvg.speed_tests.download['1MB'].excellent,
-            industryAvg.speed_tests.download['10MB'].excellent
+            industryAvg.speed_tests.upload['10K'].average,
+            industryAvg.speed_tests.upload['100K'].average,
+            industryAvg.speed_tests.upload['1MB'].average,
+            industryAvg.speed_tests.upload['10MB'].average,
+            industryAvg.speed_tests.download['10K'].average,
+            industryAvg.speed_tests.download['100K'].average,
+            industryAvg.speed_tests.download['1MB'].average,
+            industryAvg.speed_tests.download['10MB'].average
         ];
     
         charts.latestNetwork = new Chart(ctx, {
@@ -453,12 +453,12 @@ function displayLatestResults(data, industryAvg) {
         industryAvg.conditionals,
         industryAvg.mysql,
         industryAvg.wordpress_performance.time,
-        industryAvg.speed_tests.upload['10K'].excellent,
-        industryAvg.speed_tests.upload['1MB'].excellent,
-        industryAvg.speed_tests.upload['10MB'].excellent,
-        industryAvg.speed_tests.download['10K'].excellent,
-        industryAvg.speed_tests.download['1MB'].excellent,
-        industryAvg.speed_tests.download['10MB'].excellent
+        industryAvg.speed_tests.upload['10K'].average,
+        industryAvg.speed_tests.upload['1MB'].average,
+        industryAvg.speed_tests.upload['10MB'].average,
+        industryAvg.speed_tests.download['10K'].average,
+        industryAvg.speed_tests.download['1MB'].average,
+        industryAvg.speed_tests.download['10MB'].average
     ];
 
     charts.latestResults = new Chart(ctx, {
