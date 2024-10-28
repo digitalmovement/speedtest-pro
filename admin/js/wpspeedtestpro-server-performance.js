@@ -224,15 +224,21 @@ jQuery(document).ready(function($) {
     }
 
     function displayResults(data) {
-        displayLatestPerformanceResults(data.latest_results, data.industry_avg);
-        displayLatestNetworkResults(data.latest_results, data.industry_avg);
-        displayHistoricalResults('math', data.math, data.industry_avg);
-        displayHistoricalResults('string', data.string, data.industry_avg);
-        displayHistoricalResults('loops', data.loops, data.industry_avg);
-        displayHistoricalResults('conditionals', data.conditionals, data.industry_avg);
-        displayHistoricalResults('mysql', data.mysql, data.industry_avg);
-        displayWordPressPerformance(data.wordpress_performance, data.industry_avg);
-        displaySpeedTestHistory(data.speed_test, data.industry_avg.speed_tests);
+        if (!data || !data.latest_results) {
+            console.error('No data available');
+            return;
+        }
+    
+        displayLatestPerformanceResults(data.latest_results, data.industry_avg || {});
+        displayLatestNetworkResults(data.latest_results, data.industry_avg || {});
+        
+        if (data.math) displayHistoricalResults('math', data.math, data.industry_avg || {});
+        if (data.string) displayHistoricalResults('string', data.string, data.industry_avg || {});
+        if (data.loops) displayHistoricalResults('loops', data.loops, data.industry_avg || {});
+        if (data.conditionals) displayHistoricalResults('conditionals', data.conditionals, data.industry_avg || {});
+        if (data.mysql) displayHistoricalResults('mysql', data.mysql, data.industry_avg || {});
+        if (data.wordpress_performance) displayWordPressPerformance(data.wordpress_performance, data.industry_avg || {});
+        if (data.speed_test) displaySpeedTestHistory(data.speed_test, (data.industry_avg || {}).speed_tests || {});
     }
 
     function displayLatestNetworkResults(data, industryAvg) {
@@ -534,17 +540,41 @@ function displaySpeedTestHistory(data, industryAvg) {
         charts.speedTest.destroy();
     }
 
-    const processedData = data.map(item => ({
-        x: new Date(item.test_date),
-        upload10k: item.speed_test.upload_10k,
-        upload100k: item.speed_test.upload_100k,
-        upload1m: item.speed_test.upload_1mb,
-        upload10m: item.speed_test.upload_10mb,
-        download10k: item.speed_test.download_10k,
-        download100k: item.speed_test.download_100k,
-        download1m: item.speed_test.download_1mb,
-        download10m: item.speed_test.download_10mb
-    }));
+    // Check if data exists and is valid
+    if (!data || !Array.isArray(data) || data.length === 0) {
+        charts.speedTest = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: []
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Speed Test History - No Data Available'
+                    }
+                }
+            }
+        });
+        return;
+    }
+
+    // Safely process the data with null checks
+    const processedData = data.map(item => {
+        const speedTest = item.speed_test || {};
+        return {
+            x: new Date(item.test_date || new Date()),
+            upload10k: speedTest.upload_10k || 0,
+            upload100k: speedTest.upload_100k || 0,
+            upload1m: speedTest.upload_1mb || 0,
+            upload10m: speedTest.upload_10mb || 0,
+            download10k: speedTest.download_10k || 0,
+            download100k: speedTest.download_100k || 0,
+            download1m: speedTest.download_1mb || 0,
+            download10m: speedTest.download_10mb || 0
+        };
+    });
 
     charts.speedTest = new Chart(ctx, {
         type: 'line',
