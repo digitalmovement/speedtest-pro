@@ -272,7 +272,8 @@ class Wpspeedtestpro_Server_Performance {
             $results['mysql'] = $this->get_historical_results('mysql');
             $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
             $results['speed_test'] = $this->get_historical_results('speed_test');
-    
+            $results['industry_avg'] = "test";
+            
             update_option('wpspeedtestpro_performance_test_results', $results);
             update_option('wpspeedtestpro_performance_test_status', 'stopped');
     
