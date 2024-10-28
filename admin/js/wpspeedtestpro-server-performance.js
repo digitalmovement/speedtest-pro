@@ -596,7 +596,7 @@ function displaySpeedTestHistory(data, industryAvg) {
                 {
                     label: 'Upload 100KB',
                     data: processedData.map(item => ({ x: item.x, y: item.upload100k })),
-                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderColor: 'rgba(255, 102, 255, 1)',
                     fill: false
                 },
                 {
@@ -614,7 +614,7 @@ function displaySpeedTestHistory(data, industryAvg) {
                 {
                     label: 'Download 10KB',
                     data: processedData.map(item => ({ x: item.x, y: item.download10k })),
-                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderColor: 'rgba(200, 150, 132, 1)',
                     fill: false
                 },
                 {
