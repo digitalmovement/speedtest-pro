@@ -101,7 +101,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
-                action: 'wpspeedtestpro_start_continuous_test',
+                action: 'wpspeedtestpro_start_server_perf_continuous_test',
                 _ajax_nonce: wpspeedtestpro_performance.nonce
             },
             success: function(response) {
