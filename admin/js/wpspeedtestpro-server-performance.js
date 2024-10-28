@@ -238,6 +238,12 @@ jQuery(document).ready(function($) {
         if (data.conditionals) displayHistoricalResults('conditionals', data.conditionals, data.industry_avg || {});
         if (data.mysql) displayHistoricalResults('mysql', data.mysql, data.industry_avg || {});
         if (data.wordpress_performance) displayWordPressPerformance(data.wordpress_performance, data.industry_avg || {});
+
+        console.log("Speed");
+        console.log(data);
+        console.log("Speed Test");
+
+        console.log(data.speed_test);
         if (data.speed_test) displaySpeedTestHistory(data.speed_test, (data.industry_avg || {}).speed_tests || {});
     }
 
