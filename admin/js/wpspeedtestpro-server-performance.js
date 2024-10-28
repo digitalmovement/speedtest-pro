@@ -247,12 +247,6 @@ jQuery(document).ready(function($) {
         if (charts.latestNetwork) {
             charts.latestNetwork.destroy();
         }
-
-        document.getElementById('speed-test-location').textContent = data.speed_test.location || 'N/A';
-        document.getElementById('speed-test-ip').textContent = data.speed_test.ip_address || 'N/A';
-        document.getElementById('speed-test-ping').textContent = data.speed_test.ping_latency ? data.speed_test.ping_latency.toFixed(2) : 'N/A';
-
-
     
         const labels = [
             'Upload 10K', 'Upload 100K', 'Upload 1MB', 'Upload 10MB',
@@ -271,14 +265,14 @@ jQuery(document).ready(function($) {
         ];
     
         const avgData = [
-            industryAvg.speed_tests.upload['10K'].average,
-            industryAvg.speed_tests.upload['100K'].average,
-            industryAvg.speed_tests.upload['1MB'].average,
-            industryAvg.speed_tests.upload['10MB'].average,
-            industryAvg.speed_tests.download['10K'].average,
-            industryAvg.speed_tests.download['100K'].average,
-            industryAvg.speed_tests.download['1MB'].average,
-            industryAvg.speed_tests.download['10MB'].average
+            industryAvg.speed_tests.upload['10K'].excellent,
+            industryAvg.speed_tests.upload['100K'].excellent,
+            industryAvg.speed_tests.upload['1MB'].excellent,
+            industryAvg.speed_tests.upload['10MB'].excellent,
+            industryAvg.speed_tests.download['10K'].excellent,
+            industryAvg.speed_tests.download['100K'].excellent,
+            industryAvg.speed_tests.download['1MB'].excellent,
+            industryAvg.speed_tests.download['10MB'].excellent
         ];
     
         charts.latestNetwork = new Chart(ctx, {
@@ -304,12 +298,17 @@ jQuery(document).ready(function($) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false, // This allows the chart to fill its container
                 scales: {
                     x: {
                         stacked: false,
                         title: {
                             display: true,
                             text: 'Network Speed Tests'
+                        },
+                        ticks: {
+                            maxRotation: 45, // Rotate labels for better readability
+                            minRotation: 45
                         }
                     },
                     y: {
@@ -339,7 +338,6 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    
 
     function displayLatestPerformanceResults(data, industryAvg) {
         var ctx = document.getElementById('latest-performance-chart').getContext('2d');
@@ -540,7 +538,7 @@ function displayLatestResults(data, industryAvg) {
 }
     
 function displaySpeedTestHistory(data, industryAvg) {
-    console.log(data);
+  
     var ctx = document.getElementById('speed-test-chart').getContext('2d');
 
     if (charts.speedTest) {

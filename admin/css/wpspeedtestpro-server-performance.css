@@ -64,3 +64,9 @@
     margin: 20px 0;
     min-height: 400px;
 }
+
+#latest-network-chart {
+    width: 100% !important;
+    height: 400px !important; /* Adjust this value as needed */
+}
+
