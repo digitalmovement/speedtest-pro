@@ -61,7 +61,7 @@
 }
 
 #tab-speed-test .chart-container {
-    margin: 20px 0;
+    margin: 20px auto;
     min-height: 400px;
 }
 
