@@ -122,7 +122,7 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function ajax_start_continuous_test() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+       // check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
