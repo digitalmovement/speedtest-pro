@@ -534,6 +534,7 @@ function displayLatestResults(data, industryAvg) {
 }
     
 function displaySpeedTestHistory(data, industryAvg) {
+    console.log(data);
     var ctx = document.getElementById('speed-test-chart').getContext('2d');
 
     if (charts.speedTest) {
