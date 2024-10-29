@@ -50,7 +50,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
-                action: 'wpspeedtestpro_get_next_test_time',
+                action: 'wpspeedtestpro_performance_get_next_test_time',
                 _ajax_nonce: wpspeedtestpro_performance.nonce
             },
             success: function(response) {
@@ -101,7 +101,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
-                action: 'wpspeedtestpro_start_server_perf_continuous_test',
+                action: 'wpspeedtestpro_performance_start_continuous_test',
                 _ajax_nonce: wpspeedtestpro_performance.nonce
             },
             success: function(response) {
@@ -124,7 +124,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_performance.ajaxurl,
             method: 'POST',
             data: {
-                action: 'wpspeedtestpro_stop_continuous_test',
+                action: 'wpspeedtestpro_performance_stop_continuous_test',
                 _ajax_nonce: wpspeedtestpro_performance.nonce
             },
             success: function(response) {

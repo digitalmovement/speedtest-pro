@@ -41,12 +41,13 @@ class Wpspeedtestpro_Server_Performance {
         add_action('wp_ajax_wpspeedtestpro_performance_toggle_test', array($this, 'ajax_performance_toggle_test'));
         add_action('wp_ajax_wpspeedtestpro_performance_run_test', array($this, 'ajax_performance_run_test'));
         add_action('wp_ajax_wpspeedtestpro_performance_get_results', array($this, 'ajax_performance_get_results'));
-        add_action('wp_ajax_wpspeedtestpro_start_server_perf_continuous_test', array($this, 'ajax_start_server_perf_continuous_test'));
-        add_action('wp_ajax_wpspeedtestpro_stop_server_perf_continuous_test', array($this, 'ajax_stop_server_perf_continuous_test'));
-        add_action('wp_ajax_wpspeedtestpro_get_next_test_time', array($this, 'ajax_get_next_test_time'));
+        add_action('wp_ajax_wpspeedtestpro_performance_start_continuous_test', array($this, 'ajax_performance_start_continuous_test'));
+        add_action('wp_ajax_wpspeedtestpro_performance_stop_continuous_test', array($this, 'ajax_performance_stop_continuous_test'));
+        add_action('wp_ajax_wpspeedtestpro_performance_get_next_test_time', array($this, 'ajax_performance_get_next_test_time'));
         add_action('wpspeedtestpro_continuous_test', array($this, 'run_continuous_test'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+     
      }
 
     private function is_this_the_right_plugin_page() {
@@ -121,7 +122,7 @@ class Wpspeedtestpro_Server_Performance {
         include_once( 'partials/wpspeedtestpro-server-performance-display.php' );
     }
 
-    public function ajax_start_continuous_test() {
+    public function ajax_performance_start_continuous_test() {
         check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
        if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
@@ -134,7 +135,7 @@ class Wpspeedtestpro_Server_Performance {
         wp_send_json_success();
     }
 
-    public function ajax_stop_continuous_test() {
+    public function ajax_performance_stop_continuous_test() {
         check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
@@ -146,7 +147,7 @@ class Wpspeedtestpro_Server_Performance {
         wp_send_json_success();
     }
 
-    public function ajax_get_next_test_time() {
+    public function ajax_performance_get_next_test_time() {
         check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
