@@ -41,6 +41,7 @@ class Wpspeedtestpro_Loader {
 	 */
 	protected $filters;
 
+	protected $registered_hooks;
 	/**
 	 * Initialize the collections used to maintain the actions and filters.
 	 *
@@ -50,7 +51,7 @@ class Wpspeedtestpro_Loader {
 
 		$this->actions = array();
 		$this->filters = array();
-
+		$this->registered_hooks = array();
 	}
 
 	/**
