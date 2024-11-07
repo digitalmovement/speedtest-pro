@@ -259,7 +259,7 @@ function get_color_class($metric, $value) {
 <script type="text/javascript">
 jQuery(document).ready(function($) {
 
-
+    console.log('Checking JS');
     var probeInterval;
     var isProbing = false;
 
@@ -393,7 +393,7 @@ jQuery(document).ready(function($) {
 }
 
 
-$('#pagespeed-info-banner .notice-dismiss').on('click', function(e) {
+    $('#pagespeed-info-banner .notice-dismiss').on('click', function(e) {
         e.preventDefault();
         
         const $banner = $(this).closest('#pagespeed-info-banner');
@@ -417,7 +417,9 @@ $('#pagespeed-info-banner .notice-dismiss').on('click', function(e) {
             }
         });
     });
-$('#speedvitals-test-form').on('submit', function(e) {
+
+
+    $('#speedvitals-test-form').on('submit', function(e) {
     e.preventDefault();
     var formData = $(this).serializeArray();
     
