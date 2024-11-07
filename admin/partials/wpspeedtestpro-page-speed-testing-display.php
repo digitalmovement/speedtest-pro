@@ -263,30 +263,7 @@ jQuery(document).ready(function($) {
     var probeInterval;
     var isProbing = false;
 
-    $('#pagespeed-info-banner .notice-dismiss').on('click', function(e) {
-        e.preventDefault();
-        
-        const $banner = $(this).closest('#pagespeed-info-banner');
-        
-        $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'wpspeedtestpro_dismiss_pagespeed_info',
-                nonce: wpspeedtestpro_ajax.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    $banner.slideUp(200, function() {
-                        $banner.remove();
-                    });
-                }
-            },
-            error: function() {
-                console.error('Failed to dismiss page speed info banner');
-            }
-        });
-    });
+  
 
 
     function startProbing() {
@@ -415,6 +392,31 @@ jQuery(document).ready(function($) {
     });
 }
 
+
+$('#pagespeed-info-banner .notice-dismiss').on('click', function(e) {
+        e.preventDefault();
+        
+        const $banner = $(this).closest('#pagespeed-info-banner');
+        console.log('Dismissing banner');
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_dismiss_pagespeed_info',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $banner.slideUp(200, function() {
+                        $banner.remove();
+                    });
+                }
+            },
+            error: function() {
+                console.error('Failed to dismiss page speed info banner');
+            }
+        });
+    });
 $('#speedvitals-test-form').on('submit', function(e) {
     e.preventDefault();
     var formData = $(this).serializeArray();
