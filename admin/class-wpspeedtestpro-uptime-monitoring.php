@@ -43,6 +43,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
         add_action('wp_ajax_wpspeedtestpro_uptimerobot_setup_monitors', array($this, 'uptimerobot_setup_monitors_handler'));
         add_action('wp_ajax_wpspeedtestpro_uptimerobot_delete_monitors', array($this, 'uptimerobot_delete_monitors_handler'));
         add_action('wp_ajax_wpspeedtestpro_uptimerobot_recreate_monitors', array($this, 'uptimerobot_recreate_monitors_handler'));
+        add_action('wp_ajax_wpspeedtestpro_dismiss_uptime_info', array($this, 'dismiss_uptime_info'));
         add_action('admin_enqueue_scripts', array($this, 'uptimerobot_enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'uptimerobot_enqueue_scripts'));
     }
@@ -82,6 +83,12 @@ class Wpspeedtestpro_Uptime_Monitoring {
         include_once('partials/wpspeedtestpro-uptime-monitoring-display.php');
     }
 
+    public function dismiss_uptime_info() {
+        check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
+        update_option('wpspeedtestpro_uptime_info_dismissed', true);
+        wp_send_json_success();
+    }
+    
     private function uptimerobot_check_api_key() {
         return !empty($this->api_key);
     }
