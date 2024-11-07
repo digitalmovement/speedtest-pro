@@ -2,7 +2,30 @@ jQuery(document).ready(function($) {
     var testInProgress = false;
     var statusCheckInterval;
 
-
+    $('.ssl-info-banner .notice-dismiss').on('click', function(e) {
+        e.preventDefault();
+        
+        const $banner = $(this).closest('.ssl-info-banner');
+        
+        $.ajax({
+            url: wpspeedtestpro_ssl.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_dismiss_ssl_info',
+                nonce: wpspeedtestpro_ssl.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $banner.slideUp(200, function() {
+                        $banner.remove();
+                    });
+                }
+            },
+            error: function() {
+                console.error('Failed to dismiss SSL info banner');
+            }
+        });
+    });
 
     $('#start-ssl-test').on('click', function(e) {
         e.preventDefault();

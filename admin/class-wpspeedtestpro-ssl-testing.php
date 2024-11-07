@@ -61,6 +61,8 @@ class Wpspeedtestpro_SSL_Testing {
     private function init_components() {
         add_action('wp_ajax_start_ssl_test', array($this, 'start_ssl_test'));
         add_action('wp_ajax_check_ssl_test_status', array($this, 'check_ssl_test_status'));
+        add_action('wp_ajax_wpspeedtestpro_dismiss_ssl_info', array($this, 'dismiss_ssl_info'));
+
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
@@ -116,7 +118,11 @@ class Wpspeedtestpro_SSL_Testing {
         include_once('partials/wpspeedtestpro-ssl-testing-display.php');
     }
 
- 
+    public function dismiss_ssl_info() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        update_option('wpspeedtestpro_ssl_info_dismissed', true);
+        wp_send_json_success();
+    }
 
     public function start_ssl_test() {
         check_ajax_referer('ssl_testing_nonce', 'nonce');
