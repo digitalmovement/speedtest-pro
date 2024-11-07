@@ -14,34 +14,37 @@
         $('#refresh-monitors').on('click', uptimerobot_loadMonitorData);
         $('#delete-monitors').on('click', uptimerobot_deleteMonitors);
         $('#recreate-monitors').on('click', uptimerobot_recreateMonitors);
-    });
-
-    $('.uptime-info-banner .notice-dismiss').on('click', function(e) {
-        e.preventDefault();
-        
-        const $banner = $(this).closest('.uptime-info-banner');
-        
-        $.ajax({
-            url: wpspeedtestpro_uptime.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'wpspeedtestpro_dismiss_uptime_info',
-                nonce: wpspeedtestpro_uptime.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    $banner.slideUp(200, function() {
-                        $banner.remove();
-                    });
+        $('.uptime-info-banner .notice-dismiss').on('click', function(e) {
+            e.preventDefault();
+            
+            const $banner = $(this).closest('.uptime-info-banner');
+            
+            $.ajax({
+                url: wpspeedtestpro_uptime.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'wpspeedtestpro_dismiss_uptime_info',
+                    nonce: wpspeedtestpro_uptime.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $banner.slideUp(200, function() {
+                            $banner.remove();
+                        });
+                    }
+                },
+                error: function() {
+                    console.error('Failed to dismiss uptime info banner');
                 }
-            },
-            error: function() {
-                console.error('Failed to dismiss uptime info banner');
-            }
+            });
         });
+
+        
+
     });
 
-    
+
+
     function uptimerobot_loadMonitorData() {
         $('#uptime-monitors-data').addClass('loading');
         $('#uptime-monitors-data .spinner').show();
