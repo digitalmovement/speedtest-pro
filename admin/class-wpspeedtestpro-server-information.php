@@ -2,6 +2,8 @@
 
 /**
  * The server information functionality of the plugin.
+ * 
+ * Based on the work from Server Info - By Usman Ali Qureshi
  */
 class Wpspeedtestpro_Server_Information {
 
@@ -61,7 +63,7 @@ class Wpspeedtestpro_Server_Information {
             'server_admin' => isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN'] : '[no address given]',
             'server_port' => isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : 'N/A',
             'web_server' => isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : 'N/A',
-            'php_version' => phpversion() . ' ' . ((PHP_INT_SIZE * 8 === 64) ? '(Supports 64bit values)' : '(Does not support 64bit values)'),
+            'php_version' => function_exists('phpversion')  ? phpversion() : 'N/A' ,
             'php_memory_limit' => ini_get('memory_limit'),
             'cgi_version' => isset($_SERVER['GATEWAY_INTERFACE']) ? $_SERVER['GATEWAY_INTERFACE'] : 'N/A'
         );
@@ -76,7 +78,7 @@ class Wpspeedtestpro_Server_Information {
         }
 
         $server_version = $wpdb->get_var('SELECT VERSION()');
-        $client_version = mysqli_get_client_info();
+        $client_version = mysqli_get_client_info() ? mysqli_get_client_info() : 'N/A';
 
         $info['database'] = array(
             'extension' => $extension,
@@ -91,8 +93,8 @@ class Wpspeedtestpro_Server_Information {
         );
 
         // WordPress Information
-        $active_theme = wp_get_theme();
-        $plugins = get_plugins();
+        $active_theme = wp_get_theme() ? wp_get_theme() : 'N/A';
+        $plugins = get_plugins() ? get_plugins() : array();
         $active_plugins = array();
         $inactive_plugins = array();
 
@@ -108,11 +110,105 @@ class Wpspeedtestpro_Server_Information {
             'active_theme' => sprintf('%s (%s)', $active_theme->name, $active_theme->stylesheet),
             'active_plugins' => $active_plugins,
             'inactive_plugins' => $inactive_plugins,
-            'memory_limit' => WP_MEMORY_LIMIT,
-            'max_memory_limit' => WP_MAX_MEMORY_LIMIT,
+            'memory_limit' => WP_MEMORY_LIMIT ? WP_MEMORY_LIMIT : 'N/A',
+            'max_memory_limit' => WP_MAX_MEMORY_LIMIT ? WP_MAX_MEMORY_LIMIT : 'N/A',
             'debug_mode' => WP_DEBUG ? 'Enabled' : 'Disabled'
         );
 
         return $info;
+    }
+}
+
+
+
+class Wpspeedtestpro_Php_Info {
+    
+    private function is_phpinfo_available() {
+        ob_start();
+        $exists = function_exists('phpinfo');
+        if ($exists) {
+            try {
+                phpinfo();
+                $output = ob_get_contents();
+                ob_end_clean();
+                return !empty($output);
+            } catch (Exception $e) {
+                ob_end_clean();
+                return false;
+            }
+        }
+        ob_end_clean();
+        return false;
+    }
+
+    public function get_php_info() {
+        if ($this->is_phpinfo_available()) {
+            ob_start();
+            phpinfo();
+            $phpinfo = ob_get_clean();
+            
+            // Convert phpinfo HTML to be WordPress-friendly
+            $phpinfo = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $phpinfo);
+            $phpinfo = str_replace('<table>', '<table class="wp-list-table widefat fixed striped">', $phpinfo);
+            return $phpinfo;
+        } else {
+            return $this->get_soft_php_info();
+        }
+    }
+
+    private function get_soft_php_info() {
+        $info = array();
+        
+        // Basic PHP Information
+        $info[] = $this->create_section_row('PHP Version', phpversion());
+        $info[] = $this->create_section_row('System', php_uname());
+        $info[] = $this->create_section_row('Server API', php_sapi_name());
+        $info[] = $this->create_section_row('Configuration File', php_ini_loaded_file());
+        $info[] = $this->create_section_row('Zend Version', zend_version());
+        
+        // Memory Information
+        $info[] = $this->create_section_row('Memory Limit', ini_get('memory_limit'));
+        $info[] = $this->create_section_row('Max Execution Time', ini_get('max_execution_time'));
+        $info[] = $this->create_section_row('Upload Max Filesize', ini_get('upload_max_filesize'));
+        $info[] = $this->create_section_row('Post Max Size', ini_get('post_max_size'));
+        
+        // Extensions Information
+        $extensions = get_loaded_extensions();
+        sort($extensions);
+        $info[] = $this->create_section_row('Loaded Extensions', implode(', ', $extensions));
+        
+        // Error Reporting
+        $error_reporting = ini_get('error_reporting');
+        $error_levels = array();
+        if ($error_reporting & E_ERROR) $error_levels[] = 'E_ERROR';
+        if ($error_reporting & E_WARNING) $error_levels[] = 'E_WARNING';
+        if ($error_reporting & E_PARSE) $error_levels[] = 'E_PARSE';
+        if ($error_reporting & E_NOTICE) $error_levels[] = 'E_NOTICE';
+        $info[] = $this->create_section_row('Error Reporting', implode(', ', $error_levels));
+        
+        // Session Information
+        $info[] = $this->create_section_row('Session Save Handler', ini_get('session.save_handler'));
+        $info[] = $this->create_section_row('Session Save Path', ini_get('session.save_path'));
+        
+        // Output Buffering
+        $info[] = $this->create_section_row('Output Buffering', ini_get('output_buffering'));
+        
+        // Create the table
+        $table = '<table class="wp-list-table widefat fixed striped">';
+        $table .= '<thead><tr><th>Directive</th><th>Value</th></tr></thead><tbody>';
+        foreach ($info as $row) {
+            $table .= $row;
+        }
+        $table .= '</tbody></table>';
+        
+        return $table;
+    }
+    
+    private function create_section_row($name, $value) {
+        return sprintf(
+            '<tr><td>%s</td><td>%s</td></tr>',
+            esc_html($name),
+            esc_html($value)
+        );
     }
 }
