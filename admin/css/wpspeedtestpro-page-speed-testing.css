@@ -68,3 +68,39 @@
         flex-basis: 100%;  /* Full width on smaller screens */
     }
 }
+
+
+#pagespeed-info-banner {
+    position: relative;
+    padding: 20px;
+    margin: 20px 0;
+    background: #fff;
+    border-left: 4px solid #2271b1;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+#pagespeed-info-banner h2 {
+    font-size: 1.3em;
+    margin: 0 0 15px 0;
+}
+
+#pagespeed-info-banner h4 {
+    color: #1d2327;
+    font-size: 1.1em;
+}
+
+#pagespeed-info-banner .notice-dismiss {
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #787c82;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#pagespeed-info-banner .notice-dismiss:hover {
+    color: #d63638;
+}
+

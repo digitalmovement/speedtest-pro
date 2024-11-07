@@ -60,7 +60,7 @@ class Wpspeedtestpro_Page_Speed_Testing {
         add_action('wp_ajax_speedvitals_cancel_scheduled_test', array($this, 'speedvitals_ajax_cancel_scheduled_test'));
         add_action('wp_ajax_speedvitals_delete_old_results', array($this, 'speedvitals_ajax_delete_old_results'));
         add_action('wp_ajax_speedvitals_probe_for_updates', array($this, 'speedvitals_ajax_probe_for_updates'));
-
+        add_action('wp_ajax_wpspeedtestpro_dismiss_pagespeed_info', array($this, 'dismiss_pagespeed_info'));
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -142,6 +142,13 @@ class Wpspeedtestpro_Page_Speed_Testing {
 
         include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
     }
+
+    public function dismiss_pagespeed_info() {
+        check_ajax_referer('wpspeedtestpro-page-speed-testing-nonce', 'nonce');
+        update_option('wpspeedtestpro_pagespeed_info_dismissed', true);
+        wp_send_json_success();
+    }
+
 
     public function speedvitals_ajax_probe_for_updates() {
         check_ajax_referer('wpspeedtestpro-page-speed-testing-nonce', 'nonce');

@@ -43,6 +43,64 @@ function get_color_class($metric, $value) {
 <div class="wrap">
     <h1>WP Speed Test Pro - Page Speed Testing</h1>
 
+    <?php    
+    if (!get_option('wpspeedtestpro_pagespeed_info_dismissed', false)) : 
+    ?>
+    <div id="pagespeed-info-banner" class="notice notice-info is-dismissible">
+        <h2 style="margin-top: 0;">Understanding Core Web Vitals and Page Speed</h2>
+        
+        <p>Page speed and Core Web Vitals are crucial for user experience and SEO rankings. Our testing tool measures the following key metrics:</p>
+        
+        <div style="margin: 20px 0;">
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Performance Score (0-100)</h4>
+                <p style="margin: 0 0 5px 20px; color: #555;">
+                    An overall score calculated by Lighthouse that indicates your page's performance.
+                </p>
+                <div style="margin-left: 20px; font-size: 13px;">
+                    <span style="color: #0a3622;">• 90-100 (Good)</span> |
+                    <span style="color: #a66f00;">• 50-89 (Needs Improvement)</span> |
+                    <span style="color: #a60000;">• 0-49 (Poor)</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Core Web Vitals</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Largest Contentful Paint (LCP)</strong>: Measures loading performance. Should occur within 2.5 seconds.
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>First Contentful Paint (FCP)</strong>: Time until the first text/image appears. Should be under 1.8 seconds.
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Cumulative Layout Shift (CLS)</strong>: Measures visual stability. Should be less than 0.1.
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Total Blocking Time (TBT)</strong>: Measures interactivity. Should be under 200 milliseconds.
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Speed Index (SI)</strong>: How quickly content is visually populated. Should be under 3.4 seconds.
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Why These Metrics Matter</h4>
+                <ul style="margin: 0; color: #555; list-style-type: disc; padding-left: 40px;">
+                    <li>Directly impact your Google search rankings</li>
+                    <li>Affect user experience and engagement</li>
+                    <li>Influence conversion rates and bounce rates</li>
+                    <li>Critical for mobile user experience</li>
+                    <li>Impact your website's credibility</li>
+                </ul>
+            </div>
+        </div>
+
+        <p style="margin-top: 15px; color: #555;">Regular testing helps identify and fix performance issues before they impact your users and search rankings.</p>
+    </div>
+    <?php endif; ?>
+
     <?php if (!isset($data)) { echo "There was an error fetching data."; return; } ?>
 
     <div id="speedvitals-credits-info">
@@ -204,6 +262,32 @@ jQuery(document).ready(function($) {
 
     var probeInterval;
     var isProbing = false;
+
+    $('#pagespeed-info-banner .notice-dismiss').on('click', function(e) {
+        e.preventDefault();
+        
+        const $banner = $(this).closest('#pagespeed-info-banner');
+        
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_dismiss_pagespeed_info',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $banner.slideUp(200, function() {
+                        $banner.remove();
+                    });
+                }
+            },
+            error: function() {
+                console.error('Failed to dismiss page speed info banner');
+            }
+        });
+    });
+
 
     function startProbing() {
         if (!isProbing) {
