@@ -12,6 +12,32 @@ jQuery(document).ready(function($) {
         'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
     };
 
+    $('#latency-info-banner .notice-dismiss').on('click', function(e) {
+        e.preventDefault();
+        
+        const $banner = $(this).closest('#latency-info-banner');
+        
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_dismiss_latency_info',
+                nonce: wpspeedtestpro_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $banner.slideUp(200, function() {
+                        $banner.remove();
+                    });
+                }
+            },
+            error: function() {
+                console.error('Failed to dismiss latency info banner');
+            }
+        });
+    });
+
+
     function hideAllTabs() {
         $('#tabs').hide();
         if (!$('#graphs-message').length) {

@@ -81,6 +81,8 @@ class Wpspeedtestpro_Latency_Testing {
         add_action('wp_ajax_wpspeedtestpro_get_results_for_time_range', array($this, 'get_results_for_time_range'));
         add_action('wp_ajax_wpspeedtestpro_delete_all_results', array($this, 'delete_all_results'));
         add_action('wp_ajax_wpspeedtestpro_get_next_test_time', array($this, 'get_next_test_time'));
+        add_action('wp_ajax_wpspeedtestpro_dismiss_latency_info', array($this, 'dismiss_latency_info'));
+
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
     }
@@ -135,6 +137,13 @@ class Wpspeedtestpro_Latency_Testing {
      *
      * @since    1.0.0
      */
+
+     public function dismiss_latency_info() {
+        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        update_option('wpspeedtestpro_latency_info_dismissed', true);
+        wp_send_json_success();
+    }
+    
 
      public function run_once_test() {
         check_ajax_referer('wpspeedtestpro_nonce', 'nonce');

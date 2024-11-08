@@ -13,6 +13,77 @@
 ?>
 <div id="wpspeedtestpro" class="wrap">
     <h1>Google Data Center Latency Testing</h1>
+
+    <?php if (!get_option('wpspeedtestpro_latency_info_dismissed', false)):  ?>
+    <div id="latency-info-banner" class="notice notice-info is-dismissible">
+        <h2 style="margin-top: 0;">Understanding Google Cloud Latency Testing</h2>
+        
+        <p>Latency testing measures the response time between your server and Google Cloud Platform's global data centers, helping you optimize your website's performance for users worldwide.</p>
+        
+        <div style="margin: 20px 0;">
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Regional Testing Coverage</h4>
+                <div style="margin-left: 20px;">
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #2271b1;">Europe</strong>
+                        <p style="margin: 0; color: #555;">London, Frankfurt, Netherlands, Paris, Warsaw, Milan, and more. Ideal for European audience targeting.</p>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #2271b1;">United States & Canada</strong>
+                        <p style="margin: 0; color: #555;">Multiple locations including Iowa, Oregon, Virginia, Montreal, ensuring comprehensive North American coverage.</p>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color: #2271b1;">Asia Pacific</strong>
+                        <p style="margin: 0; color: #555;">Tokyo, Singapore, Mumbai, Sydney, covering major APAC business centers.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Latency Measurements</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Current Latency:</strong> Latest response time measurement
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Fastest Latency:</strong> Best response time achieved
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Slowest Latency:</strong> Worst response time recorded
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Testing Options</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Run Once:</strong> Single comprehensive test of all regions
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Continuous Testing:</strong> Hourly tests for 24-hour monitoring
+                        <br>
+                        <span style="color: #d63638;">⚠️ Note: Continuous testing should be used carefully on production sites</span>
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Why Latency Testing Matters</h4>
+                <ul style="margin: 0; color: #555; list-style-type: disc; padding-left: 40px;">
+                    <li>Identify optimal CDN regions for content delivery</li>
+                    <li>Monitor connection quality to different global regions</li>
+                    <li>Optimize server location choices for target audiences</li>
+                    <li>Track performance trends over time</li>
+                    <li>Help make informed infrastructure decisions</li>
+                </ul>
+            </div>
+        </div>
+
+        <p style="margin-top: 15px; color: #555;">Regular latency testing helps ensure optimal performance for your global audience and informs strategic infrastructure decisions.</p>
+    </div>
+    <?php endif; ?>
+
     <div id="latency-test-container">
         <button id="run-once-test" class="button button-primary">Run Once</button>
         <button id="continuous-test" class="button button-primary">Start Continuous Testing</button>

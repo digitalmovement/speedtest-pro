@@ -65,3 +65,38 @@
     border: 1px solid #ccc;
     border-top: none;
 }
+
+#serverinfo-info-banner {
+    position: relative;
+    padding: 20px;
+    margin: 20px 0;
+    background: #fff;
+    border-left: 4px solid #2271b1;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+#serverinfo-info-banner h2 {
+    font-size: 1.3em;
+    margin: 0 0 15px 0;
+}
+
+#serverinfo-info-banner h4 {
+    color: #1d2327;
+    font-size: 1.1em;
+}
+
+#serverinfo-info-banner .notice-dismiss {
+    padding: 10px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #787c82;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#serverinfo-info-banner .notice-dismiss:hover {
+    color: #d63638;
+}
+

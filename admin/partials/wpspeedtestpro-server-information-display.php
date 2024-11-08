@@ -5,7 +5,95 @@
 ?>
 <div class="wrap">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-    
+
+    <?php 
+        if (!get_option('wpspeedtestpro_serverinfo_info_dismissed', false)) :
+    ?>
+    <div id="serverinfo-info-banner" class="notice notice-info is-dismissible">
+        <h2 style="margin-top: 0;">Understanding Your Server Configuration</h2>
+        
+        <p>Server information provides crucial details about your hosting environment, helping you ensure optimal WordPress performance and troubleshoot potential issues.</p>
+        
+        <div style="margin: 20px 0;">
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Hosting Environment</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Operating System:</strong> Your server's platform and architecture
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Web Server:</strong> Server software handling HTTP requests (e.g., Apache, Nginx)
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>PHP Version:</strong> Installed PHP version and key configuration settings
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Memory Limits:</strong> Available memory for PHP processes
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Database Information</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>MySQL Version:</strong> Database server and client versions
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Database Settings:</strong> Charset, collation, and connection details
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Table Prefix:</strong> WordPress database table prefix for security
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">PHP Configuration</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>PHP Modules:</strong> Installed PHP extensions and their versions
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>PHP Settings:</strong> Important PHP configuration parameters
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Error Reporting:</strong> Current error logging configuration
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">WordPress Environment</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Active Theme:</strong> Current theme and version
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Active Plugins:</strong> List of activated plugins
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Debug Status:</strong> WordPress debug configuration
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 15px;">
+            <h4 style="margin: 0 0 5px 0; color: #1d2327;">Why This Information Matters</h4>
+            <ul style="margin: 0; color: #555; list-style-type: disc; padding-left: 40px;">
+                <li>Helps in troubleshooting website issues</li>
+                <li>Ensures compatibility with plugins and themes</li>
+                <li>Identifies potential security concerns</li>
+                <li>Assists in optimization efforts</li>
+                <li>Provides essential details for support requests</li>
+            </ul>
+        </div>
+
+        <p style="margin-top: 15px; color: #555;">Keep this information handy when working with developers or support teams.</p>
+    </div>
+    <?php endif; ?>
+
     <?php $server_info = $this->get_server_info(); ?>
     
     <div id="wpspeedtestpro-server-tabs">
