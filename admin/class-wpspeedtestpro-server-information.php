@@ -48,9 +48,9 @@ class Wpspeedtestpro_Server_Information {
 
         wp_localize_script($this->plugin_name . '-server-information', 'wpspeedtestpro_serverinfo', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_serverinfo_nonce')
+            'nonce' => wp_create_nonce('wpspeedtestpro_nonce')
         ));
-        
+
     }
 
     public function display_server_information() {

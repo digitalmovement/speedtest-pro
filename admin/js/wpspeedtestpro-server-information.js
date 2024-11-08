@@ -4,9 +4,10 @@ jQuery(document).ready(function($) {
         e.preventDefault();
         
         const $banner = $(this).closest('#serverinfo-info-banner');
-        
+        console.log('Sending AJAX request to:', wpspeedtestpro_serverinfo.ajax_url);
+
         $.ajax({
-            url: ajaxurl,
+            url:  wpspeedtestpro_serverinfo.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_dismiss_serverinfo_info',
