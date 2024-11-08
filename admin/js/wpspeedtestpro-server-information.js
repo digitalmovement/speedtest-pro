@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-
+    console.log('Sending AJAX request to1:', wpspeedtestpro_serverinfo.ajax_url);
     $('#serverinfo-info-banner .notice-dismiss').on('click', function(e) {
         e.preventDefault();
         
