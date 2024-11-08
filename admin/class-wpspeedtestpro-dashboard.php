@@ -41,6 +41,8 @@ class Wpspeedtestpro_Dashboard {
   
     private $core;
 
+    private $uptime_monitoring;
+
     /**
      * Initialize the class and set its properties.
      *
@@ -133,7 +135,8 @@ class Wpspeedtestpro_Dashboard {
     }
 
     private function get_latest_uptime_data() {
-        return $this->core->api->uptimerobot_get_monitor_data();
+        $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
+        return $this->uptime_monitoring->uptimerobot_get_monitor_data();
     }
 
     private function get_latest_pagespeed_test() {
