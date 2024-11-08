@@ -65,6 +65,8 @@ class Wpspeedtestpro_Dashboard {
         add_action('wp_ajax_wpspeedtestpro_get_ssl_data', array($this, 'get_ssl_data'));
         add_action('wp_ajax_wpspeedtestpro_get_uptime_data', array($this, 'get_uptime_data'));
         add_action('wp_ajax_wpspeedtestpro_get_pagespeed_data', array($this, 'get_pagespeed_data'));
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
 
 
