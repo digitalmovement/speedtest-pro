@@ -7,6 +7,31 @@ jQuery(document).ready(function($) {
     var continuousTestStatus = wpspeedtestpro_performance.wpspeedtestpro_continuous_data.continuousTestStatus;
     var timeRemaining = wpspeedtestpro_performance.wpspeedtestpro_continuous_data.timeRemaining;
 
+    $('#performance-info-banner .notice-dismiss').on('click', function(e) {
+        e.preventDefault();
+        
+        const $banner = $(this).closest('#performance-info-banner');
+        
+        $.ajax({
+            url: wpspeedtestpro_performance.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_dismiss_performance_info',
+                nonce: wpspeedtestpro_performance.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    $banner.slideUp(200, function() {
+                        $banner.remove();
+                    });
+                }
+            },
+            error: function() {
+                console.error('Failed to dismiss performance info banner');
+            }
+        });
+    });
+
 
     // Initialize tabs
     $('#server-performance-tabs').tabs();

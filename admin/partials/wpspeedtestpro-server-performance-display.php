@@ -9,6 +9,79 @@ if ( ! defined( 'ABSPATH' ) ) exit;
         <p>This page contains various server performance tests and their results. The tests measure different aspects of your server's performance.</p>
     </div>
     
+    <?php    if (!get_option('wpspeedtestpro_performance_info_dismissed', false)):
+     
+    ?>
+    <div id="performance-info-banner" class="notice notice-info is-dismissible">
+        <h2 style="margin-top: 0;">Understanding Server Performance Testing</h2>
+        
+        <p style="margin-bottom: 15px;">Server performance testing helps identify bottlenecks and ensures optimal performance of your WordPress site. Our comprehensive testing suite measures several critical aspects:</p>
+        
+        <div style="margin: 20px 0;">
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">System Performance Metrics</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Math Operations</strong>: Tests CPU performance with mathematical calculations
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>String Operations</strong>: Measures text processing and manipulation speed
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Loop Execution</strong>: Tests programming loop performance
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Conditional Logic</strong>: Evaluates decision-making speed
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Database Performance</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>MySQL Operations</strong>: Tests database query execution speed
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>WordPress Queries</strong>: Measures WordPress-specific database operations
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Network Performance</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Upload Speeds</strong>: Tests file upload performance (10KB to 10MB)
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Download Speeds</strong>: Measures file download capabilities (10KB to 10MB)
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Ping Latency</strong>: Checks server response time
+                    </p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Test Types Available</h4>
+                <div style="margin-left: 20px;">
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Single Test</strong>: One-time comprehensive performance check
+                    </p>
+                    <p style="margin: 5px 0; color: #555;">
+                        <strong>Continuous Testing</strong>: 24-hour monitoring with tests every 15 minutes
+                        <br>
+                        <span style="color: #d63638;">⚠️ Note: Use continuous testing carefully as it can impact server performance</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <p style="margin-top: 15px; color: #555;">Results are compared against industry averages to help you understand your server's performance in context.</p>
+    </div>
+
+    <?php endif; ?>
     <div id="error-message" class="notice notice-error" style="display: none;"></div>
 
     
