@@ -103,8 +103,7 @@ class Wpspeedtestpro_Admin {
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         $this->page_speed_testing   = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
         $this->server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
-   
-
+        $this->dashboard = new Wpspeedtestpro_Dashboard($this->plugin_name, $this->version, $this->core);
     }
 
     /**
@@ -115,6 +114,18 @@ class Wpspeedtestpro_Admin {
     public function enqueue_styles() {
         wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
         wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+               // Add dashboard-specific styles only on dashboard page
+               $screen = get_current_screen();
+               if ($screen && $screen->id === 'toplevel_page_' . $this->plugin_name) {
+                   wp_enqueue_style(
+                       $this->plugin_name . '-dashboard',
+                       plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-dashboard.css',
+                       array(),
+                       $this->version
+                   );
+               }
+
     }
 
     /**
@@ -132,6 +143,17 @@ class Wpspeedtestpro_Admin {
         
         // Enqueue jQuery UI CSS
         wp_enqueue_style('jquery-ui-css', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
+
+               wp_localize_script(
+                $this->plugin_name . '-dashboard',
+                'wpspeedtestpro_dashboard',
+                array(
+                    'ajax_url' => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('wpspeedtestpro_dashboard_nonce'),
+                    'selected_region' => get_option('wpspeedtestpro_selected_region'),
+                    'home_url' => home_url()
+                )
+            );
     }
 
     /**
@@ -186,6 +208,14 @@ class Wpspeedtestpro_Admin {
      */
     public function display_plugin_dashboard_page() {
         $dashboard = new Wpspeedtestpro_Dashboard( $this->plugin_name, $this->version, $this->core );
+        $api = $this->core->get_api();
+        $db = $this->core->get_db();
+        $data = array(
+            'endpoints' => $api->get_gcp_endpoints(),
+            'latest_results' => $db->get_latest_results()
+        );
+
+
         $dashboard->display_dashboard();
     }
 
@@ -193,6 +223,19 @@ class Wpspeedtestpro_Admin {
         $this->server_information->display_server_information();
     }
 
+    private function add_hooks() {
+        // ... [existing hooks]
+
+        // Dashboard AJAX handlers
+        add_action('wp_ajax_wpspeedtestpro_get_dashboard_data', array($this, 'get_dashboard_data'));
+        add_action('wp_ajax_wpspeedtestpro_get_performance_data', array($this, 'get_performance_data'));
+        add_action('wp_ajax_wpspeedtestpro_get_latency_data', array($this, 'get_latency_data'));
+        add_action('wp_ajax_wpspeedtestpro_get_ssl_data', array($this, 'get_ssl_data'));
+        add_action('wp_ajax_wpspeedtestpro_get_uptime_data', array($this, 'get_uptime_data'));
+        add_action('wp_ajax_wpspeedtestpro_get_pagespeed_data', array($this, 'get_pagespeed_data'));
+    }
+
+    
 
     public function change_plugin_icon() {
         echo '<style>

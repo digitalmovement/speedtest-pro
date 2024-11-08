@@ -26,6 +26,8 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    
     $('#wpspeedtestpro-server-tabs').tabs();
 
     // Make tables responsive

@@ -1,7 +1,7 @@
 
 jQuery(document).ready(function($) {
 
-    console.log('Checking JS');
+
     var probeInterval;
     var isProbing = false;
 
