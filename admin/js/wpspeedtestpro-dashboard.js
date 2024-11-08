@@ -15,6 +15,7 @@ jQuery(document).ready(function($) {
 
     // Initialize dashboard
     function initDashboard() {
+        console.log('Initializing dashboard');
         loadServerPerformance();
         loadLatencyData();
         loadSSLData();
