@@ -118,7 +118,7 @@ class Wpspeedtestpro_Dashboard {
 
 
         // Use the data to render your dashboard
-        include_once( 'partials/wpspeedtestpro-admin-dashboard-display.php' );
+        include_once( 'partials/wpspeedtestpro-dashboard-display.php' );
     }
     // Add more methods as needed for dashboard functionality
 
