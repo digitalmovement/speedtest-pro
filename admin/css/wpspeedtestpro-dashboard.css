@@ -149,3 +149,24 @@
     margin: 0;
     padding: 10px;
 }
+
+
+.loading {
+    animation: pulse 1.5s infinite;
+    color: #666;
+}
+
+.test-progress-message {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f0f6fc;
+    border-left: 4px solid #2271b1;
+    color: #1d2327;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+

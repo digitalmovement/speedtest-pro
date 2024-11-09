@@ -241,67 +241,136 @@ jQuery(document).ready(function($) {
     // SSL Functions
     function loadSSLData() {
         $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
+            url: wpspeedtestpro_ssl.ajax_url,
             type: 'POST',
             data: {
                 action: 'check_ssl_test_status',
-                nonce: wpspeedtestpro_ajax.ssl_nonce
+                nonce: wpspeedtestpro_ssl.nonce
             },
             success: function(response) {
-                if (response.success) {
+                if (response.success && response.data) {
                     updateSSLCard(response.data);
+                } else {
+                    displayNoSSLData(response.data || 'No SSL data available');
                 }
-            }
-        });
-    }
-
-    function updateSSLCard(data) {
-        if (data.status === 'completed' && data.data) {
-            const grade = data.data.endpoints[0].grade;
-            $('#ssl-grade').text(grade).addClass(getSSLGradeClass(grade));
-            $('#ssl-last-checked').text(new Date().toLocaleString());
-            
-            const cert = data.data.certs[0];
-            const expiryDate = new Date(cert.notAfter);
-            $('#ssl-expiry').text(expiryDate.toLocaleDateString());
-            $('#ssl-protocol').text(data.data.endpoints[0].details.protocols[0].name + ' ' + 
-                                  data.data.endpoints[0].details.protocols[0].version);
-        }
-    }
-
-    // Uptime Functions
-    function loadUptimeData() {
-        $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'wpspeedtestpro_uptimerobot_get_monitor_data',
-                nonce: wpspeedtestpro_ajax.uptime_nonce
             },
-            success: function(response) {
-                if (response.success) {
-                    updateUptimeCard(response.data);
-                    createUptimeTrendChart(response.data);
-                }
+            error: function() {
+                displayNoSSLData('Error loading SSL data');
             }
         });
     }
-
-    function updateUptimeCard(data) {
-        const pingMonitor = data.find(m => m.friendly_name.includes('Ping'));
-        const cronMonitor = data.find(m => m.friendly_name.includes('Cron'));
-
-        if (pingMonitor) {
-            $('#server-uptime').text(formatUptime(pingMonitor.custom_uptime_ratio) + '%')
-                .addClass(getUptimeClass(pingMonitor.custom_uptime_ratio));
-            $('#avg-ping-time').text(pingMonitor.average_response_time + ' ms');
+    
+    function displayNoSSLData(message) {
+        // Clear any existing classes
+        $('#ssl-grade, #ssl-last-checked, #ssl-expiry, #ssl-protocol')
+            .removeClass('good warning poor');
+    
+        // Update card with "No data" messages
+        $('#ssl-grade')
+            .text('-')
+            .addClass('no-data')
+            .attr('title', message);
+        
+        $('#ssl-last-checked').text('Never tested')
+            .addClass('no-data');
+        
+        $('#ssl-expiry').text('No data available')
+            .addClass('no-data');
+        
+        $('#ssl-protocol').text('No data available')
+            .addClass('no-data');
+    
+        // Add an info message to the card
+        const $sslCard = $('#ssl-card .card-content');
+        const existingMessage = $sslCard.find('.no-data-message');
+        
+        if (!existingMessage.length) {
+            $sslCard.append(
+                $('<div/>', {
+                    class: 'no-data-message',
+                    html: `<p>${message}</p><p>Run an SSL test to see results.</p>`
+                })
+            );
+        } else {
+            existingMessage.find('p:first').text(message);
         }
-
-        if (cronMonitor) {
-            $('#cron-uptime').text(formatUptime(cronMonitor.custom_uptime_ratio) + '%')
-                .addClass(getUptimeClass(cronMonitor.custom_uptime_ratio));
-            $('#avg-cron-time').text(cronMonitor.average_response_time + ' ms');
+    }
+    
+    function updateSSLCard(data) {
+        // Remove any existing no-data messages
+        $('.no-data-message').remove();
+        
+        // Remove no-data class from all elements
+        $('#ssl-grade, #ssl-last-checked, #ssl-expiry, #ssl-protocol')
+            .removeClass('no-data');
+    
+        if (data.status === 'completed' && data.data && data.data.endpoints && data.data.endpoints[0]) {
+            const endpoint = data.data.endpoints[0];
+            const grade = endpoint.grade;
+    
+            // Update SSL Grade
+            $('#ssl-grade')
+                .text(grade)
+                .removeClass('good warning poor')
+                .addClass(getSSLGradeClass(grade))
+                .removeAttr('title');
+    
+            // Update Last Checked
+            $('#ssl-last-checked')
+                .text(new Date().toLocaleString());
+    
+            // Update Certificate Details
+            if (data.data.certs && data.data.certs[0]) {
+                const cert = data.data.certs[0];
+                const expiryDate = new Date(cert.notAfter);
+                $('#ssl-expiry').text(expiryDate.toLocaleDateString());
+            } else {
+                $('#ssl-expiry').text('Certificate data not available')
+                    .addClass('no-data');
+            }
+    
+            // Update Protocol
+            if (endpoint.details && endpoint.details.protocols && endpoint.details.protocols[0]) {
+                const protocol = endpoint.details.protocols[0];
+                $('#ssl-protocol').text(protocol.name + ' ' + protocol.version);
+            } else {
+                $('#ssl-protocol').text('Protocol data not available')
+                    .addClass('no-data');
+            }
+    
+        } else if (data.status === 'in_progress') {
+            // Handle in-progress state
+            displaySSLInProgress();
+        } else {
+            // Handle invalid or incomplete data
+            displayNoSSLData('Invalid or incomplete SSL data received');
         }
+    }
+    
+    function displaySSLInProgress() {
+        // Clear any existing classes and messages
+        $('.no-data-message').remove();
+        $('#ssl-grade, #ssl-last-checked, #ssl-expiry, #ssl-protocol')
+            .removeClass('good warning poor no-data');
+    
+        // Add loading indicators
+        $('#ssl-grade').text('...')
+            .addClass('loading');
+        $('#ssl-last-checked').text('Test in progress...')
+            .addClass('loading');
+        $('#ssl-expiry').text('Checking...')
+            .addClass('loading');
+        $('#ssl-protocol').text('Checking...')
+            .addClass('loading');
+    
+        // Add progress message
+        const $sslCard = $('#ssl-card .card-content');
+        $sslCard.append(
+            $('<div/>', {
+                class: 'test-progress-message',
+                html: '<p>SSL test in progress. This may take a few minutes...</p>'
+            })
+        );
     }
 
     function createUptimeTrendChart(data) {
