@@ -91,12 +91,13 @@ class Wpspeedtestpro_Dashboard {
         wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
+            'performance_nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
+            'ssl_nonce' => wp_create_nonce('wpspeedtestpro_ssl_nonce'),
             'selected_region' => get_option('wpspeedtestpro_selected_region'),
             'home_url' => home_url()
         ));    
 
-
-
+  
     }
 
     /**

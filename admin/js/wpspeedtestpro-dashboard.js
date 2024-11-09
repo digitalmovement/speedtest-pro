@@ -31,7 +31,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_performance_get_results',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: wpspeedtestpro_ajax.performance_nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -193,7 +193,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'check_ssl_test_status',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: wpspeedtestpro_ajax.ssl_nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -343,7 +343,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'start_ssl_test',
-                    nonce: wpspeedtestpro_ajax.nonce
+                    nonce: wpspeedtestpro_ajax.ssl_nonce
                 },
                 success: function() {
                     setTimeout(loadSSLData, 30000);
@@ -359,7 +359,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'wpspeedtestpro_performance_run_test',
-                    nonce: wpspeedtestpro_ajax.nonce
+                    nonce: wpspeedtestpro_ajax.performance_nonce
                 },
                 success: function() {
                     setTimeout(loadServerPerformance, 30000);
