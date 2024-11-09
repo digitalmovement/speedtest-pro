@@ -31,7 +31,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_performance_get_results',
-                nonce: wpspeedtestpro_performance.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
