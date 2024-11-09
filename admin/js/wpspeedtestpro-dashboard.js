@@ -114,29 +114,81 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_get_results_for_time_range',
-                time_range: '24_hours',
+                time_range: '90_days',
                 nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
-                if (response.success) {
+                if (response.success && Array.isArray(response.data) && response.data.length > 0) {
                     updateLatencyCard(response.data);
                     createLatencyTrendChart(response.data);
+                } else {
+                    displayNoLatencyData();
                 }
+            },
+            error: function() {
+                console.error('Failed to load latency data');
+                displayNoLatencyData();
             }
         });
     }
-
+    
+    function displayNoLatencyData() {
+        // Clear any existing classes
+        $('#selected-region, #current-latency, #fastest-latency, #slowest-latency, #latency-last-updated')
+            .removeClass('good warning poor');
+    
+        // Update card with "No data" messages
+        $('#selected-region').text('No region data available');
+        $('#current-latency').text('No data available')
+            .addClass('no-data');
+        $('#fastest-latency').text('No data available');
+        $('#slowest-latency').text('No data available');
+        $('#latency-last-updated').text('Never');
+    
+        // Clear the chart if it exists
+        if (charts.latency) {
+            charts.latency.destroy();
+            charts.latency = null;
+        }
+    
+        // Add a "no data" message to the chart container
+        const chartContainer = document.getElementById('latency-trend-chart').parentElement;
+        const existingMessage = chartContainer.querySelector('.no-data-message');
+        
+        if (!existingMessage) {
+            const message = document.createElement('div');
+            message.className = 'no-data-message';
+            message.innerHTML = '<p>No latency data available. Run a test to see results.</p>';
+            chartContainer.appendChild(message);
+        }
+    }
+    
     function updateLatencyCard(data) {
         const selectedRegion = wpspeedtestpro_ajax.selected_region;
         const regionData = data.find(item => item.region_name === selectedRegion) || data[0];
-
+    
         if (regionData) {
+            // Remove any existing no-data messages
+            const chartContainer = document.getElementById('latency-trend-chart').parentElement;
+            const existingMessage = chartContainer.querySelector('.no-data-message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+    
+            // Clear any existing classes
+            $('#selected-region, #current-latency, #fastest-latency, #slowest-latency, #latency-last-updated')
+                .removeClass('good warning poor no-data');
+    
+            // Update with actual data
             $('#selected-region').text(regionData.region_name);
-            $('#current-latency').text(`${regionData.latency} ms`)
+            $('#current-latency')
+                .text(`${regionData.latency} ms`)
                 .addClass(getLatencyClass(regionData.latency));
             $('#fastest-latency').text(`${regionData.fastest_latency} ms`);
             $('#slowest-latency').text(`${regionData.slowest_latency} ms`);
             $('#latency-last-updated').text(new Date(regionData.test_time).toLocaleString());
+        } else {
+            displayNoLatencyData();
         }
     }
 
