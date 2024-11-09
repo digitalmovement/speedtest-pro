@@ -189,11 +189,11 @@ jQuery(document).ready(function($) {
     // SSL Functions
     function loadSSLData() {
         $.ajax({
-            url: wpspeedtestpro_ssl.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'check_ssl_test_status',
-                nonce: wpspeedtestpro_ssl.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -220,11 +220,11 @@ jQuery(document).ready(function($) {
     // Uptime Functions
     function loadUptimeData() {
         $.ajax({
-            url: wpspeedtestpro_uptime.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_uptimerobot_get_monitor_data',
-                nonce: wpspeedtestpro_uptime.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -339,11 +339,11 @@ jQuery(document).ready(function($) {
         $('#test-ssl').on('click', function() {
             $(this).prop('disabled', true);
             $.ajax({
-                url: wpspeedtestpro_ssl.ajax_url,
+                url: wpspeedtestpro_ajax.ajax_url,
                 type: 'POST',
                 data: {
                     action: 'start_ssl_test',
-                    nonce: wpspeedtestpro_ssl.nonce
+                    nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function() {
                     setTimeout(loadSSLData, 30000);
@@ -359,7 +359,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'wpspeedtestpro_performance_run_test',
-                    nonce: wpspeedtestpro_performance.nonce
+                    nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function() {
                     setTimeout(loadServerPerformance, 30000);
