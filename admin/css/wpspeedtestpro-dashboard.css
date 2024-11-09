@@ -170,3 +170,41 @@
     100% { opacity: 1; }
 }
 
+.no-data-hint {
+    font-style: italic;
+    color: #666;
+    margin-top: 10px;
+}
+
+.metric-hints {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.hint-item {
+    margin: 5px 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.hint-label {
+    font-weight: bold;
+    color: #2271b1;
+}
+
+.pagespeed-card .no-data {
+    color: #666;
+    font-style: italic;
+}
+
+.pagespeed-card .loading {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

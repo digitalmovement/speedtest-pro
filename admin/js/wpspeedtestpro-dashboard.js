@@ -456,24 +456,153 @@ jQuery(document).ready(function($) {
                 nonce: wpspeedtestpro_ajax.pagespeed_nonce
             },
             success: function(response) {
-                if (response.success) {
+                if (response.success && response.data && 
+                    Array.isArray(response.data.updated_tests) && 
+                    response.data.updated_tests.length > 0) {
                     updatePageSpeedCard(response.data);
+                } else {
+                    displayNoPageSpeedData();
                 }
+            },
+            error: function() {
+                displayNoPageSpeedData('Error loading Page Speed data');
             }
         });
     }
-
-    function updatePageSpeedCard(data) {
-        if (data.updated_tests && data.updated_tests.length > 0) {
-            const latestTest = data.updated_tests[0];
-            $('#performance-score').text(latestTest.metrics.performance_score)
-                .addClass(getPerformanceScoreClass(latestTest.metrics.performance_score));
-            $('#fcp-value').text((latestTest.metrics.first_contentful_paint / 1000).toFixed(2) + 's');
-            $('#lcp-value').text((latestTest.metrics.largest_contentful_paint / 1000).toFixed(2) + 's');
-            $('#pagespeed-last-tested').text(new Date(latestTest.created_at).toLocaleString());
+    
+    function displayNoPageSpeedData(message = 'No Page Speed data available') {
+        // Clear any existing classes
+        $('#performance-score, #fcp-value, #lcp-value, #pagespeed-last-tested')
+            .removeClass('good warning poor');
+    
+        // Update card with "No data" messages
+        $('#performance-score')
+            .text('N/A')
+            .addClass('no-data')
+            .attr('title', message);
+        
+        $('#fcp-value')
+            .text('No data')
+            .addClass('no-data');
+        
+        $('#lcp-value')
+            .text('No data')
+            .addClass('no-data');
+        
+        $('#pagespeed-last-tested')
+            .text('Never tested')
+            .addClass('no-data');
+    
+        // Add info message to the card
+        const $pageSpeedCard = $('#pagespeed-card .card-content');
+        const existingMessage = $pageSpeedCard.find('.no-data-message');
+        
+        if (!existingMessage.length) {
+            $pageSpeedCard.append(
+                $('<div/>', {
+                    class: 'no-data-message',
+                    html: `
+                        <p>${message}</p>
+                        <p class="no-data-hint">Run a Page Speed test to analyze your website's performance.</p>
+                        <div class="metric-hints">
+                            <div class="hint-item">
+                                <span class="hint-label">FCP:</span> First Contentful Paint
+                            </div>
+                            <div class="hint-item">
+                                <span class="hint-label">LCP:</span> Largest Contentful Paint
+                            </div>
+                        </div>
+                    `
+                })
+            );
+        } else {
+            existingMessage.find('p:first').text(message);
         }
     }
-
+    
+    function updatePageSpeedCard(data) {
+        if (!data.updated_tests || !data.updated_tests.length) {
+            displayNoPageSpeedData();
+            return;
+        }
+    
+        // Remove any existing no-data messages and classes
+        $('.no-data-message').remove();
+        $('#performance-score, #fcp-value, #lcp-value, #pagespeed-last-tested')
+            .removeClass('no-data');
+    
+        const latestTest = data.updated_tests[0];
+    
+        if (latestTest.metrics) {
+            // Update Performance Score
+            if (typeof latestTest.metrics.performance_score !== 'undefined') {
+                $('#performance-score')
+                    .text(latestTest.metrics.performance_score)
+                    .removeClass('good warning poor')
+                    .addClass(getPerformanceScoreClass(latestTest.metrics.performance_score))
+                    .attr('title', `Performance Score: ${latestTest.metrics.performance_score}`);
+            } else {
+                $('#performance-score')
+                    .text('N/A')
+                    .addClass('no-data')
+                    .attr('title', 'Performance score not available');
+            }
+    
+            // Update FCP (First Contentful Paint)
+            if (typeof latestTest.metrics.first_contentful_paint !== 'undefined') {
+                const fcpSeconds = (latestTest.metrics.first_contentful_paint / 1000).toFixed(2);
+                $('#fcp-value')
+                    .text(fcpSeconds + 's')
+                    .removeClass('good warning poor')
+                    .addClass(getFCPClass(fcpSeconds));
+            } else {
+                $('#fcp-value')
+                    .text('N/A')
+                    .addClass('no-data');
+            }
+    
+            // Update LCP (Largest Contentful Paint)
+            if (typeof latestTest.metrics.largest_contentful_paint !== 'undefined') {
+                const lcpSeconds = (latestTest.metrics.largest_contentful_paint / 1000).toFixed(2);
+                $('#lcp-value')
+                    .text(lcpSeconds + 's')
+                    .removeClass('good warning poor')
+                    .addClass(getLCPClass(lcpSeconds));
+            } else {
+                $('#lcp-value')
+                    .text('N/A')
+                    .addClass('no-data');
+            }
+    
+            // Update Last Tested Time
+            if (latestTest.created_at) {
+                $('#pagespeed-last-tested')
+                    .text(new Date(latestTest.created_at).toLocaleString())
+                    .removeClass('no-data');
+            } else {
+                $('#pagespeed-last-tested')
+                    .text('Date not available')
+                    .addClass('no-data');
+            }
+        } else {
+            displayNoPageSpeedData('Test completed but metrics not available');
+        }
+    }
+    
+    // Helper functions for metric classifications
+    function getFCPClass(seconds) {
+        const value = parseFloat(seconds);
+        if (value <= 1.8) return 'good';
+        if (value <= 3) return 'warning';
+        return 'poor';
+    }
+    
+    function getLCPClass(seconds) {
+        const value = parseFloat(seconds);
+        if (value <= 2.5) return 'good';
+        if (value <= 4) return 'warning';
+        return 'poor';
+    }
     // Event Handlers
     function setupEventHandlers() {
         $('#test-latency').on('click', function() {
