@@ -215,7 +215,7 @@ class Wpspeedtestpro_Admin {
             'latest_results' => $db->get_latest_results()
         );
 
-
+        echo 'im admin display';
         $dashboard->display_dashboard();
     }
 
@@ -235,7 +235,7 @@ class Wpspeedtestpro_Admin {
         add_action('wp_ajax_wpspeedtestpro_get_pagespeed_data', array($this, 'get_pagespeed_data'));
     }
 
-    
+
 
     public function change_plugin_icon() {
         echo '<style>

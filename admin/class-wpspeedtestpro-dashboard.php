@@ -88,17 +88,15 @@ class Wpspeedtestpro_Dashboard {
     public function enqueue_scripts() {
         wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-dashboard.js', array( 'jquery' ), $this->version, false );
 
-        wp_localize_script(
-            $this->plugin_name . '-dashboard',
-            'wpspeedtestpro_dashboard',
-            array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_dashboard_nonce'),
-                'selected_region' => get_option('wpspeedtestpro_selected_region'),
-                'home_url' => home_url()
-            )
-        );
-        
+        wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
+            'selected_region' => get_option('wpspeedtestpro_selected_region'),
+            'home_url' => home_url()
+        ));    
+
+
+
     }
 
     /**
