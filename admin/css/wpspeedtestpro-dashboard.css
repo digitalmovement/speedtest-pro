@@ -128,3 +128,24 @@
     50% { opacity: 0.3; }
     100% { opacity: 0.6; }
 }
+
+.no-data {
+    color: #666;
+    font-style: italic;
+}
+
+.no-data-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    width: 100%;
+}
+
+.no-data-message p {
+    margin: 0;
+    padding: 10px;
+}
