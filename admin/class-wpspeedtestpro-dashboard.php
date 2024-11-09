@@ -92,7 +92,9 @@ class Wpspeedtestpro_Dashboard {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
             'performance_nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
-            'ssl_nonce' => wp_create_nonce('wpspeedtestpro_ssl_nonce'),
+            'ssl_nonce' => wp_create_nonce('ssl_testing_nonce'),
+            'uptime_nonce' => wp_create_nonce('wpspeedtestpro_uptime_nonce'),
+            'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce'),
             'selected_region' => get_option('wpspeedtestpro_selected_region'),
             'home_url' => home_url()
         ));    

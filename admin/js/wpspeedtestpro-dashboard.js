@@ -224,7 +224,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_uptimerobot_get_monitor_data',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: wpspeedtestpro_ajax.uptime_nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -297,7 +297,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'speedvitals_probe_for_updates',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: wpspeedtestpro_ajax.pagespeed_nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -375,7 +375,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'speedvitals_run_test',
-                    nonce: wpspeedtestpro_ajax.nonce,
+                    nonce: wpspeedtestpro_ajax.pagespeed_nonce,
                     url: window.location.origin,
                     device: 'desktop',
                     location: 'us'
