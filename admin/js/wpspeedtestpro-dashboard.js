@@ -241,11 +241,11 @@ jQuery(document).ready(function($) {
     // SSL Functions
     function loadSSLData() {
         $.ajax({
-            url: wpspeedtestpro_ssl.ajax_url,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'check_ssl_test_status',
-                nonce: wpspeedtestpro_ssl.nonce
+                nonce: wpspeedtestpro_ajax.ssl_nonce
             },
             success: function(response) {
                 if (response.success && response.data) {
