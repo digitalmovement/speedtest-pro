@@ -373,6 +373,41 @@ jQuery(document).ready(function($) {
         );
     }
 
+    // Uptime Functions
+    function loadUptimeData() {
+        $.ajax({
+            url: wpspeedtestpro_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'wpspeedtestpro_uptimerobot_get_monitor_data',
+                nonce: wpspeedtestpro_ajax.uptime_nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    updateUptimeCard(response.data);
+                    createUptimeTrendChart(response.data);
+                }
+            }
+        });
+    }
+
+    function updateUptimeCard(data) {
+        const pingMonitor = data.find(m => m.friendly_name.includes('Ping'));
+        const cronMonitor = data.find(m => m.friendly_name.includes('Cron'));
+
+        if (pingMonitor) {
+            $('#server-uptime').text(formatUptime(pingMonitor.custom_uptime_ratio) + '%')
+                .addClass(getUptimeClass(pingMonitor.custom_uptime_ratio));
+            $('#avg-ping-time').text(pingMonitor.average_response_time + ' ms');
+        }
+
+        if (cronMonitor) {
+            $('#cron-uptime').text(formatUptime(cronMonitor.custom_uptime_ratio) + '%')
+                .addClass(getUptimeClass(cronMonitor.custom_uptime_ratio));
+            $('#avg-cron-time').text(cronMonitor.average_response_time + ' ms');
+        }
+    }
+
     function createUptimeTrendChart(data) {
         const ctx = document.getElementById('uptime-trend-chart').getContext('2d');
         
