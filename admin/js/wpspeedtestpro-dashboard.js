@@ -396,17 +396,88 @@ jQuery(document).ready(function($) {
     function updateUptimeCard(data) {
         const pingMonitor = data.find(m => m.friendly_name.includes('Ping'));
         const cronMonitor = data.find(m => m.friendly_name.includes('Cron'));
-
-        if (pingMonitor) {
-            $('#server-uptime').text(formatUptime(pingMonitor.custom_uptime_ratio) + '%')
-                .addClass(getUptimeClass(pingMonitor.custom_uptime_ratio));
-            $('#avg-ping-time').text(pingMonitor.average_response_time + ' ms');
+    
+        function findLastGoodStatus(monitor) {
+            if (!monitor || !monitor.logs) return null;
+            
+            // Find the last log with "OK" status
+            return monitor.logs.find(log => 
+                log.type === 2 && // Type 2 indicates "Up" status
+                log.reason && 
+                log.reason.detail === "OK"
+            );
         }
-
+    
+        function formatDuration(seconds) {
+            // Convert seconds to days, hours, minutes
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+    
+            // Build readable string
+            const parts = [];
+            if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+            if (hours > 0) parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
+            if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
+    
+            // Handle case where duration is less than a minute
+            if (parts.length === 0) {
+                return 'Less than a minute';
+            }
+    
+            return parts.join(', ');
+        }
+    
+        if (pingMonitor) {
+            const lastGoodPing = findLastGoodStatus(pingMonitor);
+            if (lastGoodPing) {
+                $('#server-uptime')
+                    .text(formatDuration(lastGoodPing.duration))
+                    .removeClass('no-data')
+                    .addClass('good');
+            } else {
+                $('#server-uptime')
+                    .text('No uptime data available')
+                    .removeClass('good warning poor')
+                    .addClass('no-data');
+            }
+    
+            // Still include average ping time if available
+            if (pingMonitor.average_response_time) {
+                $('#avg-ping-time')
+                    .text(pingMonitor.average_response_time + ' ms')
+                    .removeClass('no-data');
+            } else {
+                $('#avg-ping-time')
+                    .text('No data')
+                    .addClass('no-data');
+            }
+        }
+    
         if (cronMonitor) {
-            $('#cron-uptime').text(formatUptime(cronMonitor.custom_uptime_ratio) + '%')
-                .addClass(getUptimeClass(cronMonitor.custom_uptime_ratio));
-            $('#avg-cron-time').text(cronMonitor.average_response_time + ' ms');
+            const lastGoodCron = findLastGoodStatus(cronMonitor);
+            if (lastGoodCron) {
+                $('#cron-uptime')
+                    .text(formatDuration(lastGoodCron.duration))
+                    .removeClass('no-data')
+                    .addClass('good');
+            } else {
+                $('#cron-uptime')
+                    .text('No uptime data available')
+                    .removeClass('good warning poor')
+                    .addClass('no-data');
+            }
+    
+            // Still include average cron time if available
+            if (cronMonitor.average_response_time) {
+                $('#avg-cron-time')
+                    .text(cronMonitor.average_response_time + ' ms')
+                    .removeClass('no-data');
+            } else {
+                $('#avg-cron-time')
+                    .text('No data')
+                    .addClass('no-data');
+            }
         }
     }
 
