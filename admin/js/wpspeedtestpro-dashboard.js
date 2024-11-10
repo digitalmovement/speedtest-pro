@@ -856,6 +856,41 @@ jQuery(document).ready(function($) {
         return parseFloat(uptime).toFixed(2);
     }
 
+    function truncateUrl(url) {
+        if (!url) return 'N/A';
+        const maxLength = 40;
+        url = url.replace(/^https?:\/\//, '');
+        return url.length > maxLength ? url.substring(0, maxLength) + '...' : url;
+    }
+    
+    function formatLocation(location) {
+        if (!location) return 'N/A';
+        const locations = {
+            'us': 'United States',
+            'ca': 'Canada',
+            'uk': 'United Kingdom',
+            'de': 'Germany',
+            'fr': 'France',
+            'jp': 'Japan',
+            'in': 'India',
+            'au': 'Australia',
+            // Add more locations as needed
+        };
+        return locations[location.toLowerCase()] || location;
+    }
+    
+    function formatDevice(device) {
+        if (!device) return 'N/A';
+        const devices = {
+            'mobile': 'Mobile',
+            'desktop': 'Desktop',
+            'tablet': 'Tablet',
+            // Add more device types as needed
+        };
+        return devices[device.toLowerCase()] || device;
+    }
+
+    
     // Initialize the dashboard
     initDashboard();
 });
