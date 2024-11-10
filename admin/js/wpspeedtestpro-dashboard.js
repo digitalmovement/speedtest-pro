@@ -46,9 +46,9 @@ jQuery(document).ready(function($) {
         const latestResults = data.latest_results;
         const industryAvg = data.industry_avg;
 
-        //$('#server-performance-last-executed').text(new Date(latestResults.test_date).toLocaleString());
+        $('#server-performance-last-executed').text(new Date(latestResults.test_date).toLocaleString());
 
-        $('#server-performance-last-executed').text(latestResults.test_date);
+        //$('#server-performance-last-executed').text(latestResults.test_date);
 
         // Calculate percentages compared to industry averages
         updateMetricWithPercentage('#math-performance', latestResults.math, industryAvg.math);

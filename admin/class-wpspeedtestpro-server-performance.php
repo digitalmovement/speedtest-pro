@@ -580,9 +580,6 @@ class Wpspeedtestpro_Server_Performance {
 
     private function save_test_results($results) {
         try {
-            //$db = new Wpspeedtestpro_DB();
-            
-
             $this->core->db->insert_benchmark_result($results);
             return true;
         } catch (Exception $e) {
@@ -590,59 +587,49 @@ class Wpspeedtestpro_Server_Performance {
         }
     }
 
-    /*
+
     private function get_historical_results($test_type, $limit = 30) {
         try {
-            $db = new Wpspeedtestpro_DB();
-            return $db->get_benchmark_results($limit);
+            $results = $this->core->db->get_benchmark_results($limit);
+            
+            return array_map(function($result) use ($test_type) {
+                if ($test_type === 'wordpress_performance') {
+                    return [
+                        'test_date' => $result['test_date'],
+                        'wordpress_performance' => [
+                            'time' => $result['wordpress_performance_time'],
+                            'queries' => $result['wordpress_performance_queries']
+                        ]
+                    ];
+                } elseif ($test_type === 'speed_test') {
+                    return [
+                        'test_date' => $result['test_date'],
+                        'speed_test' => [
+                            'upload_10k' => $result['upload_10k'],
+                            'upload_100k' => $result['upload_100k'],
+                            'upload_1mb' => $result['upload_1mb'],
+                            'upload_10mb' => $result['upload_10mb'],
+                            'download_10k' => $result['download_10k'],
+                            'download_100k' => $result['download_100k'],
+                            'download_1mb' => $result['download_1mb'],
+                            'download_10mb' => $result['download_10mb'],
+                            'ping_latency' => $result['ping_latency'],
+                            'ip_address' => $result['ip_address'],
+                            'location' => $result['location']
+                        ]
+                    ];
+                } else {
+                    return [
+                        'test_date' => $result['test_date'],
+                        $test_type => $result[$test_type]
+                    ];
+                }
+            }, $results);
         } catch (Exception $e) {
             error_log('Error getting historical results: ' . $e->getMessage());
             return array();
         }
     }
-*/
-private function get_historical_results($test_type, $limit = 30) {
-    try {
-        $results = $this->core->db->get_benchmark_results($limit);
-        
-        return array_map(function($result) use ($test_type) {
-            if ($test_type === 'wordpress_performance') {
-                return [
-                    'test_date' => $result['test_date'],
-                    'wordpress_performance' => [
-                        'time' => $result['wordpress_performance_time'],
-                        'queries' => $result['wordpress_performance_queries']
-                    ]
-                ];
-            } elseif ($test_type === 'speed_test') {
-                return [
-                    'test_date' => $result['test_date'],
-                    'speed_test' => [
-                        'upload_10k' => $result['upload_10k'],
-                        'upload_100k' => $result['upload_100k'],
-                        'upload_1mb' => $result['upload_1mb'],
-                        'upload_10mb' => $result['upload_10mb'],
-                        'download_10k' => $result['download_10k'],
-                        'download_100k' => $result['download_100k'],
-                        'download_1mb' => $result['download_1mb'],
-                        'download_10mb' => $result['download_10mb'],
-                        'ping_latency' => $result['ping_latency'],
-                        'ip_address' => $result['ip_address'],
-                        'location' => $result['location']
-                    ]
-                ];
-            } else {
-                return [
-                    'test_date' => $result['test_date'],
-                    $test_type => $result[$test_type]
-                ];
-            }
-        }, $results);
-    } catch (Exception $e) {
-        error_log('Error getting historical results: ' . $e->getMessage());
-        return array();
-    }
-}
 
     private function log_message($message) {
         $log_file = WP_CONTENT_DIR . '/wpspeedtestpro-performance.log';
