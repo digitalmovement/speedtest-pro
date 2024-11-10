@@ -283,7 +283,7 @@ class Wpspeedtestpro_Server_Performance {
             $results['mysql'] = $this->get_historical_results('mysql');
             $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
             $results['speed_test'] = $this->get_historical_results('speed_test');
-            $results['ian'] = "test";
+            $results['test_date'] = date('Y-m-d H:i:s');
 
             update_option('wpspeedtestpro_performance_test_results', $results);
             update_option('wpspeedtestpro_performance_test_status', 'stopped');
@@ -396,6 +396,7 @@ class Wpspeedtestpro_Server_Performance {
     private function get_test_results() {
         return get_option('wpspeedtestpro_performance_test_results', array(
             'latest_results' => array(
+                'test_date' => '',
                 'math' => 0,
                 'string' => 0,
                 'loops' => 0,
