@@ -417,6 +417,7 @@ class Wpspeedtestpro_Server_Performance {
                     'location' => ''
                 )
             ),
+            'test_date' => '',
             'math' => array(),
             'string' => array(),
             'loops' => array(),
