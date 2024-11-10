@@ -596,30 +596,24 @@ jQuery(document).ready(function($) {
     }
     
     function updatePageSpeedCard(result) {
-        // Remove any existing no-data messages and states
-        $('.no-data-message').remove();
-        $('.pagespeed-metrics .no-data').removeClass('no-data');
-    
         if (!result || !result.status) {
             displayNoPageSpeedData();
             return;
         }
     
-        // Update Performance Score
+        // Performance Score
         if (result.performance_score !== null && result.performance_score !== undefined) {
             $('#performance-score')
                 .text(result.performance_score)
                 .removeClass('good warning poor no-data')
-                .addClass(getPerformanceScoreClass(result.performance_score))
-                .attr('title', `Performance Score: ${result.performance_score}/100`);
+                .addClass(getPerformanceScoreClass(result.performance_score));
         } else {
             $('#performance-score')
-                .text('--')
-                .addClass('no-data')
-                .attr('title', 'Performance score not available');
+                .text('No data')
+                .addClass('no-data');
         }
     
-        // Update First Contentful Paint
+        // First Contentful Paint
         if (result.first_contentful_paint) {
             const fcpSeconds = (result.first_contentful_paint / 1000).toFixed(2);
             $('#fcp-value')
@@ -628,11 +622,11 @@ jQuery(document).ready(function($) {
                 .addClass(getFCPClass(fcpSeconds));
         } else {
             $('#fcp-value')
-                .text('--')
+                .text('No data')
                 .addClass('no-data');
         }
     
-        // Update Largest Contentful Paint
+        // Largest Contentful Paint
         if (result.largest_contentful_paint) {
             const lcpSeconds = (result.largest_contentful_paint / 1000).toFixed(2);
             $('#lcp-value')
@@ -641,31 +635,85 @@ jQuery(document).ready(function($) {
                 .addClass(getLCPClass(lcpSeconds));
         } else {
             $('#lcp-value')
-                .text('--')
+                .text('No data')
                 .addClass('no-data');
         }
     
-        // Update Last Tested Time
+        // URL Tested
+        if (result.url) {
+            $('#tested-url')
+                .text(truncateUrl(result.url))
+                .removeClass('no-data')
+                .attr('title', result.url);
+        } else {
+            $('#tested-url')
+                .text('No data')
+                .addClass('no-data');
+        }
+    
+        // Test Location
+        if (result.location) {
+            $('#test-location')
+                .text(formatLocation(result.location))
+                .removeClass('no-data');
+        } else {
+            $('#test-location')
+                .text('No data')
+                .addClass('no-data');
+        }
+    
+        // Device Type
+        if (result.device) {
+            $('#test-device')
+                .text(formatDevice(result.device))
+                .removeClass('no-data');
+        } else {
+            $('#test-device')
+                .text('No data')
+                .addClass('no-data');
+        }
+    
+        // Last Tested
         if (result.test_date) {
             $('#pagespeed-last-tested')
                 .text(new Date(result.test_date).toLocaleString())
                 .removeClass('no-data');
         } else {
             $('#pagespeed-last-tested')
-                .text('Date not available')
+                .text('No data')
                 .addClass('no-data');
         }
     
-        // Add status indicator if test is pending
-        if (result.status === 'pending' || result.status === 'processing') {
-            $('.pagespeed-metrics').addClass('loading');
-            $('#pagespeed-card .card-content').append(
-                $('<div/>', {
-                    class: 'test-status-message',
-                    html: '<p><i class="fas fa-spinner fa-spin"></i> Test in progress...</p>'
-                })
-            );
+        // Report Link
+        if (result.report_url) {
+            $('#report-link').attr('href', result.report_url);
+            $('#report-link-container').show();
+        } else {
+            $('#report-link-container').hide();
         }
+    }
+    
+    function displayNoPageSpeedData(message = 'No Page Speed data available') {
+        // Reset all values to "No data"
+        const metrics = [
+            'performance-score',
+            'fcp-value',
+            'lcp-value',
+            'tested-url',
+            'test-location',
+            'test-device',
+            'pagespeed-last-tested'
+        ];
+    
+        metrics.forEach(id => {
+            $(`#${id}`)
+                .text('No data')
+                .removeClass('good warning poor')
+                .addClass('no-data');
+        });
+    
+        // Hide report link
+        $('#report-link-container').hide();
     }
     
     // Helper functions for metric classifications

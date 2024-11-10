@@ -135,10 +135,7 @@
 }
 
 .no-data-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
     text-align: center;
     color: #666;
     font-style: italic;
@@ -243,4 +240,26 @@
     color: #666;
     font-style: italic;
 }
+
+.report-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: #2271b1;
+    color: white;
+    font-size: 0.9em;
+}
+
+.report-button:hover {
+    background: #135e96;
+    color: white;
+}
+
+.report-button i {
+    font-size: 0.8em;
+}
+
 

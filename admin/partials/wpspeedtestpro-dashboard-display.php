@@ -149,8 +149,28 @@
                         <span class="value" id="lcp-value">Loading...</span>
                     </div>
                     <div class="metric">
+                        <span class="label">URL Tested:</span>
+                        <span class="value" id="tested-url">Loading...</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Test Location:</span>
+                        <span class="value" id="test-location">Loading...</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Device Type:</span>
+                        <span class="value" id="test-device">Loading...</span>
+                    </div>
+                    <div class="metric">
                         <span class="label">Last Tested:</span>
                         <span class="value" id="pagespeed-last-tested">Loading...</span>
+                    </div>
+                    <div class="metric" id="report-link-container" style="display: none;">
+                        <span class="label">Full Report:</span>
+                        <span class="value">
+                            <a href="#" id="report-link" target="_blank" class="report-button">
+                                <i class="fas fa-external-link-alt"></i> View Report
+                            </a>
+                        </span>
                     </div>
                 </div>
             </div>
