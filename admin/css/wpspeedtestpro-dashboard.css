@@ -194,10 +194,7 @@
     color: #2271b1;
 }
 
-.pagespeed-card .no-data {
-    color: #666;
-    font-style: italic;
-}
+
 
 .pagespeed-card .loading {
     animation: pulse 1.5s infinite;
@@ -208,3 +205,42 @@
     50% { opacity: 0.5; }
     100% { opacity: 1; }
 }
+
+.pagespeed-metrics.loading .metric {
+    opacity: 0.5;
+}
+
+.test-status-message {
+    text-align: center;
+    padding: 10px;
+    margin-top: 15px;
+    background-color: #f0f6fc;
+    border-radius: 4px;
+}
+
+.test-status-message i {
+    margin-right: 8px;
+    color: #2271b1;
+}
+
+.pagespeed-card .metric {
+    transition: opacity 0.3s ease;
+}
+
+.pagespeed-card .good {
+    color: #00a32a;
+}
+
+.pagespeed-card .warning {
+    color: #dba617;
+}
+
+.pagespeed-card .poor {
+    color: #d63638;
+}
+
+.pagespeed-card .no-data {
+    color: #666;
+    font-style: italic;
+}
+
