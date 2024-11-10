@@ -251,9 +251,12 @@ class Wpspeedtestpro_Server_Performance {
         try {
             update_option('wpspeedtestpro_performance_test_status', 'running');
             
+            $current_date = date('Y-m-d H:i:s');
+
             // Run existing performance tests
             $results = array(
                 'latest_results' => array(
+                    'test_date' => $current_date,  
                     'math' => $this->test_math(),
                     'string' => $this->test_string(),
                     'loops' => $this->test_loops(),
@@ -283,7 +286,7 @@ class Wpspeedtestpro_Server_Performance {
             $results['mysql'] = $this->get_historical_results('mysql');
             $results['wordpress_performance'] = $this->get_historical_results('wordpress_performance');
             $results['speed_test'] = $this->get_historical_results('speed_test');
-            $results['test_date'] = date('Y-m-d H:i:s');
+            $results['test_date'] = $current_date; 
 
             update_option('wpspeedtestpro_performance_test_results', $results);
             update_option('wpspeedtestpro_performance_test_status', 'stopped');
@@ -396,7 +399,7 @@ class Wpspeedtestpro_Server_Performance {
     private function get_test_results() {
         return get_option('wpspeedtestpro_performance_test_results', array(
             'latest_results' => array(
-                'test_date' => '',
+                'test_date' => date('Y-m-d H:i:s'), 
                 'math' => 0,
                 'string' => 0,
                 'loops' => 0,
@@ -417,7 +420,7 @@ class Wpspeedtestpro_Server_Performance {
                     'location' => ''
                 )
             ),
-            'test_date' => '',
+            'test_date' => date('Y-m-d H:i:s'),
             'math' => array(),
             'string' => array(),
             'loops' => array(),
@@ -578,6 +581,8 @@ class Wpspeedtestpro_Server_Performance {
     private function save_test_results($results) {
         try {
             //$db = new Wpspeedtestpro_DB();
+            
+
             $this->core->db->insert_benchmark_result($results);
             return true;
         } catch (Exception $e) {
