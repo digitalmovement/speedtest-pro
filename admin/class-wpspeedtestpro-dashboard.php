@@ -84,7 +84,7 @@ class Wpspeedtestpro_Dashboard {
      */
     public function enqueue_styles() {
         if ($this->is_this_the_right_plugin_page()) {
-            wp_enqueue_style( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-dashboard.css', array(), $this->version, 'all' );
+            wp_enqueue_style( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-dashboard1.css', array(), $this->version, 'all' );
         }
     }
     /**
@@ -94,7 +94,7 @@ class Wpspeedtestpro_Dashboard {
      */
     public function enqueue_scripts() {
         if ($this->is_this_the_right_plugin_page()) {
-            wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-dashboard.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-dashboard1.js', array( 'jquery' ), $this->version, false );
 
             wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
