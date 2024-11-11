@@ -69,6 +69,12 @@ class Wpspeedtestpro_Dashboard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
 
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'toplevel_page_wpspeedtestpro';    
+        }
+    }
 
 
     /**
@@ -77,37 +83,33 @@ class Wpspeedtestpro_Dashboard {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        wp_enqueue_style( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-dashboard.css', array(), $this->version, 'all' );
+        if ($this->is_this_the_right_plugin_page()) {
+            wp_enqueue_style( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-dashboard.css', array(), $this->version, 'all' );
+        }
     }
-
     /**
      * Register the JavaScript for the dashboard area.
      *
      * @since    1.0.0
      */
     public function enqueue_scripts() {
-        wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-dashboard.js', array( 'jquery' ), $this->version, false );
+        if ($this->is_this_the_right_plugin_page()) {
+            wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-dashboard.js', array( 'jquery' ), $this->version, false );
 
-        wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-            'performance_nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
-            'ssl_nonce' => wp_create_nonce('ssl_testing_nonce'),
-            'uptime_nonce' => wp_create_nonce('wpspeedtestpro_uptime_nonce'),
-            'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce'),
-            'selected_region' => get_option('wpspeedtestpro_selected_region'),
-            'home_url' => home_url()
-        ));    
-
+            wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
+                'performance_nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
+                'ssl_nonce' => wp_create_nonce('ssl_testing_nonce'),
+                'uptime_nonce' => wp_create_nonce('wpspeedtestpro_uptime_nonce'),
+                'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce'),
+                'selected_region' => get_option('wpspeedtestpro_selected_region'),
+                'home_url' => home_url()
+            ));    
+        }
   
     }
 
-    private function is_this_the_right_plugin_page() {
-        if ( function_exists( 'get_current_screen' ) ) {
-            $screen = get_current_screen();
-            return $screen && $screen->id === 'toplevel_page_wpspeedtestpro';    
-        }
-    }
 
     /**
      * Render the dashboard page for this plugin.
