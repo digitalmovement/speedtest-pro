@@ -105,8 +105,7 @@ class Wpspeedtestpro_Dashboard {
     private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
             $screen = get_current_screen();
-            print_r($screen);
-            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro';    
+            return $screen && $screen->id === 'toplevel_page_wpspeedtestpro';    
         }
     }
 
