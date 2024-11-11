@@ -10,6 +10,7 @@
         if (!get_option('wpspeedtestpro_serverinfo_info_dismissed', false)) :
     ?>
     <div id="serverinfo-info-banner" class="notice notice-info">
+        <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
         <h2 style="margin-top: 0;">Understanding Your Server Configuration</h2>
         
         <p>Server information provides crucial details about your hosting environment, helping you ensure optimal WordPress performance and troubleshoot potential issues.</p>
