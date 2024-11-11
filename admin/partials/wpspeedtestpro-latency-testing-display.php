@@ -15,7 +15,10 @@
     <h1>Google Data Center Latency Testing</h1>
 
     <?php if (!get_option('wpspeedtestpro_latency_info_dismissed', false)):  ?>
-    <div id="latency-info-banner" class="notice notice-info is-dismissible">
+    <div id="latency-info-banner" class="notice notice-info">
+        <button type="button" class="notice-dismiss">
+            <span class="screen-reader-text">Dismiss this notice.</span>
+        </button>
         <h2 style="margin-top: 0;">Understanding Google Cloud Latency Testing</h2>
         
         <p>Latency testing measures the response time between your server and Google Cloud Platform's global data centers, helping you optimize your website's performance for users worldwide.</p>

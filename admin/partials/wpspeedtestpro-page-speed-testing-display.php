@@ -46,7 +46,10 @@ function get_color_class($metric, $value) {
     <?php    
     if (!get_option('wpspeedtestpro_pagespeed_info_dismissed', false)) : 
     ?>
-    <div id="pagespeed-info-banner" class="notice notice-info is-dismissible">
+    <div id="pagespeed-info-banner" class="notice notice-info">
+        <button type="button" class="notice-dismiss">
+            <span class="screen-reader-text">Dismiss this notice.</span>
+        </button>
         <h2 style="margin-top: 0;">Understanding Core Web Vitals and Page Speed</h2>
         
         <p>Page speed and Core Web Vitals are crucial for user experience and SEO rankings. Our testing tool measures the following key metrics:</p>

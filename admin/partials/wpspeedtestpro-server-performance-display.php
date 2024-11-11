@@ -12,7 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) exit;
     <?php    if (!get_option('wpspeedtestpro_performance_info_dismissed', false)):
      
     ?>
-    <div id="performance-info-banner" class="notice notice-info is-dismissible">
+    <div id="performance-info-banner" class="notice notice-info">
+        <button type="button" class="notice-dismiss">
+            <span class="screen-reader-text">Dismiss this notice.</span>
+        </button>
         <h2 style="margin-top: 0;">Understanding Server Performance Testing</h2>
         
         <p style="margin-bottom: 15px;">Server performance testing helps identify bottlenecks and ensures optimal performance of your WordPress site. Our comprehensive testing suite measures several critical aspects:</p>
