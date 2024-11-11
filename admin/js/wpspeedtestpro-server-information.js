@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 
-    $('#serverinfo-info-banner > button.notice-dismiss').on('click', function(e) {
+    $(document).on('click', '#serverinfo-info-banner .notice-dismiss', function(e) {
         e.preventDefault();
         
         const $banner = $(this).closest('#serverinfo-info-banner');
@@ -36,3 +36,4 @@ jQuery(document).ready(function($) {
     $('.phpinfo-wrapper table').addClass('wp-list-table widefat fixed striped');
     $('.phpinfo-wrapper td.e').addClass('row-title');
 });
+document.querySelector("#serverinfo-info-banner > button")
