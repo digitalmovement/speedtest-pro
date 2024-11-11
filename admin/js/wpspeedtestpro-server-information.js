@@ -1,7 +1,6 @@
 jQuery(document).ready(function($) {
-    console.log('WTF');
-    console.log('Sending AJAX request to1:', wpspeedtestpro_serverinfo.ajax_url);
-    $('#serverinfo-info-banner .notice-dismiss').on('click', function(e) {
+
+    $('#serverinfo-info-banner button.notice-dismiss').on('click', function(e) {
         e.preventDefault();
         
         const $banner = $(this).closest('#serverinfo-info-banner');
@@ -27,7 +26,7 @@ jQuery(document).ready(function($) {
         });
     });
 
-    
+
     $('#wpspeedtestpro-server-tabs').tabs();
 
     // Make tables responsive
