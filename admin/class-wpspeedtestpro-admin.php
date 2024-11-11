@@ -215,7 +215,6 @@ class Wpspeedtestpro_Admin {
             'latest_results' => $db->get_latest_results()
         );
 
-        echo 'im admin display';
         $dashboard->display_dashboard();
     }
 
