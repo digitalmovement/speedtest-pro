@@ -102,12 +102,22 @@ class Wpspeedtestpro_Dashboard {
   
     }
 
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-dashboard';    
+        }
+    }
+
     /**
      * Render the dashboard page for this plugin.
      *
      * @since    1.0.0
      */
     public function display_dashboard() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
         $api = $this->core->get_api();
         $db = $this->core->get_db();
 
