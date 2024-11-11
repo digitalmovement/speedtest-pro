@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 
-    $('#serverinfo-info-banner button.notice-dismiss').on('click', function(e) {
+    $('#serverinfo-info-banner > button.notice-dismiss').on('click', function(e) {
         e.preventDefault();
         
         const $banner = $(this).closest('#serverinfo-info-banner');
