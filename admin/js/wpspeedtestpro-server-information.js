@@ -10,7 +10,7 @@ jQuery(document).ready(function($) {
     $('.phpinfo-wrapper td.e').addClass('row-title');
 
 
-    
+
     $(document).on('click', '#serverinfo-info-banner .notice-dismiss', function(e) {
         e.preventDefault();
         
@@ -22,7 +22,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_dismiss_serverinfo_info',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: wpspeedtestpro_serverinfo.nonce
             },
             success: function(response) {
                 if (response.success) {
