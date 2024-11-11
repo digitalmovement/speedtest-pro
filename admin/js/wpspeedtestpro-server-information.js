@@ -1,5 +1,16 @@
 jQuery(document).ready(function($) {
 
+    $('#wpspeedtestpro-server-tabs').tabs();
+
+    // Make tables responsive
+    $('.wp-list-table').wrap('<div class="table-responsive"></div>');
+
+    // Style PHPInfo output
+    $('.phpinfo-wrapper table').addClass('wp-list-table widefat fixed striped');
+    $('.phpinfo-wrapper td.e').addClass('row-title');
+
+
+    
     $(document).on('click', '#serverinfo-info-banner .notice-dismiss', function(e) {
         e.preventDefault();
         
@@ -27,13 +38,4 @@ jQuery(document).ready(function($) {
     });
 
 
-    $('#wpspeedtestpro-server-tabs').tabs();
-
-    // Make tables responsive
-    $('.wp-list-table').wrap('<div class="table-responsive"></div>');
-
-    // Style PHPInfo output
-    $('.phpinfo-wrapper table').addClass('wp-list-table widefat fixed striped');
-    $('.phpinfo-wrapper td.e').addClass('row-title');
 });
-document.querySelector("#serverinfo-info-banner > button")
