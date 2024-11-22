@@ -105,7 +105,7 @@ class Wpspeedtestpro_Admin {
         $this->server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
         $this->dashboard = new Wpspeedtestpro_Dashboard($this->plugin_name, $this->version, $this->core);
 
-        $cloudflare_sync = new Wpspeedtestpro_Cloudflare_Sync($this->db);
+        $cloudflare_sync = new Wpspeedtestpro_Cloudflare_Sync($this->core->db);
         $cloudflare_sync->init();
 
     }
