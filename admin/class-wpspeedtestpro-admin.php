@@ -104,6 +104,10 @@ class Wpspeedtestpro_Admin {
         $this->page_speed_testing   = new Wpspeedtestpro_Page_Speed_Testing( $this->plugin_name, $this->version, $this->core );
         $this->server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
         $this->dashboard = new Wpspeedtestpro_Dashboard($this->plugin_name, $this->version, $this->core);
+
+        $cloudflare_sync = new Wpspeedtestpro_Cloudflare_Sync($this->db);
+        $cloudflare_sync->init();
+
     }
 
     /**
@@ -302,3 +306,97 @@ class Wpspeedtestpro_Admin {
        $this->settings->display_settings();
     }
 }
+
+
+class Wpspeedtestpro_Cloudflare_Sync {
+    private $worker_url;
+    private $shared_secret;
+    private $db;
+
+    public function __construct($db) {
+        $this->db = $db;
+        $this->worker_url = 'https://analytics.wpspeedtestpro.com';
+        $this->shared_secret = 'your-very-long-and-secure-secret-key'; // Same as in Worker
+        add_action('wpspeedtestpro_sync_to_cloudflare', array($this, 'sync_data'));
+    }
+
+    private function generate_signature($data) {
+        return hash_hmac('sha256', json_encode($data), $this->shared_secret);
+    }
+    public function init() {
+        // Schedule periodic sync if not already scheduled
+        if (!wp_next_scheduled('wpspeedtestpro_sync_to_cloudflare')) {
+            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_to_cloudflare');
+        }
+    }
+    
+    public function sync_data() {
+        try {
+            $last_sync_id = get_option('wpspeedtestpro_last_sync_id', 0);
+            $results = $this->db->get_new_benchmark_results($last_sync_id);
+            
+            if (empty($results)) {
+                return;
+            }
+
+            $data = $this->process_data($results);
+            
+            // Generate signature
+            $signature = $this->generate_signature($data);
+            
+            $response = wp_remote_post($this->worker_url . '/upload', array(
+                'headers' => array(
+                    'Content-Type' => 'application/json',
+                    'X-Signature' => $signature
+                ),
+                'body' => json_encode($data),
+                'timeout' => 30
+            ));
+
+            if (is_wp_error($response)) {
+                throw new Exception('Failed to send data: ' . $response->get_error_message());
+            }
+
+            $body = json_decode(wp_remote_retrieve_body($response), true);
+            
+            if (!empty($body['success'])) {
+                $max_id = max(array_column($results, 'id'));
+                update_option('wpspeedtestpro_last_sync_id', $max_id);
+            }
+
+        } catch (Exception $e) {
+            error_log('WPSpeedTestPro Sync Error: ' . $e->getMessage());
+        }
+    }
+
+    private function process_data($results) {
+        return array(
+            'site_url' => site_url(),
+            'site_key' => $this->site_key,
+            'php_version' => phpversion(),
+            'wp_version' => get_bloginfo('version'),
+            'sync_time' => current_time('mysql'),
+            'results' => array_map(function($result) {
+                return array(
+                    'id' => $result['id'],
+                    'test_date' => $result['test_date'],
+                    'metrics' => array(
+                        'math' => floatval($result['math']),
+                        'string' => floatval($result['string']),
+                        'loops' => floatval($result['loops']),
+                        'conditionals' => floatval($result['conditionals']),
+                        'mysql' => floatval($result['mysql']),
+                        'wp_performance' => array(
+                            'time' => floatval($result['wordpress_performance_time']),
+                            'queries' => floatval($result['wordpress_performance_queries'])
+                        )
+                    )
+                );
+            }, $results)
+        );
+    }
+
+
+}
+
+

@@ -234,6 +234,18 @@ class Wpspeedtestpro_DB {
         return $wpdb->get_results($query);
     }
 
+    public function get_new_benchmark_results($last_id = 0) {
+        global $wpdb;
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->benchmark_results_table} WHERE id > %d ORDER BY id ASC",
+                $last_id
+            ),
+            ARRAY_A
+        );
+    }
+
+    
     public function speedvitals_create_tables() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
