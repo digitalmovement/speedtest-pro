@@ -373,13 +373,12 @@ class Wpspeedtestpro_Cloudflare_Sync {
     private function process_data($results) {
         return array(
             'site_url' => site_url(),
-            'site_key' => $this->site_key,
+            'site_key' => "your-site-key",
             'php_version' => phpversion(),
             'wp_version' => get_bloginfo('version'),
             'sync_time' => current_time('mysql'),
             'results' => array_map(function($result) {
                 return array(
-                    'id' => $result['id'],
                     'test_date' => $result['test_date'],
                     'metrics' => array(
                         'math' => floatval($result['math']),
