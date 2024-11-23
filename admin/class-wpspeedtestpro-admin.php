@@ -109,7 +109,7 @@ class Wpspeedtestpro_Admin {
 #        $cloudflare_sync->init();
         $this->sync_handler = new Wpspeedtestpro_Sync_Handler($this->core->db);
 
-        if (get_option('wpspeedtestpro_allow_data_collection', false)) {
+        if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
             $this->sync_handler->init();
         }
 
