@@ -411,7 +411,7 @@ class Wpspeedtestpro_Sync_Handler {
 
     public function __construct($db) {
         $this->db = $db;
-        $this->worker_url = 'https://analytics.wpspeedtestpro.workers.dev/upload';
+        $this->worker_url = 'https://analytics.wpspeedtestpro.com/upload';
         $this->shared_secret = 'your-very-long-and-secure-secret-key';
         
        // Generate or get site key
