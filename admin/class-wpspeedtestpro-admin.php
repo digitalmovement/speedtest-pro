@@ -415,13 +415,21 @@ class Wpspeedtestpro_Sync_Handler {
         $this->worker_url = 'https://analytics.wpspeedtestpro.workers.dev/upload';
         $this->shared_secret = 'your-very-long-and-secure-secret-key';
         
-        // Generate or get site key
-        $this->site_key = get_option('wpspeedtestpro_site_key');
-        if (empty($this->site_key)) {
-            $this->site_key = wp_hash(site_url() . time());
-            update_option('wpspeedtestpro_site_key', $this->site_key);
-        }
+       // Generate or get site key
+       $this->site_key = get_option('wpspeedtestpro_site_key');
+       if (empty($this->site_key)) {
+           $this->site_key = $this->generate_site_key();
+           update_option('wpspeedtestpro_site_key', $this->site_key);
+       }
     }
+
+    private function generate_site_key() {
+        $site_url = site_url();
+        $salt = wp_salt('auth'); // Using WordPress authentication salt
+        $unique_string = $site_url . time() . $salt;
+        return hash('sha256', $unique_string);
+    }
+    
 
     public function init() {
         // Check if data collection is allowed
