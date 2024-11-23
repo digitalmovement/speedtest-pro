@@ -125,7 +125,7 @@ class Wpspeedtestpro_Deactivator {
     public static function deactivate() {
         // Handle basic deactivation tasks
         wp_clear_scheduled_hook('speedvitals_check_scheduled_tests');
-        
+        wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
         // Data deletion is handled via AJAX before deactivation
     }
 }

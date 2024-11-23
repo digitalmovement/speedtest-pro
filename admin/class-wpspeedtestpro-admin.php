@@ -105,8 +105,13 @@ class Wpspeedtestpro_Admin {
         $this->server_information = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);
         $this->dashboard = new Wpspeedtestpro_Dashboard($this->plugin_name, $this->version, $this->core);
 
-        $cloudflare_sync = new Wpspeedtestpro_Cloudflare_Sync($this->core->db);
-        $cloudflare_sync->init();
+#        $cloudflare_sync = new Wpspeedtestpro_Cloudflare_Sync($this->core->db);
+#        $cloudflare_sync->init();
+        $this->sync_handler = new Wpspeedtestpro_Sync_Handler($this->core->db);
+
+        if (get_option('wpspeedtestpro_allow_data_collection', false)) {
+            $this->sync_handler->init();
+        }
 
     }
 
@@ -399,4 +404,160 @@ class Wpspeedtestpro_Cloudflare_Sync {
 
 }
 
+class Wpspeedtestpro_Sync_Handler {
+    private $db;
+    private $worker_url;
+    private $shared_secret;
+    private $site_key;
 
+    public function __construct($db) {
+        $this->db = $db;
+        $this->worker_url = 'https://analytics.wpspeedtestpro.workers.dev/upload';
+        $this->shared_secret = 'your-very-long-and-secure-secret-key';
+        
+        // Generate or get site key
+        $this->site_key = get_option('wpspeedtestpro_site_key');
+        if (empty($this->site_key)) {
+            $this->site_key = wp_hash(site_url() . time());
+            update_option('wpspeedtestpro_site_key', $this->site_key);
+        }
+    }
+
+    public function init() {
+        // Check if data collection is allowed
+        if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
+            wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
+            return;
+        }
+
+        // Schedule hourly sync if not already scheduled
+        if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
+            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
+        }
+
+        add_action('wpspeedtestpro_sync_data', array($this, 'sync_data'));
+    }
+
+    private function get_environment_info() {
+        global $wp_version;
+        
+        return array(
+            'php_version' => phpversion(),
+            'wp_version' => $wp_version,
+            'mysql_version' => $this->get_mysql_version(),
+            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+            'os' => PHP_OS,
+            'max_execution_time' => ini_get('max_execution_time'),
+            'max_input_vars' => ini_get('max_input_vars'),
+            'max_input_time' => ini_get('max_input_time'),
+            'memory_limit' => ini_get('memory_limit'),
+            'post_max_size' => ini_get('post_max_size'),
+            'upload_max_filesize' => ini_get('upload_max_filesize'),
+            'php_extensions' => get_loaded_extensions(),
+            'active_plugins' => $this->get_active_plugins(),
+            'theme' => $this->get_theme_info(),
+            'multisite' => is_multisite(),
+            'site_url' => site_url(),
+            'home_url' => home_url(),
+            'is_ssl' => is_ssl(),
+            'wp_debug' => defined('WP_DEBUG') && WP_DEBUG,
+            'wp_memory_limit' => WP_MEMORY_LIMIT,
+            'timezone' => wp_timezone_string()
+        );
+    }
+
+    private function get_mysql_version() {
+        global $wpdb;
+        return $wpdb->get_var("SELECT VERSION()");
+    }
+
+    private function get_active_plugins() {
+        $active_plugins = get_option('active_plugins');
+        $plugin_info = array();
+        
+        foreach ($active_plugins as $plugin) {
+            $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin);
+            $plugin_info[] = array(
+                'name' => $plugin_data['Name'],
+                'version' => $plugin_data['Version']
+            );
+        }
+        
+        return $plugin_info;
+    }
+
+    private function get_theme_info() {
+        $theme = wp_get_theme();
+        return array(
+            'name' => $theme->get('Name'),
+            'version' => $theme->get('Version'),
+            'author' => $theme->get('Author')
+        );
+    }
+
+    private function generate_signature($data) {
+        return hash_hmac('sha256', json_encode($data), $this->shared_secret);
+    }
+
+    public function sync_data() {
+        // Check if data collection is still allowed
+        if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
+            return;
+        }
+
+        try {
+            // Get all unsynced data
+            $unsynced_data = $this->db->get_unsynced_data();
+            
+            if (empty($unsynced_data['benchmark_results']) && 
+                empty($unsynced_data['hosting_results']) && 
+                empty($unsynced_data['speedvitals_results'])) {
+                return;
+            }
+
+            // Prepare data for sync
+            $sync_data = array(
+                'site_key' => $this->site_key,
+                'site_url' => site_url(),
+                'sync_time' => current_time('mysql'),
+                'environment' => $this->get_environment_info(),
+                'data' => $unsynced_data
+            );
+
+            // Generate signature
+            $signature = $this->generate_signature($sync_data);
+
+            // Send to Cloudflare Worker
+            $response = wp_remote_post($this->worker_url, array(
+                'headers' => array(
+                    'Content-Type' => 'application/json',
+                    'X-Signature' => $signature
+                ),
+                'body' => json_encode($sync_data),
+                'timeout' => 30
+            ));
+
+            if (is_wp_error($response)) {
+                throw new Exception('Failed to send data: ' . $response->get_error_message());
+            }
+
+            $body = json_decode(wp_remote_retrieve_body($response), true);
+
+            if (!empty($body['success'])) {
+                // Mark data as synced
+                if (!empty($unsynced_data['benchmark_results'])) {
+                    $this->db->mark_as_synced('benchmark', array_column($unsynced_data['benchmark_results'], 'id'));
+                }
+                if (!empty($unsynced_data['hosting_results'])) {
+                    $this->db->mark_as_synced('hosting', array_column($unsynced_data['hosting_results'], 'id'));
+                }
+                if (!empty($unsynced_data['speedvitals_results'])) {
+                    $this->db->mark_as_synced('speedvitals', array_column($unsynced_data['speedvitals_results'], 'id'));
+                }
+            }
+
+        } catch (Exception $e) {
+            error_log('WPSpeedTestPro Sync Error: ' . $e->getMessage());
+        }
+    }
+}

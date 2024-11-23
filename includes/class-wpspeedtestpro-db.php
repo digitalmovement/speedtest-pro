@@ -24,15 +24,15 @@ class Wpspeedtestpro_DB {
             region_name varchar(255) NOT NULL,
             latency float NOT NULL,
             latency_difference float DEFAULT NULL,
+            synced tinyint(1) DEFAULT 0,
             PRIMARY KEY  (id),
             KEY region_name (region_name),
-            KEY test_time (test_time)
+            KEY test_time (test_time),
+            KEY synced (synced)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
-
-        $this->create_benchmark_table();
     }
 
     public function create_benchmark_table() {
@@ -60,8 +60,10 @@ class Wpspeedtestpro_DB {
             ping_latency float NULL,
             ip_address varchar(45) NULL,
             location varchar(2) NULL,
+            synced tinyint(1) DEFAULT 0,
             PRIMARY KEY  (id),
-            KEY test_date (test_date)
+            KEY test_date (test_date),
+            KEY synced (synced)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -245,7 +247,7 @@ class Wpspeedtestpro_DB {
         );
     }
 
-    
+
     public function speedvitals_create_tables() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
@@ -266,7 +268,9 @@ class Wpspeedtestpro_DB {
             total_blocking_time int(11),
             cumulative_layout_shift float,
             report_url varchar(255),
-            PRIMARY KEY  (id)
+            synced tinyint(1) DEFAULT 0,
+            PRIMARY KEY  (id),
+            KEY synced (synced)
         ) $charset_collate;
 
         CREATE TABLE {$this->speedvitals_scheduled_tests_table} (
@@ -462,5 +466,60 @@ class Wpspeedtestpro_DB {
             ARRAY_A
         );
     }       
+
+    public function get_unsynced_data() {
+        global $wpdb;
+        
+        // Get unsynced benchmark results
+        $benchmark_results = $wpdb->get_results(
+            "SELECT * FROM {$this->benchmark_results_table} WHERE synced = 0",
+            ARRAY_A
+        );
+
+        // Get unsynced hosting benchmarking results
+        $hosting_results = $wpdb->get_results(
+            "SELECT * FROM {$this->hosting_benchmarking_table} WHERE synced = 0",
+            ARRAY_A
+        );
+
+        // Get unsynced speedvitals results
+        $speedvitals_results = $wpdb->get_results(
+            "SELECT * FROM {$this->speedvitals_tests_table} WHERE synced = 0 AND status = 'success'",
+            ARRAY_A
+        );
+
+        return [
+            'benchmark_results' => $benchmark_results,
+            'hosting_results' => $hosting_results,
+            'speedvitals_results' => $speedvitals_results
+        ];
+    }
+
+    // Method to mark records as synced
+    public function mark_as_synced($table_type, $ids) {
+        if (empty($ids)) return;
+        
+        global $wpdb;
+        $table = '';
+        
+        switch($table_type) {
+            case 'benchmark':
+                $table = $this->benchmark_results_table;
+                break;
+            case 'hosting':
+                $table = $this->hosting_benchmarking_table;
+                break;
+            case 'speedvitals':
+                $table = $this->speedvitals_tests_table;
+                break;
+        }
+        
+        if (empty($table)) return;
+        
+        $ids_string = implode(',', array_map('intval', $ids));
+        $wpdb->query("UPDATE {$table} SET synced = 1 WHERE id IN ({$ids_string})");
+    }
+
+
 
 } // End of class
