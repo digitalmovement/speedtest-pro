@@ -424,12 +424,21 @@ class Wpspeedtestpro_Sync_Handler {
     }
 
     private function generate_site_key() {
-        $site_url = site_url();
-        $salt = wp_salt('auth'); // Using WordPress authentication salt
-        $unique_string = $site_url . time() . $salt;
-        return hash('sha256', $unique_string);
+        $unique_parts = array(
+            parse_url(site_url(), PHP_URL_HOST), // Domain name
+            defined('ABSPATH') ? ABSPATH : '', // WordPress installation path
+            defined('DB_NAME') ? DB_NAME : '', // Database name
+            php_uname(), // System information
+            time(), // Current timestamp
+            uniqid('', true), // Unique identifier with more entropy
+            random_bytes(16) // Random bytes for additional entropy
+        );
+
+        // Combine all parts and hash them
+        $combined = implode('|', $unique_parts);
+        return hash('sha256', $combined);
     }
-    
+
 
     public function init() {
         // Check if data collection is allowed
