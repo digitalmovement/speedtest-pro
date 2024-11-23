@@ -339,7 +339,7 @@ class Wpspeedtestpro_Cloudflare_Sync {
                 return;
             }
 
-            WP_DEBUG_LOG('Syncing ' . print_r($results) . ' results to Cloudflare');
+            error_log('Syncing ' . print_r($results) . ' results to Cloudflare');
             $data = $this->process_data($results);
             
             // Generate signature
