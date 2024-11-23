@@ -333,7 +333,7 @@ class Wpspeedtestpro_Cloudflare_Sync {
     public function sync_data() {
         try {
             $last_sync_id = get_option('wpspeedtestpro_last_sync_id1', 0);
-            $results = $this->db->get_new_benchmark_results($last_sync_id);
+            $results = $this->db->get_latest_benchmark_results();
             
             if (empty($results)) {
                 return;
