@@ -332,13 +332,14 @@ class Wpspeedtestpro_Cloudflare_Sync {
     
     public function sync_data() {
         try {
-            $last_sync_id = get_option('wpspeedtestpro_last_sync_id', 0);
+            $last_sync_id = get_option('wpspeedtestpro_last_sync_id1', 0);
             $results = $this->db->get_new_benchmark_results($last_sync_id);
             
             if (empty($results)) {
                 return;
             }
 
+            WP_DEBUG_LOG('Syncing ' . print_r($results) . ' results to Cloudflare');
             $data = $this->process_data($results);
             
             // Generate signature
