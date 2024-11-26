@@ -460,6 +460,7 @@ class Wpspeedtestpro_Sync_Handler {
 
             if (is_wp_error($response)) {
                 throw new Exception('Failed to send data: ' . $response->get_error_message());
+                error_log('WPSpeedTestPro Sync Error: ' . $response->get_error_message());
             }
 
             $body = json_decode(wp_remote_retrieve_body($response), true);
