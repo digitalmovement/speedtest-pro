@@ -107,9 +107,9 @@ class Wpspeedtestpro_Admin {
 
         $this->sync_handler = new Wpspeedtestpro_Sync_Handler($this->core->db);
 
-        if (get_option('wpspeedtestpro_allow_data_collection')) {
+//        if (get_option('wpspeedtestpro_allow_data_collection')) {
             $this->sync_handler->init();
-        }
+ //       }
     }
 
     /**
