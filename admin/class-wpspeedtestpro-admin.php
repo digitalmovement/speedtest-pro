@@ -462,8 +462,6 @@ class Wpspeedtestpro_Sync_Handler {
                 throw new Exception('Failed to send data: ' . $response->get_error_message());
             }
 
-           
-            error_log('WPSpeedTestPro Sync Error: ' . var_export($response, true));
             
 
             $body = json_decode(wp_remote_retrieve_body($response), true);
