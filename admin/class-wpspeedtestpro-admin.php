@@ -462,10 +462,10 @@ class Wpspeedtestpro_Sync_Handler {
                 throw new Exception('Failed to send data: ' . $response->get_error_message());
             }
 
-            if (wp_remote_retrieve_response_code($response) !== 200) {
-                error_log('WPSpeedTestPro Sync Error: ' . wp_remote_retrieve_response_message($response));
-            }
+           
+            error_log('WPSpeedTestPro Sync Error: ' . var_export($response, true));
             
+
             $body = json_decode(wp_remote_retrieve_body($response), true);
 
             if (!empty($body['success'])) {
