@@ -151,7 +151,8 @@ class Wpspeedtestpro_Settings {
         ));
         register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_speedvitals_api_key' );
         register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_uptimerobot_api_key' );
-    
+        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_pagespeed_api_key');
+
         // Add settings section
         add_settings_section(
             'wpspeedtestpro_section',
@@ -216,6 +217,24 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro-settings',
             'wpspeedtestpro_section'
         );
+
+        add_settings_section(
+            'pagespeed_settings_section',
+            'PageSpeed Insights Settings',
+            null,
+            'wpspeedtestpro-settings'
+        );
+
+        add_settings_field(
+            'pagespeed_api_key',
+            'PageSpeed Insights API Key',
+            [self::class, 'render_api_key_field'],
+            'wpspeedtestpro-settings',
+            'pagespeed_settings_section'
+        );
+
+
+
 
     }
 
@@ -504,5 +523,21 @@ class Wpspeedtestpro_Settings {
         echo '<p class="description">The information for SSL testing is sent to SSLLabs.com. ' .
              '<a href="https://www.qualys.com/company/privacy" target="_blank">View their Privacy Policy</a>.</p>';
     }   
+
+
+    public static function render_api_key_field() {
+        $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
+        ?>
+        <input type="text" 
+               name="wpspeedtestpro_pagespeed_api_key" 
+               value="<?php echo esc_attr($api_key); ?>" 
+               class="regular-text">
+        <p class="description">
+            Enter your Google PageSpeed Insights API key. 
+            <a href="https://developers.google.com/speed/docs/insights/v5/get-started" 
+               target="_blank">Get an API key</a>
+        </p>
+        <?php
+    }
 }
 

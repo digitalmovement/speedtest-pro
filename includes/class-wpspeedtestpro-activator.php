@@ -41,6 +41,22 @@ class Wpspeedtestpro_Activator {
         $db->create_benchmark_table();
         $db->speedvitals_create_tables();
 
+        $pagespeed = new Wpspeedtestpro_PageSpeed_Insights('wpspeedtestpro', WPSPEEDTESTPRO_VERSION, null);
+        $pagespeed->create_tables();
         // Any other activation tasks can be added here
+
+              // Schedule cron job for running scheduled tests
+              if (!wp_next_scheduled('wpspeedtestpro_daily_pagespeed_check')) {
+                wp_schedule_event(time(), 'daily', 'wpspeedtestpro_daily_pagespeed_check');
+            }
+    
+            // Add default options
+            add_option('wpspeedtestpro_pagespeed_settings', [
+                'retention_days' => 90,
+                'auto_test_new_content' => true,
+                'email_notifications' => false,
+                'notification_email' => get_option('admin_email'),
+                'minimum_score_alert' => 80
+            ]);
     }
 }

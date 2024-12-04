@@ -104,11 +104,15 @@ class Wpspeedtestpro_Deactivator {
             wp_clear_scheduled_hook('speedvitals_check_pending_tests');
             wp_clear_scheduled_hook('wpspeedtestpro_cron_hook');
             wp_clear_scheduled_hook('speedvitals_run_scheduled_tests');
+            wp_clear_scheduled_hook('wpspeedtestpro_daily_pagespeed_check');
+            
 
             // Delete any transients
             $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wpspeedtestpro_%'");
             $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wpspeedtestpro_%'");
-
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_pagespeed_%'");
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_pagespeed_%'");
+    
             // Commit transaction
             $wpdb->query('COMMIT');
 

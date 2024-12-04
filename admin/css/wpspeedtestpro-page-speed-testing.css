@@ -1,106 +1,236 @@
-.green { background-color: #c8e6c9; color: #1b5e20; }
-.amber { background-color: #fff9c4; color: #f57f17; }
-.red { background-color: #ffcdd2; color: #b71c1c; }
-
-.speedvitals-table th[title] {
-    position: relative;
-    cursor: help;
+/* Tab Navigation */
+.pagespeed-tabs {
+    margin-top: 20px;
 }
 
-.speedvitals-table th[title]:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    background-color: #333;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 3px;
-    font-weight: normal;
-    font-size: 14px;
-    white-space: nowrap;
-    z-index: 99;
+.nav-tab-wrapper {
+    margin-bottom: 0;
 }
 
-
-.speedvitals-form-container {
-    max-width: 100%;
-    margin-bottom: 20px;
+.tab-content {
+    display: none;
+    padding: 20px 0;
 }
 
-.speedvitals-form-row {
-    display: flex;
-    flex-wrap: wrap;
-    margin: -10px;  /* Negative margin to counteract padding on columns */
-    margin-bottom: 10px;
-}
-
-.speedvitals-form-column {
-    flex: 1 1 200px;  /* Grow, shrink, and base width */
-    padding: 10px;
-    min-width: 150px;  /* Reduced minimum width for better fit */
-}
-
-.speedvitals-form-column.full-width {
-    flex-basis: 100%;
-}
-
-.speedvitals-form-column label {
+.tab-content.active {
     display: block;
-    margin-bottom: 5px;
+}
+
+/* Cards and Forms */
+.card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+
+.form-table th {
+    width: 200px;
+}
+
+/* Results Display */
+.results-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.results-column {
+    text-align: center;
+}
+
+.results-column h3 {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Score Circles */
+.score-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.score-circle.good {
+    border-color: #0a3;
+    background: rgba(0, 170, 51, 0.1);
+}
+
+.score-circle.average {
+    border-color: #fa3;
+    background: rgba(255, 170, 51, 0.1);
+}
+
+.score-circle.poor {
+    border-color: #e33;
+    background: rgba(238, 51, 51, 0.1);
+}
+
+.score-circle .score {
+    font-size: 24px;
     font-weight: bold;
+    line-height: 1;
+    margin-bottom: 5px;
 }
 
-.speedvitals-form-column select,
-.speedvitals-form-column input[type="submit"] {
+.score-circle .label {
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+/* Metrics Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.core-web-vitals .metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.metric {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.metric.good { background: rgba(0, 170, 51, 0.1); }
+.metric.average { background: rgba(255, 170, 51, 0.1); }
+.metric.poor { background: rgba(238, 51, 51, 0.1); }
+
+.metric .score {
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.metric .label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Results Table */
+.wp-list-table td.good { color: #0a3; }
+.wp-list-table td.average { color: #fa3; }
+.wp-list-table td.poor { color: #e33; }
+
+/* Shortcode Display */
+.pagespeed-results {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.pagespeed-summary h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.pagespeed-scores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.pagespeed-scores h4 {
+    margin: 0 0 10px 0;
+}
+
+.pagespeed-scores ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pagespeed-scores li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.last-tested {
+    color: #666;
+    font-style: italic;
+    margin: 0;
+}
+
+/* Meta Box Styles */
+#pagespeed_insights.postbox .inside {
+    margin: 0;
+    padding: 0;
+}
+
+.pagespeed-meta-box {
+    padding: 12px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.pagespeed-meta-box p {
+    margin: 0 0 8px 0;
+}
+
+.pagespeed-meta-box p:last-child {
+    margin-bottom: 0;
+}
+
+#run-pagespeed-test {
     width: 100%;
-    padding: 5px;
+    margin: 12px 0 0 0;
 }
 
-.speedvitals-form-column.submit-column {
-    flex: 0 1 auto;  /* Don't grow, allow shrinking, auto basis */
-    align-self: flex-end;  /* Align to bottom of row */
+/* Loading States */
+.spinner.is-active {
+    visibility: visible;
+    margin-left: 10px;
 }
 
-@media (max-width: 768px) {
-    .speedvitals-form-column,
-    .speedvitals-form-column.submit-column {
-        flex-basis: 100%;  /* Full width on smaller screens */
+/* Mobile Responsiveness */
+@media screen and (max-width: 782px) {
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pagespeed-scores {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-table th {
+        width: 100%;
+        display: block;
     }
 }
 
-
-#pagespeed-info-banner {
-    position: relative;
-    padding: 20px;
-    margin: 20px 0;
-    background: #fff;
-    border-left: 4px solid #2271b1;
-    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+/* Animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-#pagespeed-info-banner h2 {
-    font-size: 1.3em;
-    margin: 0 0 15px 0;
+.score-circle.updating {
+    animation: pulse 1s infinite;
 }
-
-#pagespeed-info-banner h4 {
-    color: #1d2327;
-    font-size: 1.1em;
-}
-
-#pagespeed-info-banner .notice-dismiss {
-    padding: 10px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    color: #787c82;
-    background: none;
-    border: none;
-    cursor: pointer;
-}
-
-#pagespeed-info-banner .notice-dismiss:hover {
-    color: #d63638;
-}
-

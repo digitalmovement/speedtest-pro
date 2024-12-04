@@ -379,12 +379,13 @@ class Wpspeedtestpro_Sync_Handler {
             'active_plugins' => $this->get_active_plugins(),
             'theme' => $this->get_theme_info(),
             'multisite' => is_multisite(),
-            'site_url' => site_url(),
-            'home_url' => home_url(),
             'is_ssl' => is_ssl(),
             'wp_debug' => defined('WP_DEBUG') && WP_DEBUG,
             'wp_memory_limit' => WP_MEMORY_LIMIT,
-            'timezone' => wp_timezone_string()
+            'timezone' => wp_timezone_string(),
+            'hosting_provider' => get_option('wpspeedtestpro_selected_provider'),
+            'hosting_package' => get_option('wpspeedtestpro_selected_package'),
+            'hosting_region' => get_option('wpspeedtestpro_selected_region')
         );
     }
 
