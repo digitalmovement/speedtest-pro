@@ -234,7 +234,7 @@ jQuery(document).ready(function($) {
 
 
 // Event handlers for scheduled test actions
-$(document).on('click', '.cancel-schedule', function(e) {
+jQuery(document).on('click', '.cancel-schedule', function(e) {
     e.preventDefault();
     const id = $(this).data('id');
     if (confirm('Are you sure you want to cancel this scheduled test?')) {
@@ -242,14 +242,14 @@ $(document).on('click', '.cancel-schedule', function(e) {
     }
 });
 
-$(document).on('click', '.run-now', function(e) {
+jQuery(document).on('click', '.run-now', function(e) {
     e.preventDefault();
     const id = $(this).data('id');
     runScheduledTest(id);
 });
 
 // Load scheduled tests when page loads
-$(document).ready(function() {
+jQuery(document).ready(function() {
     loadScheduledTests();
     loadTestHistory();
     // Refresh every 5 minutes
