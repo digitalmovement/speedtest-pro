@@ -298,7 +298,7 @@ class Wpspeedtestpro_DB {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->pagespeed_table} (
+        $sql = "CREATE TABLE {$this->pagespeed_table} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             url varchar(255) NOT NULL,
             location varchar(50) NOT NULL,
@@ -320,7 +320,7 @@ class Wpspeedtestpro_DB {
             KEY test_date (test_date)
         ) $charset_collate;
         
-        CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
+        CREATE TABLE  {$this->pagespeed_scheduled_table} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             url varchar(255) NOT NULL,
             frequency varchar(20) NOT NULL,
