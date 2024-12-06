@@ -303,7 +303,7 @@ class Wpspeedtestpro_DB {
             url varchar(255) NOT NULL,
             location varchar(50) NOT NULL,
             device varchar(50) NOT NULL,
-            test_date datetime DEFAULT CURRENT_TIMESTAMP,
+            test_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             performance_score int(3),
             accessibility_score int(3),
             best_practices_score int(3),

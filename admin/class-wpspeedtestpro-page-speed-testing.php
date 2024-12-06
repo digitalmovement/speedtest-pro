@@ -12,7 +12,7 @@ class Wpspeedtestpro_PageSpeed {
         $this->plugin_name = $plugin_name;
         $this->version = $version;
         $this->core = $core;
-        $this->pagespeed_table = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
+        $this->pagespeed_table           = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
         $this->pagespeed_scheduled_table = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
 
         $this->init();
