@@ -80,50 +80,114 @@ class Wpspeedtestpro_PageSpeed {
         include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
     }
 
-    public function ajax_run_test($url, $api_key = '', $device = 'desktop') {
+    public function ajax_run_test() {
+        // Verify nonce and user capabilities
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+    
+        // Get POST parameters
+        $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
+        $device = isset($_POST['device']) ? sanitize_text_field($_POST['device']) : 'desktop';
+        $frequency = isset($_POST['frequency']) ? sanitize_text_field($_POST['frequency']) : 'once';
+    
+        if (empty($url)) {
+            wp_send_json_error('URL is required');
+            return;
+        }
+    
+        // Get API key from settings
+        $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
+    
+        // Run tests based on device selection
+        $results = array();
+    
+        if ($device === 'both') {
+            // Run desktop test
+            $desktop_result = $this->run_pagespeed_test($url, $api_key, 'desktop');
+            if (!$desktop_result['success']) {
+                wp_send_json_error('Desktop test failed: ' . $desktop_result['message']);
+                return;
+            }
+            $results['desktop'] = $desktop_result['data'];
+    
+            // Run mobile test
+            $mobile_result = $this->run_pagespeed_test($url, $api_key, 'mobile');
+            if (!$mobile_result['success']) {
+                wp_send_json_error('Mobile test failed: ' . $mobile_result['message']);
+                return;
+            }
+            $results['mobile'] = $mobile_result['data'];
+        } else {
+            // Run single device test
+            $test_result = $this->run_pagespeed_test($url, $api_key, $device);
+            if (!$test_result['success']) {
+                wp_send_json_error('Test failed: ' . $test_result['message']);
+                return;
+            }
+            $results[$device] = $test_result['data'];
+        }
+    
+        // If frequency is not 'once', schedule recurring tests
+        if ($frequency !== 'once') {
+            $this->schedule_test($url, $frequency);
+        }
+    
+        wp_send_json_success(array(
+            'status' => 'complete',
+            'results' => $results
+        ));
+    }
+    
+    private function run_pagespeed_test($url, $api_key = '', $device = 'desktop') {
         $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
         
         $params = array(
             'url' => esc_url($url),
             'strategy' => $device
         );
-
+    
         if (!empty($api_key)) {
             $params['key'] = $api_key;
         }
-
+    
         $request_url = add_query_arg($params, $api_url);
-
-        error_log('Request URL: ' . $request_url);
+        error_log('PageSpeed API Request URL: ' . $request_url);
+    
         $response = wp_remote_get($request_url);
-
+    
         if (is_wp_error($response)) {
+            error_log('PageSpeed API Error: ' . $response->get_error_message());
             return array(
                 'success' => false,
                 'message' => $response->get_error_message()
             );
         }
-
+    
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
-
+    
         if (!$data || isset($data['error'])) {
+            $error_message = isset($data['error']['message']) ? $data['error']['message'] : 'Invalid response from PageSpeed API';
+            error_log('PageSpeed API Error: ' . $error_message);
             return array(
                 'success' => false,
-                'message' => isset($data['error']['message']) ? $data['error']['message'] : 'Invalid response from PageSpeed API'
+                'message' => $error_message
             );
         }
-
+    
         // Parse and save results
         $results = $this->parse_results($data);
         $this->save_results($url, $device, $results, $data);
-
+    
         return array(
             'success' => true,
             'data' => $results
         );
     }
-
     private function parse_results($data) {
         $lighthouse = $data['lighthouseResult'];
         $categories = $lighthouse['categories'];
