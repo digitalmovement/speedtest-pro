@@ -118,7 +118,7 @@ class Wpspeedtestpro_PageSpeed {
         dbDelta($sql);
     }
 
-    public function run_test($url, $api_key = '', $device = 'desktop') {
+    public function ajax_run_test($url, $api_key = '', $device = 'desktop') {
         $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
         
         $params = array(
