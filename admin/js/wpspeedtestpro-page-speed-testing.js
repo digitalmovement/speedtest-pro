@@ -147,7 +147,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_get_scheduled_tests',
-                nonce: wpspeedtestpro_pagespeed.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -232,7 +232,7 @@ jQuery(document).ready(function($) {
     // Refresh every 5 minutes
     setInterval(loadScheduledTests, 5 * 60 * 1000);
     
-    
+
     
 });
 
@@ -252,10 +252,5 @@ jQuery(document).on('click', '.run-now', function(e) {
     e.preventDefault();
     const id = $(this).data('id');
     runScheduledTest(id);
-});
-
-// Load scheduled tests when page loads
-jQuery(document).ready(function() {
-
 });
 
