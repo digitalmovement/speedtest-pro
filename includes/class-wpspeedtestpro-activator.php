@@ -39,7 +39,7 @@ class Wpspeedtestpro_Activator {
         // Call the create_table method
         $db->create_table();
         $db->create_benchmark_table();
-        $db->speedvitals_create_tables();
+        //$db->speedvitals_create_tables();
         $db->create_pagespeed_tables();
 
         // Any other activation tasks can be added here
