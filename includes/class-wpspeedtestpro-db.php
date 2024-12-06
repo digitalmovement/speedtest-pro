@@ -318,9 +318,9 @@ class Wpspeedtestpro_DB {
             PRIMARY KEY  (id),
             KEY url (url),
             KEY test_date (test_date)
-        ) $charset_collate;";
-
-        $sql2 = " CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
+        ) $charset_collate;
+        
+        CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             url varchar(255) NOT NULL,
             frequency varchar(20) NOT NULL,
