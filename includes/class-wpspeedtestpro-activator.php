@@ -41,7 +41,7 @@ class Wpspeedtestpro_Activator {
         $db->create_benchmark_table();
         $db->speedvitals_create_tables();
 
-        $pagespeed = new Wpspeedtestpro_PageSpeed_Insights('wpspeedtestpro', WPSPEEDTESTPRO_VERSION, null);
+        $pagespeed = new Wpspeedtestpro_PageSpeed('wpspeedtestpro', WPSPEEDTESTPRO_VERSION, null);
         $pagespeed->create_tables();
         // Any other activation tasks can be added here
 
