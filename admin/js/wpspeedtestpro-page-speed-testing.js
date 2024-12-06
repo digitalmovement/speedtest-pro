@@ -9,8 +9,8 @@ jQuery(document).ready(function($) {
         
         // Disable submit button and show status
         $submit.prop('disabled', true);
-        $status.show();
-
+        $status.show().html('<p>Initiating test...</p>');
+    
         // Collect form data
         const data = {
             action: 'pagespeed_run_test',
@@ -19,25 +19,18 @@ jQuery(document).ready(function($) {
             device: $('#test-device').val(),
             frequency: $('#test-frequency').val()
         };
-
-        // Run the test
+    
+        // Start the test
         $.post(ajaxurl, data, function(response) {
-            if (response.success) {
-                if (response.data.status === 'complete') {
-                    displayResults(response.data.results);
-                    loadTestHistory();
-                    if (data.frequency !== 'once') {
-                        loadScheduledTests();
-                    }
-                }
+            if (response.success && response.data.status === 'initiated') {
+                checkTestStatus(data.url);
             } else {
-                alert('Error: ' + response.data);
+                $status.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
+                $submit.prop('disabled', false);
             }
         }).fail(function() {
-            alert('Failed to run test. Please try again.');
-        }).always(function() {
+            $status.html('<p class="error">Failed to communicate with server</p>');
             $submit.prop('disabled', false);
-            $status.hide();
         });
     });
 
@@ -62,6 +55,48 @@ jQuery(document).ready(function($) {
         });
     });
 
+
+    function checkTestStatus(url) {
+        const $status = $('#test-status');
+        const $submit = $('#pagespeed-test-form button[type="submit"]');
+        
+        $.post(ajaxurl, {
+            action: 'pagespeed_check_test_status',
+            nonce: $('#pagespeed_test_nonce').val(),
+            url: url
+        }, function(response) {
+            if (!response.success) {
+                $status.html('<p class="error">Error: ' + response.data + '</p>');
+                $submit.prop('disabled', false);
+                return;
+            }
+    
+            if (response.data.status === 'running') {
+                // Update progress message
+                $status.html('<p>Test in progress... <span class="spinner is-active"></span></p>');
+                // Check again in 5 seconds
+                setTimeout(() => checkTestStatus(url), 5000);
+            } else if (response.data.status === 'complete') {
+                // Display results
+                displayResults(response.data.results);
+                loadTestHistory();
+                
+                // Update UI
+                $status.hide();
+                $submit.prop('disabled', false);
+                
+                // Check if we need to reload scheduled tests
+                if ($('#test-frequency').val() !== 'once') {
+                    loadScheduledTests();
+                }
+            }
+        }).fail(function() {
+            $status.html('<p class="error">Failed to check test status</p>');
+            $submit.prop('disabled', false);
+        });
+    }
+
+    
     // Function to cancel a scheduled test
     function cancelScheduledTest(id) {
         $.post(ajaxurl, {

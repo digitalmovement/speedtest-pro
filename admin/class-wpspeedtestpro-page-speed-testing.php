@@ -29,7 +29,9 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_get_latest_result', array($this, 'ajax_get_latest_result'));
         add_action('wp_ajax_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
         add_action('wp_ajax_pagespeed_get_test_results', array($this, 'ajax_get_test_results'));
-    
+        add_action('wp_ajax_pagespeed_check_test_status', array($this, 'ajax_check_test_status'));
+
+
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
@@ -80,114 +82,211 @@ class Wpspeedtestpro_PageSpeed {
         include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
     }
 
-    public function ajax_run_test() {
-        // Verify nonce and user capabilities
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+  public function ajax_run_test() {
+    check_ajax_referer('pagespeed_test_nonce', 'nonce');
+    
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Unauthorized access');
+        return;
+    }
+
+    $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
+    $device = isset($_POST['device']) ? sanitize_text_field($_POST['device']) : 'desktop';
+    $frequency = isset($_POST['frequency']) ? sanitize_text_field($_POST['frequency']) : 'once';
+
+    if (empty($url)) {
+        wp_send_json_error('URL is required');
+        return;
+    }
+
+    // Start tests based on device selection
+    if ($device === 'both') {
+        // Initiate both tests
+        $desktop_test = $this->initiate_pagespeed_test($url, 'desktop');
+        $mobile_test = $this->initiate_pagespeed_test($url, 'mobile');
+
+        if (!$desktop_test['success'] || !$mobile_test['success']) {
+            wp_send_json_error('Failed to initiate tests');
+            return;
+        }
+
+        // Store test IDs in transient for status checking
+        set_transient('pagespeed_test_' . md5($url), [
+            'desktop_id' => $desktop_test['test_id'],
+            'mobile_id' => $mobile_test['test_id'],
+            'frequency' => $frequency,
+            'url' => $url,
+            'status' => 'running',
+            'start_time' => time()
+        ], 3600); // 1 hour expiration
+
+    } else {
+        // Initiate single device test
+        $test = $this->initiate_pagespeed_test($url, $device);
         
-        if (!current_user_can('manage_options')) {
-            wp_send_json_error('Unauthorized access');
+        if (!$test['success']) {
+            wp_send_json_error('Failed to initiate test');
             return;
         }
+
+        set_transient('pagespeed_test_' . md5($url), [
+            'test_id' => $test['test_id'],
+            'device' => $device,
+            'frequency' => $frequency,
+            'url' => $url,
+            'status' => 'running',
+            'start_time' => time()
+        ], 3600);
+    }
+
+    wp_send_json_success(['status' => 'initiated']);
+}
+
+public function ajax_check_test_status() {
+    check_ajax_referer('pagespeed_test_nonce', 'nonce');
     
-        // Get POST parameters
-        $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
-        $device = isset($_POST['device']) ? sanitize_text_field($_POST['device']) : 'desktop';
-        $frequency = isset($_POST['frequency']) ? sanitize_text_field($_POST['frequency']) : 'once';
-    
-        if (empty($url)) {
-            wp_send_json_error('URL is required');
-            return;
-        }
-    
-        // Get API key from settings
-        $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
-    
-        // Run tests based on device selection
-        $results = array();
-    
-        if ($device === 'both') {
-            // Run desktop test
-            $desktop_result = $this->run_pagespeed_test($url, $api_key, 'desktop');
-            if (!$desktop_result['success']) {
-                wp_send_json_error('Desktop test failed: ' . $desktop_result['message']);
-                return;
-            }
+    if (!current_user_can('manage_options')) {
+        wp_send_json_error('Unauthorized access');
+        return;
+    }
+
+    $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
+    if (empty($url)) {
+        wp_send_json_error('URL is required');
+        return;
+    }
+
+    $test_data = get_transient('pagespeed_test_' . md5($url));
+    if (!$test_data) {
+        wp_send_json_error('No test found for this URL');
+        return;
+    }
+
+    // Check if test has been running too long
+    if (time() - $test_data['start_time'] > 120) { // 2 minutes timeout
+        delete_transient('pagespeed_test_' . md5($url));
+        wp_send_json_error('Test timeout');
+        return;
+    }
+
+    $results = [];
+    $all_complete = true;
+
+    if (isset($test_data['desktop_id']) && isset($test_data['mobile_id'])) {
+        // Check both desktop and mobile tests
+        $desktop_result = $this->check_test_result($test_data['desktop_id']);
+        $mobile_result = $this->check_test_result($test_data['mobile_id']);
+
+        if ($desktop_result['status'] === 'complete' && $mobile_result['status'] === 'complete') {
             $results['desktop'] = $desktop_result['data'];
-    
-            // Run mobile test
-            $mobile_result = $this->run_pagespeed_test($url, $api_key, 'mobile');
-            if (!$mobile_result['success']) {
-                wp_send_json_error('Mobile test failed: ' . $mobile_result['message']);
-                return;
-            }
             $results['mobile'] = $mobile_result['data'];
-        } else {
-            // Run single device test
-            $test_result = $this->run_pagespeed_test($url, $api_key, $device);
-            if (!$test_result['success']) {
-                wp_send_json_error('Test failed: ' . $test_result['message']);
-                return;
+
+            // Save results to database
+            $this->save_results($url, 'desktop', $desktop_result['data'], $desktop_result['raw_data']);
+            $this->save_results($url, 'mobile', $mobile_result['data'], $mobile_result['raw_data']);
+
+            // Schedule if needed
+            if ($test_data['frequency'] !== 'once') {
+                $this->schedule_test($url, $test_data['frequency']);
             }
-            $results[$device] = $test_result['data'];
+
+            delete_transient('pagespeed_test_' . md5($url));
+        } else {
+            $all_complete = false;
         }
-    
-        // If frequency is not 'once', schedule recurring tests
-        if ($frequency !== 'once') {
-            $this->schedule_test($url, $frequency);
+    } else {
+        // Check single device test
+        $result = $this->check_test_result($test_data['test_id']);
+        
+        if ($result['status'] === 'complete') {
+            $results[$test_data['device']] = $result['data'];
+            
+            // Save results
+            $this->save_results($url, $test_data['device'], $result['data'], $result['raw_data']);
+
+            // Schedule if needed
+            if ($test_data['frequency'] !== 'once') {
+                $this->schedule_test($url, $test_data['frequency']);
+            }
+
+            delete_transient('pagespeed_test_' . md5($url));
+        } else {
+            $all_complete = false;
         }
-    
-        wp_send_json_success(array(
+    }
+
+    if ($all_complete) {
+        wp_send_json_success([
             'status' => 'complete',
             'results' => $results
-        ));
+        ]);
+    } else {
+        wp_send_json_success([
+            'status' => 'running'
+        ]);
     }
+}
+
+private function initiate_pagespeed_test($url, $device) {
+    $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
+    $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
     
-    private function run_pagespeed_test($url, $api_key = '', $device = 'desktop') {
-        $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
-        
-        $params = array(
-            'url' => esc_url($url),
-            'strategy' => $device
-        );
-    
-        if (!empty($api_key)) {
-            $params['key'] = $api_key;
-        }
-    
-        $request_url = add_query_arg($params, $api_url);
-        error_log('PageSpeed API Request URL: ' . $request_url);
-    
-        $response = wp_remote_get($request_url);
-    
-        if (is_wp_error($response)) {
-            error_log('PageSpeed API Error: ' . $response->get_error_message());
-            return array(
-                'success' => false,
-                'message' => $response->get_error_message()
-            );
-        }
-    
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-    
-        if (!$data || isset($data['error'])) {
-            $error_message = isset($data['error']['message']) ? $data['error']['message'] : 'Invalid response from PageSpeed API';
-            error_log('PageSpeed API Error: ' . $error_message);
-            return array(
-                'success' => false,
-                'message' => $error_message
-            );
-        }
-    
-        // Parse and save results
-        $results = $this->parse_results($data);
-        $this->save_results($url, $device, $results, $data);
-    
-        return array(
-            'success' => true,
-            'data' => $results
-        );
+    $params = array(
+        'url' => esc_url($url),
+        'strategy' => $device,
+        'category' => ['performance', 'accessibility', 'best-practices', 'seo']
+    );
+
+    if (!empty($api_key)) {
+        $params['key'] = $api_key;
     }
+
+    $request_url = add_query_arg($params, $api_url);
+    $response = wp_remote_get($request_url);
+
+    if (is_wp_error($response)) {
+        error_log('PageSpeed API Error: ' . $response->get_error_message());
+        return ['success' => false];
+    }
+
+    // Generate a unique test ID
+    $test_id = wp_generate_uuid4();
+    
+    return [
+        'success' => true,
+        'test_id' => $test_id
+    ];
+}
+
+private function check_test_result($test_id) {
+    // Use the test ID to check the result
+    // You might need to modify this based on how Google PageSpeed API handles result checking
+    
+    $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
+    $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
+    
+    $response = wp_remote_get($api_url);
+
+    if (is_wp_error($response)) {
+        return ['status' => 'error'];
+    }
+
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body, true);
+
+    if (!$data || isset($data['error'])) {
+        return ['status' => 'error'];
+    }
+
+    // Parse results and return
+    $results = $this->parse_results($data);
+    
+    return [
+        'status' => 'complete',
+        'data' => $results,
+        'raw_data' => $data
+    ];
+}
     private function parse_results($data) {
         $lighthouse = $data['lighthouseResult'];
         $categories = $lighthouse['categories'];
