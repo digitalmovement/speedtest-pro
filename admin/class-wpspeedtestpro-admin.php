@@ -296,7 +296,7 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function display_plugin_page_speed_testing_page() {
-        //$this->page_speed_testing->();
+        $this->page_speed_testing->display_page_speed_testing();
     }
 
     /**
