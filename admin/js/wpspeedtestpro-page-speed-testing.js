@@ -142,17 +142,118 @@ jQuery(document).ready(function($) {
 
     // Load scheduled tests
     function loadScheduledTests() {
-        $.post(ajaxurl, {
-            action: 'pagespeed_get_scheduled_tests',
-            nonce: $('#pagespeed_test_nonce').val()
-        }, function(response) {
-            if (response.success) {
-                updateScheduledTests(response.data);
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'pagespeed_get_scheduled_tests',
+                nonce: wpspeedtestpro_pagespeed.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    displayScheduledTests(response.data);
+                } else {
+                    console.error('Failed to load scheduled tests:', response.data);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', error);
             }
         });
     }
-
     // Initialize page
-    loadTestHistory();
-    loadScheduledTests();
+ 
+    function displayScheduledTests(tests) {
+        const $tbody = $('#pagespeed-scheduled-body');
+        $tbody.empty();
+    
+        if (tests.length === 0) {
+            $tbody.append(`
+                <tr>
+                    <td colspan="5" class="no-items">No scheduled tests found.</td>
+                </tr>
+            `);
+            return;
+        }
+    
+        tests.forEach(function(test) {
+            const statusClass = getStatusClass(test.status);
+            $tbody.append(`
+                <tr>
+                    <td>${escapeHtml(test.url)}</td>
+                    <td>${escapeHtml(test.frequency)}</td>
+                    <td>${escapeHtml(test.last_run)}</td>
+                    <td>
+                        <span class="status-indicator ${statusClass}">
+                            ${escapeHtml(test.next_run)}
+                        </span>
+                    </td>
+                    <td>
+                        <button type="button" 
+                                class="button button-small cancel-schedule" 
+                                data-id="${test.id}">
+                            Cancel
+                        </button>
+                        ${test.status === 'overdue' ? `
+                            <button type="button" 
+                                    class="button button-small run-now" 
+                                    data-id="${test.id}">
+                                Run Now
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `);
+        });
+    }
+    
+    function getStatusClass(status) {
+        switch(status) {
+            case 'active':
+                return 'status-active';
+            case 'overdue':
+                return 'status-overdue';
+            case 'inactive':
+                return 'status-inactive';
+            default:
+                return '';
+        }
+    }
+    
+    // Helper function to safely escape HTML
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    
 });
+
+
+
+
+// Event handlers for scheduled test actions
+$(document).on('click', '.cancel-schedule', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (confirm('Are you sure you want to cancel this scheduled test?')) {
+        cancelScheduledTest(id);
+    }
+});
+
+$(document).on('click', '.run-now', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    runScheduledTest(id);
+});
+
+// Load scheduled tests when page loads
+$(document).ready(function() {
+    loadScheduledTests();
+    loadTestHistory();
+    // Refresh every 5 minutes
+    setInterval(loadScheduledTests, 5 * 60 * 1000);
+    
+});
+

@@ -25,6 +25,7 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_cancel_scheduled_test', array($this, 'ajax_cancel_scheduled_test'));
         add_action('wp_ajax_pagespeed_delete_old_results', array($this, 'ajax_delete_old_results'));
         add_action('wp_ajax_pagespeed_get_latest_result', array($this, 'ajax_get_latest_result'));
+        add_action('wp_ajax_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -316,4 +317,59 @@ class Wpspeedtestpro_PageSpeed {
         if ($score >= 50) return 'average';
         return 'poor';
     }
+
+    public function ajax_get_scheduled_tests() {
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+    
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+    
+        global $wpdb;
+        
+        $results = $wpdb->get_results(
+            "SELECT * FROM {$this->pagespeed_scheduled_table} 
+            ORDER BY next_run ASC"
+        );
+    
+        if ($results === false) {
+            wp_send_json_error('Database error occurred');
+            return;
+        }
+    
+        $formatted_results = array_map(function($test) {
+            return array(
+                'id' => $test->id,
+                'url' => $test->url,
+                'frequency' => $test->frequency,
+                'last_run' => $test->last_run ? wp_date('F j, Y g:i a', strtotime($test->last_run)) : 'Never',
+                'next_run' => $test->next_run ? wp_date('F j, Y g:i a', strtotime($test->next_run)) : 'Not scheduled',
+                'status' => $this->get_schedule_status($test)
+            );
+        }, $results);
+    
+        wp_send_json_success($formatted_results);
+    }
+    
+    /**
+     * Helper function to determine schedule status
+     */
+    private function get_schedule_status($test) {
+        if (empty($test->next_run)) {
+            return 'inactive';
+        }
+    
+        $next_run = strtotime($test->next_run);
+        $now = current_time('timestamp');
+    
+        if ($next_run < $now) {
+            return 'overdue';
+        }
+    
+        return 'active';
+    }
+
+    
+    
 }
