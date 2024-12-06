@@ -1,6 +1,6 @@
 <?php
 
-class Wpspeedtestpro_PageSpeed_Insights {
+class Wpspeedtestpro_PageSpeed {
     private $plugin_name;
     private $version;
     private $core;
@@ -14,146 +14,218 @@ class Wpspeedtestpro_PageSpeed_Insights {
         $this->core = $core;
         $this->pagespeed_table = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
         $this->pagespeed_scheduled_table = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
-        
-        $this->init_hooks();
+
+        $this->init();
     }
 
-    private function init_hooks() {
-        add_action('init', array($this, 'register_shortcode'));
-        add_action('wp_ajax_run_pagespeed_test', array($this, 'ajax_run_test'));
-        add_action('wp_ajax_schedule_pagespeed_test', array($this, 'ajax_schedule_test'));
-        add_action('wp_ajax_delete_old_pagespeed_results', array($this, 'ajax_delete_old_results'));
-        add_action('wp_ajax_get_pagespeed_results', array($this, 'ajax_get_results'));
-        add_action('wpspeedtestpro_daily_pagespeed_check', array($this, 'run_scheduled_tests'));
-        
+    private function init() {
+        // Admin AJAX handlers
+        add_action('wp_ajax_pagespeed_run_test', array($this, 'ajax_run_test'));
+        add_action('wp_ajax_pagespeed_get_test_status', array($this, 'ajax_get_test_status'));
+        add_action('wp_ajax_pagespeed_cancel_scheduled_test', array($this, 'ajax_cancel_scheduled_test'));
+        add_action('wp_ajax_pagespeed_delete_old_results', array($this, 'ajax_delete_old_results'));
+        add_action('wp_ajax_pagespeed_get_latest_result', array($this, 'ajax_get_latest_result'));
+
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+
         // Add meta box for pages and posts
-        add_action('add_meta_boxes', array($this, 'add_pagespeed_meta_box'));
-        add_action('save_post', array($this, 'save_pagespeed_meta'));
+        add_action('add_meta_boxes', array($this, 'add_meta_box'));
+        
+        // Schedule event for running tests
+        add_action('pagespeed_run_scheduled_tests', array($this, 'run_scheduled_tests'));
     }
 
+
+    private function is_this_the_right_plugin_page() {
+        if ( function_exists( 'get_current_screen' ) ) {
+            $screen = get_current_screen();
+            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-page-speed-testing';    
+        }
+    }
+
+    /**
+     * Register the stylesheets for the page speed testing area.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_styles() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
+        wp_enqueue_style($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing.css', array(), $this->version, 'all');
+
+    }
+
+    public function enqueue_scripts() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
+
+        wp_enqueue_script($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing.js', array('jquery'), $this->version, false);
+        wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce')
+        ));
+
+
+    }
+
+    public function display_page_speed_testing() {
+        
+        include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
+    }
     public function create_tables() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE IF NOT EXISTS {$this->pagespeed_table} (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
             url varchar(255) NOT NULL,
+            location varchar(50) NOT NULL,
+            device varchar(50) NOT NULL,
             test_date datetime DEFAULT CURRENT_TIMESTAMP,
-            desktop_performance int(3),
-            desktop_accessibility int(3),
-            desktop_best_practices int(3),
-            desktop_seo int(3),
-            mobile_performance int(3),
-            mobile_accessibility int(3),
-            mobile_best_practices int(3),
-            mobile_seo int(3),
-            fcp_score decimal(5,2),
-            lcp_score decimal(5,2),
-            cls_score decimal(5,2),
-            fid_score decimal(5,2),
-            si_score decimal(5,2),
-            tti_score decimal(5,2),
+            performance_score int(3),
+            accessibility_score int(3),
+            best_practices_score int(3),
+            seo_score int(3),
+            fcp int(11),
+            lcp int(11),
+            cls decimal(5,3),
+            si int(11),
+            tti int(11),
+            tbt int(11),
             full_report longtext,
             PRIMARY KEY  (id),
             KEY url (url),
             KEY test_date (test_date)
-        ) $charset_collate;";
+        ) $charset_collate;
 
-        $sql .= "CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
-            id bigint(20) NOT NULL AUTO_INCREMENT,
+        CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
             url varchar(255) NOT NULL,
             frequency varchar(20) NOT NULL,
             last_run datetime DEFAULT NULL,
             next_run datetime DEFAULT NULL,
-            active tinyint(1) DEFAULT 1,
-            PRIMARY KEY  (id),
-            KEY next_run (next_run)
+            PRIMARY KEY  (id)
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
 
-    public function run_test($url, $api_key = '') {
-        $devices = ['mobile', 'desktop'];
-        $results = [];
-
-        foreach ($devices as $device) {
-            $api_url = add_query_arg([
-                'url' => esc_url($url),
-                'strategy' => $device
-            ], 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed');
-
-            if (!empty($api_key)) {
-                $api_url = add_query_arg('key', $api_key, $api_url);
-            }
-
-            $response = wp_remote_get($api_url);
-
-            if (is_wp_error($response)) {
-                continue;
-            }
-
-            $body = wp_remote_retrieve_body($response);
-            $data = json_decode($body, true);
-
-            if (empty($data)) {
-                continue;
-            }
-
-            $results[$device] = $this->parse_pagespeed_response($data);
-        }
-
-        if (!empty($results)) {
-            $this->save_test_results($url, $results);
-        }
-
-        return $results;
-    }
-
-    private function parse_pagespeed_response($data) {
-        $categories = $data['lighthouseResult']['categories'];
-        $audits = $data['lighthouseResult']['audits'];
+    public function run_test($url, $api_key = '', $device = 'desktop') {
+        $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
         
-        return [
-            'performance' => $categories['performance']['score'] * 100,
-            'accessibility' => $categories['accessibility']['score'] * 100,
-            'best_practices' => $categories['best-practices']['score'] * 100,
-            'seo' => $categories['seo']['score'] * 100,
-            'fcp' => $audits['first-contentful-paint']['score'] * 100,
-            'lcp' => $audits['largest-contentful-paint']['score'] * 100,
-            'cls' => $audits['cumulative-layout-shift']['score'] * 100,
-            'fid' => $audits['max-potential-fid']['score'] * 100,
-            'si' => $audits['speed-index']['score'] * 100,
-            'tti' => $audits['interactive']['score'] * 100
-        ];
+        $params = array(
+            'url' => esc_url($url),
+            'strategy' => $device
+        );
+
+        if (!empty($api_key)) {
+            $params['key'] = $api_key;
+        }
+
+        $request_url = add_query_arg($params, $api_url);
+        $response = wp_remote_get($request_url);
+
+        if (is_wp_error($response)) {
+            return array(
+                'success' => false,
+                'message' => $response->get_error_message()
+            );
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (!$data || isset($data['error'])) {
+            return array(
+                'success' => false,
+                'message' => isset($data['error']['message']) ? $data['error']['message'] : 'Invalid response from PageSpeed API'
+            );
+        }
+
+        // Parse and save results
+        $results = $this->parse_results($data);
+        $this->save_results($url, $device, $results, $data);
+
+        return array(
+            'success' => true,
+            'data' => $results
+        );
     }
 
-    private function save_test_results($url, $results) {
+    private function parse_results($data) {
+        $lighthouse = $data['lighthouseResult'];
+        $categories = $lighthouse['categories'];
+        $audits = $lighthouse['audits'];
+
+        return array(
+            'performance_score' => round($categories['performance']['score'] * 100),
+            'accessibility_score' => round($categories['accessibility']['score'] * 100),
+            'best_practices_score' => round($categories['best-practices']['score'] * 100),
+            'seo_score' => round($categories['seo']['score'] * 100),
+            'fcp' => $audits['first-contentful-paint']['numericValue'],
+            'lcp' => $audits['largest-contentful-paint']['numericValue'],
+            'cls' => $audits['cumulative-layout-shift']['numericValue'],
+            'si' => $audits['speed-index']['numericValue'],
+            'tti' => $audits['interactive']['numericValue'],
+            'tbt' => $audits['total-blocking-time']['numericValue']
+        );
+    }
+
+    private function save_results($url, $device, $results, $full_data) {
         global $wpdb;
 
-        $data = [
-            'url' => $url,
-            'test_date' => current_time('mysql'),
-            'desktop_performance' => $results['desktop']['performance'],
-            'desktop_accessibility' => $results['desktop']['accessibility'],
-            'desktop_best_practices' => $results['desktop']['best_practices'],
-            'desktop_seo' => $results['desktop']['seo'],
-            'mobile_performance' => $results['mobile']['performance'],
-            'mobile_accessibility' => $results['mobile']['accessibility'],
-            'mobile_best_practices' => $results['mobile']['best_practices'],
-            'mobile_seo' => $results['mobile']['seo'],
-            'fcp_score' => $results['desktop']['fcp'],
-            'lcp_score' => $results['desktop']['lcp'],
-            'cls_score' => $results['desktop']['cls'],
-            'fid_score' => $results['desktop']['fid'],
-            'si_score' => $results['desktop']['si'],
-            'tti_score' => $results['desktop']['tti'],
-            'full_report' => json_encode($results)
-        ];
+        $data = array_merge(
+            array(
+                'url' => $url,
+                'device' => $device,
+                'test_date' => current_time('mysql'),
+                'full_report' => json_encode($full_data)
+            ),
+            $results
+        );
 
-        $wpdb->insert($this->pagespeed_table, $data);
-        return $wpdb->insert_id;
+        return $wpdb->insert($this->pagespeed_table, $data);
+    }
+
+    public function get_latest_result($url, $device = 'both') {
+        global $wpdb;
+
+        if ($device === 'both') {
+            $results = array();
+            
+            // Get desktop result
+            $desktop = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$this->pagespeed_table} 
+                WHERE url = %s AND device = 'desktop' 
+                ORDER BY test_date DESC LIMIT 1",
+                $url
+            ));
+
+            // Get mobile result
+            $mobile = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$this->pagespeed_table} 
+                WHERE url = %s AND device = 'mobile' 
+                ORDER BY test_date DESC LIMIT 1",
+                $url
+            ));
+
+            return array(
+                'desktop' => $desktop,
+                'mobile' => $mobile
+            );
+        }
+
+        return $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$this->pagespeed_table} 
+            WHERE url = %s AND device = %s 
+            ORDER BY test_date DESC LIMIT 1",
+            $url,
+            $device
+        ));
     }
 
     public function schedule_test($url, $frequency) {
@@ -161,11 +233,15 @@ class Wpspeedtestpro_PageSpeed_Insights {
         
         $next_run = $this->calculate_next_run($frequency);
         
-        return $wpdb->insert($this->pagespeed_scheduled_table, [
-            'url' => $url,
-            'frequency' => $frequency,
-            'next_run' => $next_run
-        ]);
+        return $wpdb->insert(
+            $this->pagespeed_scheduled_table,
+            array(
+                'url' => $url,
+                'frequency' => $frequency,
+                'last_run' => current_time('mysql'),
+                'next_run' => $next_run
+            )
+        );
     }
 
     private function calculate_next_run($frequency) {
@@ -181,149 +257,63 @@ class Wpspeedtestpro_PageSpeed_Insights {
         }
     }
 
-    public function run_scheduled_tests() {
-        global $wpdb;
-        
-        $now = current_time('mysql');
-        $scheduled_tests = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_scheduled_table} 
-            WHERE active = 1 AND next_run <= %s",
-            $now
-        ));
-
-        $api_key = get_option('wpspeedtestpro_pagespeed_api_key');
-
-        foreach ($scheduled_tests as $test) {
-            $this->run_test($test->url, $api_key);
-            
-            // Update next run time
-            $next_run = $this->calculate_next_run($test->frequency);
-            $wpdb->update(
-                $this->pagespeed_scheduled_table,
-                ['last_run' => $now, 'next_run' => $next_run],
-                ['id' => $test->id]
+    public function add_meta_box() {
+        $post_types = array('post', 'page');
+        foreach ($post_types as $post_type) {
+            add_meta_box(
+                'pagespeed_results',
+                'PageSpeed Results',
+                array($this, 'render_meta_box'),
+                $post_type,
+                'side'
             );
         }
     }
 
-    public function get_results($url = '', $limit = 10) {
-        global $wpdb;
-        
-        $query = "SELECT * FROM {$this->pagespeed_table}";
-        if (!empty($url)) {
-            $query .= $wpdb->prepare(" WHERE url = %s", $url);
-        }
-        $query .= " ORDER BY test_date DESC LIMIT " . intval($limit);
-        
-        return $wpdb->get_results($query);
-    }
+    public function render_meta_box($post) {
+        $url = get_permalink($post->ID);
+        $results = $this->get_latest_result($url, 'both');
+        $has_results = !empty($results['desktop']) || !empty($results['mobile']);
 
-    public function delete_old_results($days) {
-        global $wpdb;
-        
-        $cutoff_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
-        return $wpdb->query($wpdb->prepare(
-            "DELETE FROM {$this->pagespeed_table} WHERE test_date < %s",
-            $cutoff_date
-        ));
-    }
-
-    public function register_shortcode() {
-        add_shortcode('pagespeed_results', array($this, 'render_shortcode'));
-    }
-
-    public function render_shortcode($atts) {
-        $atts = shortcode_atts([
-            'url' => get_permalink(),
-            'show_graph' => 'true'
-        ], $atts);
-
-        $results = $this->get_results($atts['url'], 1);
-        if (empty($results)) {
-            return '<p>No PageSpeed results available for this page.</p>';
-        }
-
-        $result = $results[0];
-        ob_start();
+        wp_nonce_field('pagespeed_meta_box', 'pagespeed_meta_box_nonce');
         ?>
-        <div class="pagespeed-results">
-            <div class="pagespeed-summary">
-                <h3>PageSpeed Insights Results</h3>
-                <div class="pagespeed-scores">
-                    <div class="desktop-scores">
+        <div class="pagespeed-meta-box">
+            <?php if ($has_results): ?>
+                <div class="results-grid">
+                    <div class="desktop-results">
                         <h4>Desktop</h4>
-                        <ul>
-                            <li>Performance: <?php echo $result->desktop_performance; ?>%</li>
-                            <li>Accessibility: <?php echo $result->desktop_accessibility; ?>%</li>
-                            <li>Best Practices: <?php echo $result->desktop_best_practices; ?>%</li>
-                            <li>SEO: <?php echo $result->desktop_seo; ?>%</li>
-                        </ul>
+                        <div class="score <?php echo $this->get_score_class($results['desktop']->performance_score); ?>">
+                            <?php echo $results['desktop']->performance_score; ?>%
+                        </div>
+                        <div class="last-tested">
+                            <?php echo human_time_diff(strtotime($results['desktop']->test_date)) . ' ago'; ?>
+                        </div>
                     </div>
-                    <div class="mobile-scores">
+                    <div class="mobile-results">
                         <h4>Mobile</h4>
-                        <ul>
-                            <li>Performance: <?php echo $result->mobile_performance; ?>%</li>
-                            <li>Accessibility: <?php echo $result->mobile_accessibility; ?>%</li>
-                            <li>Best Practices: <?php echo $result->mobile_best_practices; ?>%</li>
-                            <li>SEO: <?php echo $result->mobile_seo; ?>%</li>
-                        </ul>
+                        <div class="score <?php echo $this->get_score_class($results['mobile']->performance_score); ?>">
+                            <?php echo $results['mobile']->performance_score; ?>%
+                        </div>
+                        <div class="last-tested">
+                            <?php echo human_time_diff(strtotime($results['mobile']->test_date)) . ' ago'; ?>
+                        </div>
                     </div>
                 </div>
-                <p class="last-tested">Last tested: <?php echo date('F j, Y g:i a', strtotime($result->test_date)); ?></p>
-            </div>
+            <?php else: ?>
+                <p>No PageSpeed test results available.</p>
+            <?php endif; ?>
+            
+            <button type="button" class="button run-pagespeed-test" data-url="<?php echo esc_attr($url); ?>">
+                Run PageSpeed Test
+            </button>
+            <span class="spinner"></span>
         </div>
         <?php
-        return ob_get_clean();
     }
 
-    public function add_pagespeed_meta_box() {
-        add_meta_box(
-            'pagespeed_insights',
-            'PageSpeed Insights',
-            array($this, 'render_meta_box'),
-            ['post', 'page'],
-            'side',
-            'default'
-        );
-    }
-
-    public function render_meta_box($post) {
-        $results = $this->get_results(get_permalink($post->ID), 1);
-        if (empty($results)) {
-            echo '<p>No PageSpeed results available.</p>';
-        } else {
-            $result = $results[0];
-            ?>
-            <div class="pagespeed-meta-box">
-                <p><strong>Desktop Performance:</strong> <?php echo $result->desktop_performance; ?>%</p>
-                <p><strong>Mobile Performance:</strong> <?php echo $result->mobile_performance; ?>%</p>
-                <p><em>Last tested: <?php echo date('F j, Y', strtotime($result->test_date)); ?></em></p>
-            </div>
-            <?php
-        }
-        
-        wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce');
-        ?>
-        <button type="button" class="button" id="run-pagespeed-test">
-            Run PageSpeed Test
-        </button>
-        <?php
-    }
-
-    public function save_pagespeed_meta($post_id) {
-        if (!isset($_POST['pagespeed_test_nonce']) || 
-            !wp_verify_nonce($_POST['pagespeed_test_nonce'], 'pagespeed_test_nonce')) {
-            return;
-        }
-
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-            return;
-        }
-
-        if (!current_user_can('edit_post', $post_id)) {
-            return;
-        }
-
-        // Any additional meta saving logic can go here
+    private function get_score_class($score) {
+        if ($score >= 90) return 'good';
+        if ($score >= 50) return 'average';
+        return 'poor';
     }
 }

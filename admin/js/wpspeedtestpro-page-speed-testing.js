@@ -1,210 +1,125 @@
 jQuery(document).ready(function($) {
-    // Tab switching
-    $('.nav-tab-wrapper a').on('click', function(e) {
-        e.preventDefault();
-        var targetTab = $(this).attr('href');
-        
-        // Update active tab
-        $('.nav-tab-wrapper a').removeClass('nav-tab-active');
-        $(this).addClass('nav-tab-active');
-        
-        // Show target content
-        $('.tab-content').removeClass('active');
-        $(targetTab).addClass('active');
-        
-        // Refresh data if needed
-        if (targetTab === '#results-tab') {
-            loadTestResults();
-        } else if (targetTab === '#scheduled-tab') {
-            loadScheduledTests();
-        }
-    });
-
-    // Run test form submission
+    // Test form submission
     $('#pagespeed-test-form').on('submit', function(e) {
         e.preventDefault();
         
-        var $form = $(this);
-        var $submit = $form.find('#run-test');
-        var $spinner = $form.find('.spinner');
+        const $form = $(this);
+        const $submit = $form.find('button[type="submit"]');
+        const $status = $('#test-status');
         
+        // Disable submit button and show status
         $submit.prop('disabled', true);
-        $spinner.addClass('is-active');
-        
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'run_pagespeed_test',
-                nonce: $('#pagespeed_test_nonce').val(),
-                url: $('#test-url').val(),
-                frequency: $('#test-frequency').val()
-            },
-            success: function(response) {
-                if (response.success) {
-                    updateLatestResults(response.data);
-                    $('#latest-results').show();
-                } else {
-                    alert('Error running test: ' + response.data);
+        $status.show();
+
+        // Collect form data
+        const data = {
+            action: 'pagespeed_run_test',
+            nonce: $('#pagespeed_test_nonce').val(),
+            url: $('#test-url').val(),
+            device: $('#test-device').val(),
+            frequency: $('#test-frequency').val()
+        };
+
+        // Run the test
+        $.post(ajaxurl, data, function(response) {
+            if (response.success) {
+                if (response.data.status === 'complete') {
+                    displayResults(response.data.results);
+                    loadTestHistory();
+                    if (data.frequency !== 'once') {
+                        loadScheduledTests();
+                    }
                 }
-            },
-            error: function() {
-                alert('Error communicating with server');
-            },
-            complete: function() {
-                $submit.prop('disabled', false);
-                $spinner.removeClass('is-active');
+            } else {
+                alert('Error: ' + response.data);
             }
+        }).fail(function() {
+            alert('Failed to run test. Please try again.');
+        }).always(function() {
+            $submit.prop('disabled', false);
+            $status.hide();
         });
     });
 
-    // Delete old results
+    // Handle old results deletion
     $('#delete-old-results').on('click', function() {
         if (!confirm('Are you sure you want to delete old results?')) {
             return;
         }
+
+        const days = $('#days-to-keep').val();
         
-        var days = $('#days-to-keep').val();
-        
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'delete_old_pagespeed_results',
-                nonce: $('#pagespeed_test_nonce').val(),
-                days: days
-            },
-            success: function(response) {
-                if (response.success) {
-                    loadTestResults();
-                } else {
-                    alert('Error deleting results: ' + response.data);
-                }
+        $.post(ajaxurl, {
+            action: 'pagespeed_delete_old_results',
+            nonce: $('#pagespeed_test_nonce').val(),
+            days: days
+        }, function(response) {
+            if (response.success) {
+                loadTestHistory();
+            } else {
+                alert('Error deleting results: ' + response.data);
             }
         });
     });
 
-    function loadTestResults() {
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'get_pagespeed_results',
-                nonce: $('#pagespeed_test_nonce').val()
-            },
-            success: function(response) {
-                if (response.success) {
-                    updateResultsTable(response.data);
-                }
-            }
-        });
+    // Display test results
+    function displayResults(results) {
+        const $results = $('#latest-results');
+        
+        // Update desktop results
+        if (results.desktop) {
+            updateDeviceResults('desktop', results.desktop);
+        }
+        
+        // Update mobile results
+        if (results.mobile) {
+            updateDeviceResults('mobile', results.mobile);
+        }
+        
+        $results.show();
     }
 
-    function loadScheduledTests() {
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'get_scheduled_pagespeed_tests',
-                nonce: $('#pagespeed_test_nonce').val()
-            },
-            success: function(response) {
-                if (response.success) {
-                    updateScheduledTable(response.data);
-                }
-            }
-        });
-    }
+    function updateDeviceResults(device, data) {
+        const $container = $(`.device-results.${device}`);
+        
+        // Update main performance score
+        const $score = $container.find('.score-circle.performance');
+        $score.find('.score-value').text(data.performance_score);
+        updateScoreClass($score, data.performance_score);
 
-    function updateLatestResults(results) {
-        // Update desktop scores
-        $('.desktop .performance .score').text(results.desktop.performance);
-        $('.desktop .metrics-grid .metric').each(function(index) {
-            var metrics = ['accessibility', 'best_practices', 'seo'];
-            $(this).find('.score').text(results.desktop[metrics[index]]);
-        });
-
-        // Update mobile scores
-        $('.mobile .performance .score').text(results.mobile.performance);
-        $('.mobile .metrics-grid .metric').each(function(index) {
-            var metrics = ['accessibility', 'best_practices', 'seo'];
-            $(this).find('.score').text(results.mobile[metrics[index]]);
+        // Update other scores
+        $container.find('.scores-grid .score-item').each(function() {
+            const $item = $(this);
+            const metric = $item.find('.label').text().toLowerCase().replace(' ', '_') + '_score';
+            const value = data[metric];
+            $item.find('.value').text(value);
+            updateScoreClass($item, value);
         });
 
         // Update Core Web Vitals
-        $('.core-web-vitals .metric').each(function(index) {
-            var metrics = ['fcp', 'lcp', 'cls', 'fid'];
-            $(this).find('.score').text(results.desktop[metrics[index]]);
-        });
+        updateWebVital($container, 'FCP', data.fcp, 's', 2.5);
+        updateWebVital($container, 'LCP', data.lcp, 's', 2.5);
+        updateWebVital($container, 'CLS', data.cls, '', 0.1);
+        updateWebVital($container, 'TBT', data.tbt, 'ms', 300);
+    }
 
-        // Update score colors
-        $('.score').each(function() {
-            var score = parseInt($(this).text());
-            $(this).closest('.metric, .score-circle')
-                .removeClass('poor average good')
+    function updateWebVital($container, metric, value, unit, threshold) {
+        const $metric = $container.find(`.metric-item:contains("${metric}")`);
+        let displayValue = value;
+        
+        if (unit === 's') {
+            displayValue = (value / 1000).toFixed(1);
+        } else if (unit === 'ms') {
+            displayValue = Math.round(value);
+        }
+        
+        $metric.find('.value').text(displayValue + unit);
+        updateScoreClass($metric, value <= threshold ? 100 : 0);
+    }
+
+    function updateScoreClass($element, score) {
+        $element.removeClass('poor average good')
                 .addClass(getScoreClass(score));
-        });
-    }
-
-    function updateResultsTable(results) {
-        var $tbody = $('#results-table-body');
-        $tbody.empty();
-        
-        results.forEach(function(result) {
-            var row = `
-                <tr>
-                    <td>${result.url}</td>
-                    <td>${formatDate(result.test_date)}</td>
-                    <td class="${getScoreClass(result.desktop_performance)}">
-                        ${result.desktop_performance}%
-                    </td>
-                    <td class="${getScoreClass(result.mobile_performance)}">
-                        ${result.mobile_performance}%
-                    </td>
-                    <td class="${getScoreClass(result.desktop_accessibility)}">
-                        ${result.desktop_accessibility}%
-                    </td>
-                    <td class="${getScoreClass(result.desktop_best_practices)}">
-                        ${result.desktop_best_practices}%
-                    </td>
-                    <td class="${getScoreClass(result.desktop_seo)}">
-                        ${result.desktop_seo}%
-                    </td>
-                    <td>
-                        <button type="button" class="button view-details" data-id="${result.id}">
-                            View Details
-                        </button>
-                    </td>
-                </tr>
-            `;
-            $tbody.append(row);
-        });
-    }
-
-    function updateScheduledTable(tests) {
-        var $tbody = $('#scheduled-table-body');
-        $tbody.empty();
-        
-        tests.forEach(function(test) {
-            var row = `
-                <tr>
-                    <td>${test.url}</td>
-                    <td>${test.frequency}</td>
-                    <td>${formatDate(test.last_run)}</td>
-                    <td>${formatDate(test.next_run)}</td>
-                    <td>${test.active ? 'Active' : 'Inactive'}</td>
-                    <td>
-                        <button type="button" class="button toggle-schedule" data-id="${test.id}">
-                            ${test.active ? 'Pause' : 'Resume'}
-                        </button>
-                        <button type="button" class="button delete-schedule" data-id="${test.id}">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            `;
-            $tbody.append(row);
-        });
     }
 
     function getScoreClass(score) {
@@ -213,12 +128,31 @@ jQuery(document).ready(function($) {
         return 'poor';
     }
 
-    function formatDate(dateString) {
-        if (!dateString) return 'Never';
-        return new Date(dateString).toLocaleString();
+    // Load test history
+    function loadTestHistory() {
+        $.post(ajaxurl, {
+            action: 'pagespeed_get_test_results',
+            nonce: $('#pagespeed_test_nonce').val()
+        }, function(response) {
+            if (response.success) {
+                updateTestHistory(response.data);
+            }
+        });
     }
 
-    // Initial load
-    loadTestResults();
+    // Load scheduled tests
+    function loadScheduledTests() {
+        $.post(ajaxurl, {
+            action: 'pagespeed_get_scheduled_tests',
+            nonce: $('#pagespeed_test_nonce').val()
+        }, function(response) {
+            if (response.success) {
+                updateScheduledTests(response.data);
+            }
+        });
+    }
+
+    // Initialize page
+    loadTestHistory();
     loadScheduledTests();
 });
