@@ -227,6 +227,12 @@ jQuery(document).ready(function($) {
         return div.innerHTML;
     }
 
+    loadScheduledTests();
+    loadTestHistory();
+    // Refresh every 5 minutes
+    setInterval(loadScheduledTests, 5 * 60 * 1000);
+    
+    
     
 });
 
@@ -250,10 +256,6 @@ jQuery(document).on('click', '.run-now', function(e) {
 
 // Load scheduled tests when page loads
 jQuery(document).ready(function() {
-    loadScheduledTests();
-    loadTestHistory();
-    // Refresh every 5 minutes
-    setInterval(loadScheduledTests, 5 * 60 * 1000);
-    
+
 });
 
