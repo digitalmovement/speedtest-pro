@@ -40,9 +40,8 @@ class Wpspeedtestpro_Activator {
         $db->create_table();
         $db->create_benchmark_table();
         $db->speedvitals_create_tables();
+        $db->create_pagespeed_tables();
 
-        $pagespeed = new Wpspeedtestpro_PageSpeed('wpspeedtestpro', WPSPEEDTESTPRO_VERSION, null);
-        $pagespeed->create_tables();
         // Any other activation tasks can be added here
 
               // Schedule cron job for running scheduled tests
