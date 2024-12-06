@@ -234,7 +234,7 @@ private function initiate_pagespeed_test($url, $device) {
     $params = array(
         'url' => esc_url($url),
         'strategy' => $device,
-        'category' => ['performance', 'accessibility', 'best-practices', 'seo']
+        'category' => "category=ACCESSIBILITY&category=BEST_PRACTICES&category=PERFORMANCE&category=PWA&category=SEO"
     );
 
     if (!empty($api_key)) {
