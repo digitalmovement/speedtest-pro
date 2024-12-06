@@ -62,6 +62,37 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // Function to cancel a scheduled test
+    function cancelScheduledTest(id) {
+        $.post(ajaxurl, {
+            action: 'pagespeed_cancel_scheduled_test',
+            nonce: $('#pagespeed_test_nonce').val(),
+            test_id: id
+        }, function(response) {
+            if (response.success) {
+                loadScheduledTests();
+            } else {
+                alert('Error canceling test: ' + response.data);
+            }
+        });
+    }
+
+    // Function to run a scheduled test immediately
+    function runScheduledTest(id) {
+        $.post(ajaxurl, {
+            action: 'pagespeed_run_scheduled_test',
+            nonce: $('#pagespeed_test_nonce').val(),
+            test_id: id
+        }, function(response) {
+            if (response.success) {
+                loadScheduledTests();
+                loadTestHistory();
+            } else {
+                alert('Error running test: ' + response.data);
+            }
+        });
+    }
+
     // Display test results
     function displayResults(results) {
         const $results = $('#latest-results');
@@ -135,9 +166,55 @@ jQuery(document).ready(function($) {
             nonce: $('#pagespeed_test_nonce').val()
         }, function(response) {
             if (response.success) {
-                updateTestHistory(response.data);
+                updateTestHistory(response.data.results);
+                updatePagination(response.data.pagination);
             }
         });
+    }
+
+    function updateTestHistory(results) {
+        const $tbody = $('#test-results');
+        $tbody.empty();
+
+        results.forEach(function(result) {
+            $tbody.append(`
+                <tr>
+                    <td>${escapeHtml(result.url)}</td>
+                    <td>${result.device}</td>
+                    <td class="${result.performance.class}">${result.performance.score}%</td>
+                    <td class="${result.accessibility.class}">${result.accessibility.score}%</td>
+                    <td class="${result.best_practices.class}">${result.best_practices.score}%</td>
+                    <td class="${result.seo.class}">${result.seo.score}%</td>
+                    <td>${result.test_date}</td>
+                    <td>
+                        <button type="button" class="button button-small view-details" 
+                                data-id="${result.id}">View Details</button>
+                    </td>
+                </tr>
+            `);
+        });
+    }
+
+    function updatePagination(pagination) {
+        const $pagination = $('.tablenav-pages');
+        if (pagination.total_pages <= 1) {
+            $pagination.hide();
+            return;
+        }
+
+        let html = '<span class="displaying-num">' + pagination.total_items + ' items</span>';
+        
+        if (pagination.current_page > 1) {
+            html += `<a class="prev-page" href="#" data-page="${pagination.current_page - 1}">‹</a>`;
+        }
+        
+        html += '<span class="paging-input">' + pagination.current_page + ' of ' + pagination.total_pages + '</span>';
+        
+        if (pagination.current_page < pagination.total_pages) {
+            html += `<a class="next-page" href="#" data-page="${pagination.current_page + 1}">›</a>`;
+        }
+
+        $pagination.html(html).show();
     }
 
     // Load scheduled tests
@@ -147,7 +224,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_get_scheduled_tests',
-                nonce: wpspeedtestpro_ajax.nonce
+                nonce: $('#pagespeed_test_nonce').val()
             },
             success: function(response) {
                 if (response.success) {
@@ -161,8 +238,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    // Initialize page
- 
+
     function displayScheduledTests(tests) {
         const $tbody = $('#pagespeed-scheduled-body');
         $tbody.empty();
@@ -189,17 +265,11 @@ jQuery(document).ready(function($) {
                         </span>
                     </td>
                     <td>
-                        <button type="button" 
-                                class="button button-small cancel-schedule" 
-                                data-id="${test.id}">
-                            Cancel
-                        </button>
+                        <button type="button" class="button button-small cancel-schedule" 
+                                data-id="${test.id}">Cancel</button>
                         ${test.status === 'overdue' ? `
-                            <button type="button" 
-                                    class="button button-small run-now" 
-                                    data-id="${test.id}">
-                                Run Now
-                            </button>
+                            <button type="button" class="button button-small run-now" 
+                                    data-id="${test.id}">Run Now</button>
                         ` : ''}
                     </td>
                 </tr>
@@ -222,35 +292,46 @@ jQuery(document).ready(function($) {
     
     // Helper function to safely escape HTML
     function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
     }
 
+    // Event handlers for scheduled test actions
+    $(document).on('click', '.cancel-schedule', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        if (confirm('Are you sure you want to cancel this scheduled test?')) {
+            cancelScheduledTest(id);
+        }
+    });
+
+    $(document).on('click', '.run-now', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        runScheduledTest(id);
+    });
+
+    // Pagination event handlers
+    $(document).on('click', '.prev-page, .next-page', function(e) {
+        e.preventDefault();
+        const page = $(this).data('page');
+        loadTestHistory(page);
+    });
+
+    // View details handler
+    $(document).on('click', '.view-details', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        // Implement view details functionality
+        // This could open a modal or expand the row with more details
+    });
+
+    // Initialize page
     loadScheduledTests();
     loadTestHistory();
+    
     // Refresh every 5 minutes
     setInterval(loadScheduledTests, 5 * 60 * 1000);
-    
-
-    
 });
-
-
-
-
-// Event handlers for scheduled test actions
-jQuery(document).on('click', '.cancel-schedule', function(e) {
-    e.preventDefault();
-    const id = $(this).data('id');
-    if (confirm('Are you sure you want to cancel this scheduled test?')) {
-        cancelScheduledTest(id);
-    }
-});
-
-jQuery(document).on('click', '.run-now', function(e) {
-    e.preventDefault();
-    const id = $(this).data('id');
-    runScheduledTest(id);
-});
-
