@@ -243,7 +243,7 @@ private function initiate_pagespeed_test($url, $device) {
 
     $request_url = add_query_arg($params, $api_url);
     $response = wp_remote_get($request_url);
-
+error_log("URL:". $request_url);
     if (is_wp_error($response)) {
         error_log('PageSpeed API Error: ' . $response->get_error_message());
         return ['success' => false];
