@@ -18,6 +18,8 @@ class Wpspeedtestpro_PageSpeed {
         $this->init();
     }
 
+     
+
     private function init() {
         // Admin AJAX handlers
         add_action('wp_ajax_pagespeed_run_test', array($this, 'ajax_run_test'));
@@ -26,7 +28,8 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_delete_old_results', array($this, 'ajax_delete_old_results'));
         add_action('wp_ajax_pagespeed_get_latest_result', array($this, 'ajax_get_latest_result'));
         add_action('wp_ajax_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
-
+        add_action('wp_ajax_pagespeed_get_test_results', array($this, 'ajax_get_test_results'));
+    
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
@@ -312,11 +315,6 @@ class Wpspeedtestpro_PageSpeed {
         <?php
     }
 
-    private function get_score_class($score) {
-        if ($score >= 90) return 'good';
-        if ($score >= 50) return 'average';
-        return 'poor';
-    }
 
     public function ajax_get_scheduled_tests() {
         check_ajax_referer('pagespeed_test_nonce', 'nonce');
@@ -370,6 +368,207 @@ class Wpspeedtestpro_PageSpeed {
         return 'active';
     }
 
+
+    /**
+     * Add this to the Wpspeedtestpro_PageSpeed class
+     */
     
+    public function ajax_get_test_results() {
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
     
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+    
+        global $wpdb;
+        
+        // Get the page number and results per page
+        $page = isset($_POST['page']) ? absint($_POST['page']) : 1;
+        $per_page = isset($_POST['per_page']) ? absint($_POST['per_page']) : 20;
+        $offset = ($page - 1) * $per_page;
+    
+        // Get total count for pagination
+        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM {$this->pagespeed_table}");
+    
+        // Get results with pagination
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->pagespeed_table}
+                ORDER BY test_date DESC
+                LIMIT %d OFFSET %d",
+                $per_page,
+                $offset
+            )
+        );
+    
+        if ($results === false) {
+            wp_send_json_error('Database error occurred');
+            return;
+        }
+    
+        $formatted_results = array_map(function($test) {
+            // Format scores with color indicators
+            $performance = [
+                'score' => $test->performance_score,
+                'class' => $this->get_score_class($test->performance_score)
+            ];
+    
+            $accessibility = [
+                'score' => $test->accessibility_score,
+                'class' => $this->get_score_class($test->accessibility_score)
+            ];
+    
+            $best_practices = [
+                'score' => $test->best_practices_score,
+                'class' => $this->get_score_class($test->best_practices_score)
+            ];
+    
+            $seo = [
+                'score' => $test->seo_score,
+                'class' => $this->get_score_class($test->seo_score)
+            ];
+    
+            // Format Core Web Vitals
+            $core_vitals = [
+                'fcp' => $this->format_timing($test->fcp),
+                'lcp' => $this->format_timing($test->lcp),
+                'cls' => number_format($test->cls, 3),
+                'tbt' => $this->format_timing($test->tbt),
+                'si' => $this->format_timing($test->si),
+                'tti' => $this->format_timing($test->tti)
+            ];
+    
+            return [
+                'id' => $test->id,
+                'url' => $test->url,
+                'device' => ucfirst($test->device),
+                'test_date' => wp_date('F j, Y g:i a', strtotime($test->test_date)),
+                'performance' => $performance,
+                'accessibility' => $accessibility,
+                'best_practices' => $best_practices,
+                'seo' => $seo,
+                'core_vitals' => $core_vitals,
+                'full_report' => json_decode($test->full_report, true)
+            ];
+        }, $results);
+    
+        $response = [
+            'results' => $formatted_results,
+            'pagination' => [
+                'total_items' => (int) $total_items,
+                'total_pages' => ceil($total_items / $per_page),
+                'current_page' => $page,
+                'per_page' => $per_page
+            ]
+        ];
+    
+        wp_send_json_success($response);
+    }
+    
+    /**
+     * Helper function to determine score class
+     */
+    private function get_score_class($score) {
+        if ($score >= 90) {
+            return 'good';
+        } elseif ($score >= 50) {
+            return 'average';
+        }
+        return 'poor';
+    }
+    
+    /**
+     * Helper function to format timing values
+     */
+    private function format_timing($value) {
+        if ($value === null) {
+            return 'N/A';
+        }
+    
+        // Convert to seconds if greater than 1000ms
+        if ($value >= 1000) {
+            return number_format($value / 1000, 2) . 's';
+        }
+    
+        // Keep as milliseconds if less than 1000ms
+        return number_format($value, 0) . 'ms';
+    }
+    
+    /**
+     * Add this handler to the init() function
+     */
+
+        // ... existing init code ...
+       
+    /**
+     * Helper function to get summary statistics
+     */
+    public function get_summary_stats($url = null) {
+        global $wpdb;
+    
+        $where = $url ? $wpdb->prepare("WHERE url = %s", $url) : "";
+    
+        $stats = $wpdb->get_row("
+            SELECT 
+                AVG(performance_score) as avg_performance,
+                AVG(accessibility_score) as avg_accessibility,
+                AVG(best_practices_score) as avg_best_practices,
+                AVG(seo_score) as avg_seo,
+                MIN(performance_score) as min_performance,
+                MAX(performance_score) as max_performance,
+                COUNT(*) as total_tests
+            FROM {$this->pagespeed_table}
+            {$where}
+        ");
+    
+        if ($stats) {
+            return [
+                'averages' => [
+                    'performance' => round($stats->avg_performance),
+                    'accessibility' => round($stats->avg_accessibility),
+                    'best_practices' => round($stats->avg_best_practices),
+                    'seo' => round($stats->avg_seo)
+                ],
+                'performance_range' => [
+                    'min' => $stats->min_performance,
+                    'max' => $stats->max_performance
+                ],
+                'total_tests' => $stats->total_tests
+            ];
+        }
+    
+        return null;
+    }
+    
+    /**
+     * Get trend data for a specific metric
+     */
+    public function get_trend_data($metric, $days = 30, $url = null) {
+        global $wpdb;
+    
+        $where = ['1=1'];
+        if ($url) {
+            $where[] = $wpdb->prepare("url = %s", $url);
+        }
+    
+        $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $where[] = $wpdb->prepare("test_date >= %s", $date_limit);
+    
+        $where_clause = "WHERE " . implode(" AND ", $where);
+    
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT 
+                DATE(test_date) as date,
+                AVG(%s) as value
+            FROM {$this->pagespeed_table}
+            {$where_clause}
+            GROUP BY DATE(test_date)
+            ORDER BY date ASC",
+            $metric
+        ));
+    }
+
+
+
 }
