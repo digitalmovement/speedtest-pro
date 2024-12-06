@@ -79,44 +79,6 @@ class Wpspeedtestpro_PageSpeed {
         
         include(plugin_dir_path(__FILE__) . 'partials/wpspeedtestpro-page-speed-testing-display.php');
     }
-    public function create_tables() {
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->pagespeed_table} (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            url varchar(255) NOT NULL,
-            location varchar(50) NOT NULL,
-            device varchar(50) NOT NULL,
-            test_date datetime DEFAULT CURRENT_TIMESTAMP,
-            performance_score int(3),
-            accessibility_score int(3),
-            best_practices_score int(3),
-            seo_score int(3),
-            fcp int(11),
-            lcp int(11),
-            cls decimal(5,3),
-            si int(11),
-            tti int(11),
-            tbt int(11),
-            full_report longtext,
-            PRIMARY KEY  (id),
-            KEY url (url),
-            KEY test_date (test_date)
-        ) $charset_collate;
-
-        CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            url varchar(255) NOT NULL,
-            frequency varchar(20) NOT NULL,
-            last_run datetime DEFAULT NULL,
-            next_run datetime DEFAULT NULL,
-            PRIMARY KEY  (id)
-        ) $charset_collate;";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-    }
 
     public function ajax_run_test($url, $api_key = '', $device = 'desktop') {
         $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';

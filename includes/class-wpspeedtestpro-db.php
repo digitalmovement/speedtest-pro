@@ -5,13 +5,18 @@ class Wpspeedtestpro_DB {
     private $benchmark_results_table;
     private $speedvitals_tests_table;
     private $speedvitals_scheduled_tests_table;
+    private $pagespeed_table;
+    private $pagespeed_scheduled_table;
+
 
     public function __construct() {
         global $wpdb;
-        $this->hosting_benchmarking_table = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results';
-        $this->benchmark_results_table = $wpdb->prefix . 'wpspeedtestpro_benchmark_results';
-        $this->speedvitals_tests_table = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
+        $this->hosting_benchmarking_table        = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results';
+        $this->benchmark_results_table           = $wpdb->prefix . 'wpspeedtestpro_benchmark_results';
+        $this->speedvitals_tests_table           = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
         $this->speedvitals_scheduled_tests_table = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
+        $this->pagespeed_table                   = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
+        $this->pagespeed_scheduled_table         = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
     }
 
     public function create_table() {
@@ -287,6 +292,48 @@ class Wpspeedtestpro_DB {
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
         dbDelta($sql);
     }
+
+
+    public function create_pagespeed_tables() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE IF NOT EXISTS {$this->pagespeed_table} (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            url varchar(255) NOT NULL,
+            location varchar(50) NOT NULL,
+            device varchar(50) NOT NULL,
+            test_date datetime DEFAULT CURRENT_TIMESTAMP,
+            performance_score int(3),
+            accessibility_score int(3),
+            best_practices_score int(3),
+            seo_score int(3),
+            fcp int(11),
+            lcp int(11),
+            cls decimal(5,3),
+            si int(11),
+            tti int(11),
+            tbt int(11),
+            full_report longtext,
+            PRIMARY KEY  (id),
+            KEY url (url),
+            KEY test_date (test_date)
+        ) $charset_collate;
+
+        CREATE TABLE IF NOT EXISTS {$this->pagespeed_scheduled_table} (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            url varchar(255) NOT NULL,
+            frequency varchar(20) NOT NULL,
+            last_run datetime DEFAULT NULL,
+            next_run datetime DEFAULT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+    }
+
+
 
     public function speedvitals_insert_test_result($result) {
         global $wpdb;
