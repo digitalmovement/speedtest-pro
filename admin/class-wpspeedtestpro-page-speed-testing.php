@@ -93,6 +93,8 @@ class Wpspeedtestpro_PageSpeed {
         }
 
         $request_url = add_query_arg($params, $api_url);
+
+        error_log('Request URL: ' . $request_url);
         $response = wp_remote_get($request_url);
 
         if (is_wp_error($response)) {
