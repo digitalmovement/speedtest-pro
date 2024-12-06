@@ -242,70 +242,116 @@ private function initiate_pagespeed_test($url, $device) {
     }
 
     $request_url = add_query_arg($params, $api_url);
-    $response = wp_remote_get($request_url);
-error_log("URL:". $request_url);
+    error_log('PageSpeed API Request URL: ' . $request_url);
+
+    // Increase timeout and configure request arguments
+    $args = array(
+        'timeout' => 60, // Increase timeout to 60 seconds
+        'sslverify' => true,
+        'headers' => array(
+            'Accept' => 'application/json'
+        ),
+        'user-agent' => 'WordPress/' . get_bloginfo('version') . '; ' . get_bloginfo('url')
+    );
+
+    $response = wp_remote_get($request_url, $args);
+
     if (is_wp_error($response)) {
         error_log('PageSpeed API Error: ' . $response->get_error_message());
-        return ['success' => false];
+        return [
+            'success' => false,
+            'error' => $response->get_error_message()
+        ];
     }
 
-    // Generate a unique test ID
-    $test_id = wp_generate_uuid4();
-    
-    return [
-        'success' => true,
-        'test_id' => $test_id
-    ];
-}
-
-private function check_test_result($test_id) {
-    // Use the test ID to check the result
-    // You might need to modify this based on how Google PageSpeed API handles result checking
-    
-    $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
-    $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
-    
-    $response = wp_remote_get($api_url);
-
-    if (is_wp_error($response)) {
-        return ['status' => 'error'];
+    $status_code = wp_remote_retrieve_response_code($response);
+    if ($status_code !== 200) {
+        error_log('PageSpeed API HTTP Error: ' . $status_code);
+        return [
+            'success' => false,
+            'error' => 'HTTP Error: ' . $status_code
+        ];
     }
 
     $body = wp_remote_retrieve_body($response);
     $data = json_decode($body, true);
 
     if (!$data || isset($data['error'])) {
-        return ['status' => 'error'];
+        $error_message = isset($data['error']['message']) ? $data['error']['message'] : 'Invalid API response';
+        error_log('PageSpeed API Response Error: ' . $error_message);
+        return [
+            'success' => false,
+            'error' => $error_message
+        ];
     }
 
-    // Parse results and return
-    $results = $this->parse_results($data);
+    // Process successful response
+    $result = [
+        'id' => wp_generate_uuid4(),
+        'data' => $data,
+        'timestamp' => time()
+    ];
+
+    // Store the result in a transient
+    set_transient('pagespeed_test_result_' . $result['id'], $result, 3600);
+
+    return [
+        'success' => true,
+        'test_id' => $result['id']
+    ];
+}
+
+private function check_test_result($test_id) {
+    $result = get_transient('pagespeed_test_result_' . $test_id);
     
+    if (!$result) {
+        return [
+            'status' => 'error',
+            'error' => 'Test result not found'
+        ];
+    }
+
+    // Process the stored result
+    $data = $result['data'];
+    $parsed_results = $this->parse_results($data);
+
     return [
         'status' => 'complete',
-        'data' => $results,
+        'data' => $parsed_results,
         'raw_data' => $data
     ];
 }
-    private function parse_results($data) {
+
+private function parse_results($data) {
+    try {
         $lighthouse = $data['lighthouseResult'];
         $categories = $lighthouse['categories'];
         $audits = $lighthouse['audits'];
 
-        return array(
+        return [
             'performance_score' => round($categories['performance']['score'] * 100),
             'accessibility_score' => round($categories['accessibility']['score'] * 100),
             'best_practices_score' => round($categories['best-practices']['score'] * 100),
             'seo_score' => round($categories['seo']['score'] * 100),
-            'fcp' => $audits['first-contentful-paint']['numericValue'],
-            'lcp' => $audits['largest-contentful-paint']['numericValue'],
-            'cls' => $audits['cumulative-layout-shift']['numericValue'],
-            'si' => $audits['speed-index']['numericValue'],
-            'tti' => $audits['interactive']['numericValue'],
-            'tbt' => $audits['total-blocking-time']['numericValue']
-        );
+            'fcp' => isset($audits['first-contentful-paint']['numericValue']) ? 
+                    $audits['first-contentful-paint']['numericValue'] : null,
+            'lcp' => isset($audits['largest-contentful-paint']['numericValue']) ? 
+                    $audits['largest-contentful-paint']['numericValue'] : null,
+            'cls' => isset($audits['cumulative-layout-shift']['numericValue']) ? 
+                    $audits['cumulative-layout-shift']['numericValue'] : null,
+            'si' => isset($audits['speed-index']['numericValue']) ? 
+                    $audits['speed-index']['numericValue'] : null,
+            'tti' => isset($audits['interactive']['numericValue']) ? 
+                    $audits['interactive']['numericValue'] : null,
+            'tbt' => isset($audits['total-blocking-time']['numericValue']) ? 
+                    $audits['total-blocking-time']['numericValue'] : null
+        ];
+    } catch (Exception $e) {
+        error_log('Error parsing PageSpeed results: ' . $e->getMessage());
+        error_log('Raw data: ' . print_r($data, true));
+        return null;
     }
-
+}
     private function save_results($url, $device, $results, $full_data) {
         global $wpdb;
 
