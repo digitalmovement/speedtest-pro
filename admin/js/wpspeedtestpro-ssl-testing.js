@@ -87,7 +87,7 @@ jQuery(document).ready(function($) {
                         testInProgress = false;
                         $('#start-ssl-test').prop('disabled', false);
                     } else if (response.data.status === 'in_progress') {
-                        $('#ssl-test-results').html( response.data.message );
+                        $('#ssl-test-results').html( "Testing is still in progress" + '<div class="test-progress"></div>' );
                     }
                 } else {
                     clearInterval(statusCheckInterval);

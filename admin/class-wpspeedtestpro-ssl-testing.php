@@ -136,7 +136,7 @@ class Wpspeedtestpro_SSL_Testing {
 
 
         if (is_array($result) && isset($result['status']) && $result['status'] !== 'READY') {
-            set_transient($this->in_progress_key, $result, 30 * MINUTE_IN_SECONDS);
+            set_transient($this->in_progress_key, $result, 360 * MINUTE_IN_SECONDS);
             wp_send_json_success(array('status' => 'in_progress', 'message' => 'SSL test initiated. Please wait.'));
         } elseif (is_array($result) && !isset($result['error'])) {
             $this->cache_ssl_results($result);
