@@ -10,6 +10,7 @@
 }
 #test-progress {
     margin: 10px 0;
+    padding: 10px 12px;
 }
 .modal {
     display: none;
@@ -94,3 +95,43 @@
 #performance-info-banner .notice-dismiss:hover {
     color: #d63638;
 }
+
+
+.test-progress {
+    height: 4px;
+    background: #e5e5e5;
+    margin-top: 10px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+
+.test-progress::after {
+    content: '';
+    display: block;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        #2271b1,
+        #4CAF50,
+        #FFC107,
+        #E91E63,
+        #2271b1
+    );
+    background-size: 400% 100%;
+    animation: 
+        progress 1s infinite linear,
+        rainbow 4s infinite linear;
+}
+
+@keyframes progress {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(400%); }
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 400% 50%; }
+}
+

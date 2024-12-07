@@ -57,7 +57,14 @@ jQuery(document).ready(function($) {
     }
 
     function updateTestProgress(message) {
-        $('#test-progress').text(message);
+        $('#test-progress').html(message + '<div class="test-progress"></div>');
+    }
+
+    function toggleNotice($element, type = 'info') {
+        const baseClass = 'notice-';
+        $element.removeClass(baseClass + 'info ' + baseClass + 'error' + baseClass + 'success')
+                .addClass(baseClass + type);
+                $element.show();
     }
 
     function updateContinuousTestInfo() {
