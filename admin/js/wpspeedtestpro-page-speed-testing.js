@@ -28,7 +28,7 @@ jQuery(document).ready(function($) {
                 checkTestStatus(data.url);
             } else {
                 $error_message.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
-                $error_message.prop('disabled', false);
+                $submit.prop('disabled', false);
             }
         }).fail(function() {
             $status.html('<p class="error">Failed to communicate with server</p>');
