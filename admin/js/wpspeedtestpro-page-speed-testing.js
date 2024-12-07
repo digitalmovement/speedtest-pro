@@ -373,9 +373,10 @@ jQuery(document).ready(function($) {
 
     function toggleNotice($element, type = 'info') {
         const baseClass = 'notice-';
-        $element.removeClass(baseClass + 'info ' + baseClass + 'error')
+        $element.removeClass(baseClass + 'info ' + baseClass + 'error' + baseClass + 'success')
                 .addClass(baseClass + type);
     }
+
 
     // Initialize page
     loadScheduledTests();
