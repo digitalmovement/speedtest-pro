@@ -6,6 +6,8 @@ jQuery(document).ready(function($) {
         const $form = $(this);
         const $submit = $form.find('button[type="submit"]');
         const $status = $('#test-status');
+        const $error_message = $('#error-message');
+
         
         // Disable submit button and show status
         $submit.prop('disabled', true);
@@ -25,8 +27,8 @@ jQuery(document).ready(function($) {
             if (response.success && response.data.status === 'initiated') {
                 checkTestStatus(data.url);
             } else {
-                $status.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
-                $submit.prop('disabled', false);
+                $error_message.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
+                $error_message.prop('disabled', false);
             }
         }).fail(function() {
             $status.html('<p class="error">Failed to communicate with server</p>');
