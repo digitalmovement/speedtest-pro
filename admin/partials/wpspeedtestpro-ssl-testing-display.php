@@ -82,12 +82,10 @@
 
             <?php endif; ?>
 
-
-            <p>SSL Testing will use, <?php echo esc_html($user_email); ?>!</p>
             <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
         <?php endif; ?>
         
-        <div id="ssl-test-results">
+        <div id="ssl-test-results" class="notice notice-info">
             <?php
             if ($cached_result) {
                 echo $this->format_ssl_test_results($cached_result);

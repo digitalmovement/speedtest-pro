@@ -33,7 +33,7 @@ jQuery(document).ready(function($) {
             return;
         }
         testInProgress = true;
-        $('#ssl-test-results').html('Starting SSL test...');
+        $('#ssl-test-results').html('Starting SSL test... Testing can take up to 3 minutes to complete<div class="test-progress"></div>');
         $('#start-ssl-test').prop('disabled', true);
 
         $.ajax({
@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     if (response.data.status === 'in_progress') {
-                        $('#ssl-test-results').html(response.data.message);
+                        $('#ssl-test-results').html("Testing is still in progress" + '<div class="test-progress"></div>');
                         startStatusCheck();
                     } else if (response.data.status === 'completed') {
                         displayResults(response.data.data);
