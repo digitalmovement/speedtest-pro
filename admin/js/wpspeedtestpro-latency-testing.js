@@ -670,6 +670,7 @@ jQuery(document).ready(function($) {
         const baseClass = 'notice-';
         $element.removeClass(baseClass + 'info ' + baseClass + 'error' + baseClass + 'success')
                 .addClass(baseClass + type);
+                $element.show();
     }
 
 
