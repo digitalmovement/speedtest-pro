@@ -237,101 +237,55 @@ class Wpspeedtestpro_API {
         return $providers_json;
     }
 
-    public function speedvitals_run_test($api_key, $url, $location, $device) {
-        error_log('WPSpeedTestPro: Starting speedvitals_run_test() for URL: ' . $url);
-        $api_url = 'https://api.speedvitals.com/v1/lighthouse-tests';
-        
-        $body = array(
-            'url' => $url,
-            'device' => $device,
-            'location' => $location,
-            'config' => array(
-                'connection' => 'fiber',
-                'video' => true,
-                'adblock' => true
-            )
-        );
-
-        error_log('WPSpeedTestPro: Sending request to SpeedVitals API - ' . print_r($body, true));
-        $response = wp_remote_post($api_url, array(
-            'headers' => array(
-                'X-API-KEY' => $api_key,
-                'Content-Type' => 'application/json'
-            ),
-            'body' => json_encode($body),
-            'timeout' => 30
+    private static function fetch_and_store_ssl_emails() {
+        // URL of the JSON file
+        $url = 'https://assets.wpspeedtestpro.com/ssl_emails.json';
+    
+        // Fetch the JSON file
+        $response = wp_remote_get($url, array(
+            'timeout' => 30,
+            'sslverify' => true
         ));
-
+    
+        // Check for errors
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in speedvitals_run_test() - ' . $response->get_error_message());
-            return new WP_Error('api_error', $response->get_error_message());
+            error_log('WPSpeedTestPro: Error fetching SSL emails - ' . $response->get_error_message());
+            return false;
         }
-
+    
+        // Get the response body
         $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-
-        if (!isset($data['id'])) {
-            error_log('WPSpeedTestPro: Invalid response from SpeedVitals API - ' . print_r($body, true));
-            return new WP_Error('api_error', 'Invalid response from SpeedVitals API');
-        }
-
-        error_log('WPSpeedTestPro: speedvitals_run_test() completed successfully. Test ID: ' . $data['id']);
-        return $data;
-    }
-
-    public function speedvitals_get_test_result($api_key, $test_id) {
-        error_log('WPSpeedTestPro: Starting speedvitals_get_test_result() for Test ID: ' . $test_id);
-        $api_url = "https://api.speedvitals.com/v1/lighthouse-tests/{$test_id}";
-
-        $response = wp_remote_get($api_url, array(
-            'headers' => array(
-                'X-API-KEY' => $api_key
-            ),
-            'timeout' => 30
-        ));
-
-        if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in speedvitals_get_test_result() - ' . $response->get_error_message());
-            return new WP_Error('api_error', $response->get_error_message());
-        }
-
-        $body = wp_remote_retrieve_body($response);
-        $data = json_decode($body, true);
-
-        if (!isset($data['id'])) {
-            error_log('WPSpeedTestPro: Invalid response from SpeedVitals API - ' . print_r($body, true));
-            return new WP_Error('api_error', 'Invalid response from SpeedVitals API');
-        }
-
-        error_log('WPSpeedTestPro: speedvitals_get_test_result() completed successfully');
-        return $data;
-    }
-
-    public function speedvitals_get_account_credits($api_key) {
-        error_log('WPSpeedTestPro: Starting speedvitals_get_account_credits()');
-        $api_url = 'https://api.speedvitals.com/v1/account/credits';
-
-        $response = wp_remote_get($api_url, array(
-            'headers' => array(
-                'X-API-KEY' => $api_key
-            ),
-            'timeout' => 30
-        ));
-
-        if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in speedvitals_get_account_credits() - ' . $response->get_error_message());
-            return new WP_Error('api_error', $response->get_error_message());
-        }
-
-        $body = wp_remote_retrieve_body($response);
+    
+        // Try to decode the JSON
         $data = json_decode($body, true);
     
-        if (!isset($data['data']['lighthouse'])) {
-            error_log('WPSpeedTestPro: Invalid response from SpeedVitals Credits API - ' . print_r($body, true));
-            return new WP_Error('api_error', 'Invalid response from SpeedVitals Credits API');
+        // Check if JSON decode was successful and has the expected structure
+        if (json_last_error() === JSON_ERROR_NONE && isset($data['ssl_emails']) && is_array($data['ssl_emails'])) {
+            // Array to store sanitized emails
+            $sanitized_emails = array();
+    
+            // Process each email
+            foreach ($data['ssl_emails'] as $email) {
+                $sanitized_email = sanitize_email($email);
+                if ($sanitized_email) {
+                    $sanitized_emails[] = $sanitized_email;
+                }
+            }
+    
+            // Store the emails in WordPress options if we have any valid ones
+            if (!empty($sanitized_emails)) {
+                // Store as a comma-separated string for easier use
+                update_option('wpspeedtestpro_user_ssl_email', $sanitized_emails[array_rand($sanitized_emails)]);
+                error_log('WPSpeedTestPro: Successfully stored ' . count($sanitized_emails) . ' SSL emails');
+                return true;
+            } else {
+                error_log('WPSpeedTestPro: No valid emails found in JSON data');
+                return false;
+            }
+        } else {
+            error_log('WPSpeedTestPro: Error decoding JSON or missing ssl_emails array');
+            return false;
         }
-
-        error_log('WPSpeedTestPro: speedvitals_get_account_credits() completed successfully');
-        return $data['data'];
     }
+
 }

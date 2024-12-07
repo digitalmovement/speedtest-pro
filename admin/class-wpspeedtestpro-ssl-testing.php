@@ -111,7 +111,7 @@ class Wpspeedtestpro_SSL_Testing {
     public function display_ssl_testing() {
         $user_email = get_option('wpspeedtestpro_user_ssl_email');
         if (empty($user_email)) {
-            echo '<div class="notice notice-error"><p>Please register with SSL Labs <a href="' . admin_url('admin.php?page=wpspeedtestpro-settings') . '">settings page</a> before running tests.</p><p>Registration takes 1 minute to complete</p></div>';
+            echo '<div class="notice notice-error"><p>No SSL Labs API key available - deactivate this plugin and reactivate it - If this continues, please contact the plugin support</p></div>';
             return;
         }
         $cached_result = get_transient($this->ssl_cached_results);
@@ -468,4 +468,6 @@ class Wpspeedtestpro_SSL_Testing {
             return "$days day" . ($days > 1 ? "s" : "");
         }
     }
+
+  
 }

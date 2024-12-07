@@ -32,15 +32,18 @@ class Wpspeedtestpro_Activator {
 	public static function activate() {
         // Ensure the DB class is loaded
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-db.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-api.php';
 
         // Create an instance of the DB class
         $db = new Wpspeedtestpro_DB();
+        $api = new Wpspeedtestpro_API();
 
         // Call the create_table method
         $db->create_table();
         $db->create_benchmark_table();
-        //$db->speedvitals_create_tables();
         $db->create_pagespeed_tables();
+
+        $api->fetch_and_store_ssl_emails();
 
         // Any other activation tasks can be added here
 
