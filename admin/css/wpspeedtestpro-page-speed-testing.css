@@ -178,6 +178,7 @@
     overflow: hidden;
 }
 
+/*
 .test-progress::after {
     content: '';
     display: block;
@@ -186,6 +187,8 @@
     background: #2271b1;
     animation: progress 1s infinite linear;
 }
+
+*/
 
 @keyframes progress {
     from { transform: translateX(-100%); }
