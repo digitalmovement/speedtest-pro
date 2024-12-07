@@ -27,7 +27,7 @@ jQuery(document).ready(function($) {
             if (response.success && response.data.status === 'initiated') {
                 checkTestStatus(data.url);
             } else {
-                $error_message.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
+                $status.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
                 $submit.prop('disabled', false);
             }
         }).fail(function() {
