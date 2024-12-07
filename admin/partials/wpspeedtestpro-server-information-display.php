@@ -99,7 +99,7 @@
     
     <div id="wpspeedtestpro-tabs">
         <ul class="wpspeedtestpro-tab-links">
-            <li><a href="#hosting-tab">Hosting Information</a></li>
+            <li class="active"><a href="#hosting-tab">Hosting Information</a></li>
             <li><a href="#database-tab">Database Information</a></li>
             <li><a href="#php-tab">PHP Information</a></li>
             <li><a href="#wordpress-tab">WordPress Information</a></li>
@@ -107,7 +107,7 @@
 
         <div class="wpspeedtestpro-tab-content">
         <!-- Hosting Information Tab -->
-        <div id="hosting-tab" class="wpspeedtestpro-tab">
+        <div id="hosting-tab" class="wpspeedtestpro-tab active">
             <table class="wp-list-table widefat fixed striped">
                 <tbody>
                     <?php foreach ($server_info['hosting'] as $key => $value): ?>
