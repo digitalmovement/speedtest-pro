@@ -237,7 +237,7 @@ class Wpspeedtestpro_API {
         return $providers_json;
     }
 
-    private static function fetch_and_store_ssl_emails() {
+    public function fetch_and_store_ssl_emails() {
         // URL of the JSON file
         $url = 'https://assets.wpspeedtestpro.com/ssl_emails.json';
     

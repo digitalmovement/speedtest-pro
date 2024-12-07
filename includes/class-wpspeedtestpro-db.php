@@ -330,7 +330,7 @@ class Wpspeedtestpro_DB {
         ) $charset_collate;";
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-      //  dbDelta($sql);
+        dbDelta($sql);
     }
 
 
