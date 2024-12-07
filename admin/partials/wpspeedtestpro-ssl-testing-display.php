@@ -16,9 +16,7 @@
 <div class="wrap">
     <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
     <p>Test your website's SSL configuration and security.</p>
-    
-
-    
+        
     <div class="wpspeedtestpro-ssl-testing">
         <?php if (empty($user_email)): ?>
             <p>SSL Testing requires an email address to send the results to. Please enter your email address in the settings.</p>
@@ -78,14 +76,12 @@
 
                 <p style="margin-top: 15px; color: #555;">Regular SSL testing helps ensure your website maintains strong security standards and protects your visitors' data effectively.</p>
             </div>
-
-
             <?php endif; ?>
 
             <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
         <?php endif; ?>
         
-        <div id="ssl-test-results" class="notice notice-info">
+        <div id="ssl-test-results">
             <?php
             if ($cached_result) {
                 echo $this->format_ssl_test_results($cached_result);
