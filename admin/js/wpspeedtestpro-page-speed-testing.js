@@ -11,7 +11,8 @@ jQuery(document).ready(function($) {
         
         // Disable submit button and show status
         $submit.prop('disabled', true);
-        $status.show().html('<p>Initiating test...</p>');
+        toggleNotice($status, 'info');
+        $status.show().html('<p>Initiating test...</p><div class="test-progress"></div>');
     
         // Collect form data
         const data = {
@@ -32,6 +33,7 @@ jQuery(document).ready(function($) {
                 $submit.prop('disabled', false);
             }
         }).fail(function() {
+            toggleNotice($status, 'error');
             $status.html('<p class="error">Failed to communicate with server</p>');
             $submit.prop('disabled', false);
         });
@@ -69,6 +71,7 @@ jQuery(document).ready(function($) {
             url: url
         }, function(response) {
             if (!response.success) {
+                toggleNotice($status, 'error');
                 $status.html('<p class="error">Error: ' + response.data + '</p>');
                 $submit.prop('disabled', false);
                 return;
@@ -76,7 +79,8 @@ jQuery(document).ready(function($) {
     
             if (response.data.status === 'running') {
                 // Update progress message
-                $status.html('<p>Test in progress.... <span class="spinner is-active"></span></p>');
+                toggleNotice($status, 'info');
+                $status.html('<p>Test in progress....</p><div class="test-progress"></div>');
                 // Check again in 5 seconds
                 setTimeout(() => checkTestStatus(url), 5000);
             } else if (response.data.status === 'complete') {
@@ -94,6 +98,7 @@ jQuery(document).ready(function($) {
                 }
             }
         }).fail(function() {
+            toggleNotice($status, 'error');
             $status.html('<p class="error">Failed to check test status</p>');
             $submit.prop('disabled', false);
         });

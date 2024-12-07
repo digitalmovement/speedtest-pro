@@ -12,7 +12,7 @@
 
     <div id="test-status" class="notice notice-info" sytle="display: none;">
             <p>Test in progress... Please wait!</p>
-            <div class="test-progress"></div>
+            
     </div>
 
     <div class="pagespeed-form-container">
