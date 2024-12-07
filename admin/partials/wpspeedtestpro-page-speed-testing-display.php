@@ -6,13 +6,15 @@
 <div class="wrap">
     <h1>Google PageSpeed Testing</h1>
 
-    <div id="test-status" style="display: none;">
-        <div class="notice notice-info">
-            <p>Test in progress... Please wait!</p>
-            <div class="test-progress"></div>
-        </div>
+    <div id="1test-status" style="display: none;">
+
     </div>
 
+    <div id="test-status" class="notice notice-info" sytle="display: none;">
+            <p>Test in progress... Please wait!</p>
+            <div class="test-progress"></div>
+    </div>
+    <div id="error-message" class="notice notice-error" style="display: none;"></div>
 
     <div class="pagespeed-form-container">
         <h2>Run a New Test</h2>
