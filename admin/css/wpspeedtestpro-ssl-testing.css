@@ -13,6 +13,7 @@
     margin-top: 20px;
 }
 
+/*
 .ssl-tabs {
     margin-top: 20px;
 }
@@ -61,7 +62,7 @@
 .ssl-tab.active {
     display: block;
 }
-
+*/
 .http-transaction {
     margin-bottom: 20px;
     padding: 10px;
