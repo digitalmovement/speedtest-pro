@@ -6,6 +6,14 @@
 <div class="wrap">
     <h1>Google PageSpeed Testing</h1>
 
+    <div id="test-status" style="display: none;">
+        <div class="notice notice-info">
+            <p>Test in progress... Please wait!</p>
+            <div class="test-progress"></div>
+        </div>
+    </div>
+
+    
     <div class="pagespeed-form-container">
         <h2>Run a New Test</h2>
         <form id="pagespeed-test-form">
@@ -72,12 +80,7 @@
         </form>
     </div>
 
-    <div id="test-status" style="display: none;">
-        <div class="notice notice-info">
-            <p>Test in progress... Please wait!</p>
-            <div class="test-progress"></div>
-        </div>
-    </div>
+
 
     <div id="latest-results" style="display: none;" class="results-panel">
         <h2>Latest Test Results</h2>
