@@ -2,3 +2,130 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+ /* Common Tab Styles */
+.wpspeedtestpro-tabs,
+.ssl-tabs,
+#tabs,
+#server-performance-tabs,
+#wpspeedtestpro-server-tabs {
+    margin-top: 20px;
+}
+
+.wpspeedtestpro-tab-links,
+.ssl-tab-links,
+.ui-tabs-nav {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.wpspeedtestpro-tab-links li,
+.ssl-tab-links li,
+.ui-tabs-nav li {
+    display: inline-block;
+    margin-bottom: -1px;
+}
+
+.wpspeedtestpro-tab-links a,
+.ssl-tab-links a,
+.ui-tabs-nav li a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #444;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background: #f8f8f8;
+    transition: all 0.2s ease;
+}
+
+.wpspeedtestpro-tab-links li.active a,
+.ssl-tab-links li.active a,
+.ui-tabs-nav li.ui-tabs-active a {
+    background-color: #fff;
+    border-color: #ccc;
+    border-bottom-color: #fff;
+    color: #2271b1;
+}
+
+.wpspeedtestpro-tab-links a:hover,
+.ssl-tab-links a:hover,
+.ui-tabs-nav li a:hover {
+    background-color: #fff;
+    border-color: #ddd;
+    color: #2271b1;
+}
+
+.wpspeedtestpro-tab-content,
+.ssl-tab-content,
+.ui-tabs-panel {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 20px;
+    min-height: 300px;
+}
+
+.wpspeedtestpro-tab,
+.ssl-tab {
+    display: none;
+}
+
+.wpspeedtestpro-tab.active,
+.ssl-tab.active {
+    display: block;
+}
+
+/* Common table styles within tabs */
+.wpspeedtestpro-tab table,
+.ssl-tab table,
+.ui-tabs-panel table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+.wpspeedtestpro-tab th,
+.wpspeedtestpro-tab td,
+.ssl-tab th,
+.ssl-tab td,
+.ui-tabs-panel th,
+.ui-tabs-panel td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #e5e5e5;
+}
+
+.wpspeedtestpro-tab th,
+.ssl-tab th,
+.ui-tabs-panel th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+    .wpspeedtestpro-tab-links li,
+    .ssl-tab-links li,
+    .ui-tabs-nav li {
+        margin-bottom: 5px;
+    }
+
+    .wpspeedtestpro-tab-links a,
+    .ssl-tab-links a,
+    .ui-tabs-nav li a {
+        padding: 8px 12px;
+    }
+
+    .wpspeedtestpro-tab-content,
+    .ssl-tab-content,
+    .ui-tabs-panel {
+        padding: 15px;
+    }
+}
+
