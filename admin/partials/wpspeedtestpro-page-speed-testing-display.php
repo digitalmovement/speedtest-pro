@@ -6,8 +6,8 @@
 <div class="wrap">
     <h1>Google PageSpeed Testing</h1>
 
-    <div id="test-status-1" style="display: none;">
-        <div class="notice-1 notice-info-1">
+    <div id="test-status" style="display: none;">
+        <div class="notice notice-info">
             <p>Test in progress... Please wait!</p>
             <div class="test-progress"></div>
         </div>
