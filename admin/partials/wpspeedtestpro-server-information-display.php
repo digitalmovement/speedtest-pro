@@ -105,6 +105,7 @@
             <li><a href="#wordpress-tab">WordPress Information</a></li>
         </ul>
 
+        <div class="wpspeedtestpro-tab-content">
         <!-- Hosting Information Tab -->
         <div id="hosting-tab" class="wpspeedtestpro-tab">
             <table class="wp-list-table widefat fixed striped">
@@ -199,6 +200,7 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
         </div>
     </div>
 </div>

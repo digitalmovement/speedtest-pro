@@ -38,4 +38,16 @@ jQuery(document).ready(function($) {
     });
 
 
+    function initializeTabs() {
+        $('.wpspeedtestpro-tab-links a').on('click', function(e) {
+            e.preventDefault();
+            var currentAttrValue = $(this).attr('href');
+
+            $('.wpspeedtestpro-tab-content ' + currentAttrValue).show().siblings().hide();
+            $(this).parent('li').addClass('active').siblings().removeClass('active');
+        });
+    }
+
+
+    initializeTabs();
 });
