@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
 
 
     // Initialize tabs
-    $('#server-performance-tabs').tabs();
+ //   $('#server-performance-tabs').tabs();
 
     function updateButtonState(status) {
         var $button = $('#start-stop-test');
@@ -863,7 +863,18 @@ function displaySpeedTestHistory(data, industryAvg) {
         }
     });
 }
+function initializeTabs() {
+    $('.wpspeedtestpro-tab-links a').on('click', function(e) {
+        e.preventDefault();
+        var currentAttrValue = $(this).attr('href');
 
+        $('.wpspeedtestpro-tab-content ' + currentAttrValue).show().siblings().hide();
+        $(this).parent('li').addClass('active').siblings().removeClass('active');
+    });
+}
+
+
+initializeTabs();
 updateButtonState(testStatus);
 updateContinuousTestInfo();
 loadResults();

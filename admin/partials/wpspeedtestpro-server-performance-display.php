@@ -117,9 +117,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
         </div>
     </div>
 
-    <div id="server-performance-tabs">
-        <ul>
-            <li><a href="#tab-latest-results">Latest Results</a></li>
+    <div id="server-performance-tabs" class="wpspeedtestpro-tabs">
+        <ul class="wpspeedtestpro-tab-links">
+            <li class="active"><a href="#tab-latest-results">Latest Results</a></li>
             <li><a href="#tab-math">Math</a></li>
             <li><a href="#tab-string">String</a></li>
             <li><a href="#tab-loops">Loops</a></li>
@@ -128,77 +128,77 @@ if ( ! defined( 'ABSPATH' ) ) exit;
             <li><a href="#tab-wordpress">WordPress Performance</a></li>
             <li><a href="#tab-speed-test">Network Performance</a></li>
         </ul>
-        
-    <div id="tab-latest-results">
-            <h2>Latest Benchmark Results</h2>
-            
-            <!-- System Performance Results -->
-            <div class="chart-container">
-                <canvas id="latest-performance-chart"></canvas>
+        <div class="wpspeedtestpro-tab-content active"> 
+            <div id="tab-latest-results">
+                    <h2>Latest Benchmark Results</h2>
+                    
+                    <!-- System Performance Results -->
+                    <div class="chart-container">
+                        <canvas id="latest-performance-chart"></canvas>
+                    </div>
+                    
+                    <!-- Network Performance Results -->
+                    <div class="chart-container">
+                        <canvas id="latest-network-chart"></canvas>
+                    </div>
+                    
+                    <!-- Network Information -->
+                    <div class="speed-test-info">
+                        <p><strong>Location:</strong> <span id="speed-test-location"></span></p>
+                        <p><strong>IP Address:</strong> <span id="speed-test-ip"></span></p>
+                        <p><strong>Ping Latency:</strong> <span id="speed-test-ping"></span> ms</p>
+                    </div>
             </div>
             
-            <!-- Network Performance Results -->
-            <div class="chart-container">
-                <canvas id="latest-network-chart"></canvas>
+            <div id="tab-math">
+                <h2>Math Performance</h2>
+                <div class="chart-container">
+                    <canvas id="math-chart"></canvas>
+                </div>
             </div>
             
-            <!-- Network Information -->
-            <div class="speed-test-info">
-                <p><strong>Location:</strong> <span id="speed-test-location"></span></p>
-                <p><strong>IP Address:</strong> <span id="speed-test-ip"></span></p>
-                <p><strong>Ping Latency:</strong> <span id="speed-test-ping"></span> ms</p>
+            <div id="tab-string">
+                <h2>String Performance</h2>
+                <div class="chart-container">
+                    <canvas id="string-chart"></canvas>
+                </div>
             </div>
-    </div>
-        
-        <div id="tab-math">
-            <h2>Math Performance</h2>
-            <div class="chart-container">
-                <canvas id="math-chart"></canvas>
+            
+            <div id="tab-loops">
+                <h2>Loops Performance</h2>
+                <div class="chart-container">
+                    <canvas id="loops-chart"></canvas>
+                </div>
             </div>
-        </div>
-        
-        <div id="tab-string">
-            <h2>String Performance</h2>
-            <div class="chart-container">
-                <canvas id="string-chart"></canvas>
+            
+            <div id="tab-conditionals">
+                <h2>Conditionals Performance</h2>
+                <div class="chart-container">
+                    <canvas id="conditionals-chart"></canvas>
+                </div>
             </div>
-        </div>
-        
-        <div id="tab-loops">
-            <h2>Loops Performance</h2>
-            <div class="chart-container">
-                <canvas id="loops-chart"></canvas>
+            
+            <div id="tab-mysql">
+                <h2>MySQL Performance</h2>
+                <div class="chart-container">
+                    <canvas id="mysql-chart"></canvas>
+                </div>
             </div>
-        </div>
-        
-        <div id="tab-conditionals">
-            <h2>Conditionals Performance</h2>
-            <div class="chart-container">
-                <canvas id="conditionals-chart"></canvas>
+            
+            <div id="tab-wordpress">
+                <h2>WordPress Performance</h2>
+                <div class="chart-container">
+                    <canvas id="wordpress-performance-chart"></canvas>
+                </div>
             </div>
-        </div>
-        
-        <div id="tab-mysql">
-            <h2>MySQL Performance</h2>
-            <div class="chart-container">
-                <canvas id="mysql-chart"></canvas>
-            </div>
-        </div>
-        
-        <div id="tab-wordpress">
-            <h2>WordPress Performance</h2>
-            <div class="chart-container">
-                <canvas id="wordpress-performance-chart"></canvas>
-            </div>
-        </div>
 
-        <div id="tab-speed-test">
-            <h2>Speed Test Performance</h2>
-            <div class="chart-container">
-                <canvas id="speed-test-chart"></canvas>
+            <div id="tab-speed-test">
+                <h2>Speed Test Performance</h2>
+                <div class="chart-container">
+                    <canvas id="speed-test-chart"></canvas>
+                </div>
             </div>
         </div>
-
     </div>
     <div class="performance-note">
         <p><strong>Note:</strong> Historical charts will be displayed once at least 5 test results have been collected. Run multiple tests to see the performance trends over time.</p>
