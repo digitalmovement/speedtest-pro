@@ -14,7 +14,6 @@
             <p>Test in progress... Please wait!</p>
             <div class="test-progress"></div>
     </div>
-    <div id="error-message" class="notice notice-error" style="display: none;"></div>
 
     <div class="pagespeed-form-container">
         <h2>Run a New Test</h2>

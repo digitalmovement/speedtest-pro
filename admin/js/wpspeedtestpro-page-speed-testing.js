@@ -6,7 +6,7 @@ jQuery(document).ready(function($) {
         const $form = $(this);
         const $submit = $form.find('button[type="submit"]');
         const $status = $('#test-status');
-        const $error_message = $('#error-message');
+
 
         
         // Disable submit button and show status
@@ -27,6 +27,7 @@ jQuery(document).ready(function($) {
             if (response.success && response.data.status === 'initiated') {
                 checkTestStatus(data.url);
             } else {
+                toggleNotice($status, 'error');
                 $status.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
                 $submit.prop('disabled', false);
             }
@@ -364,6 +365,13 @@ jQuery(document).ready(function($) {
         // Implement view details functionality
         // This could open a modal or expand the row with more details
     });
+
+    function toggleNotice(element, type = 'info') {
+        const baseClass = 'notice-';
+        element.classList.remove(baseClass + 'info', baseClass + 'error');
+        element.classList.add(baseClass + type);
+    }
+
 
     // Initialize page
     loadScheduledTests();
