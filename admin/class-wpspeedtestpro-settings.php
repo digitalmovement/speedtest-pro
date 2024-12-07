@@ -149,7 +149,6 @@ class Wpspeedtestpro_Settings {
             'default' => true,
             'sanitize_callback' => 'boolval'
         ));
-        register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_speedvitals_api_key' );
         register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_uptimerobot_api_key' );
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_pagespeed_api_key');
 
@@ -195,25 +194,9 @@ class Wpspeedtestpro_Settings {
         );
 
         add_settings_field(
-            'wpspeedtestpro_speedvitals_api_key',
-            'SpeedVitals API Key',
-            array($this, 'speedvitals_api_key_callback'),
-            'wpspeedtestpro-settings',
-            'wpspeedtestpro_section'
-        );
-
-        add_settings_field(
             'wpspeedtestpro_uptimerobot_api_key',
             'UptimeRobot API Key',
             array($this, 'uptimerobot_api_key_callback'),
-            'wpspeedtestpro-settings',
-            'wpspeedtestpro_section'
-        );
-
-        add_settings_field(
-            'wpspeedtestpro_ssl_user_email',
-            'SSL Credentials',
-            array($this, 'ssl_register_callback'),
             'wpspeedtestpro-settings',
             'wpspeedtestpro_section'
         );
@@ -257,8 +240,8 @@ class Wpspeedtestpro_Settings {
             $sanitized_input['wpspeedtestpro_allow_data_collection'] = (bool) $input['wpspeedtestpro_allow_data_collection'];
         }
         
-        if (isset($input['wpspeedtestpro_speedvitals_api_key'])) {
-            $sanitized_input['wpspeedtestpro_speedvitals_api_key'] = sanitize_text_field($input['wpspeedtestpro_speedvitals_api_key']);
+        if (isset($input['wpspeedtestpro_pagespeed_api_key'])) {
+            $sanitized_input['wpspeedtestpro_pagespeed_api_key'] = sanitize_text_field($input['wpspeedtestpro_pagespeed_api_key']);
         }
 
         if (isset($input['wpspeedtestpro_uptimerobot_api_key'])) {
@@ -397,133 +380,12 @@ class Wpspeedtestpro_Settings {
 
         wp_send_json_success($packages);
     }
-    public function ajax_ssl_register_user() {
-        // Verify nonce
-        if (!check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce', false)) {
-            wp_send_json_error('Invalid security token.');
-            return;
-        }
     
-        // Validate required fields
-        $required_fields = array('first_name', 'last_name', 'email', 'organization');
-        foreach ($required_fields as $field) {
-            if (empty($_POST[$field])) {
-                wp_send_json_error("$field is required.");
-                return;
-            }
-        }
-    
-        // Sanitize input
-        $user_data = array(
-            'first_name' => sanitize_text_field($_POST['first_name']),
-            'last_name' => sanitize_text_field($_POST['last_name']),
-            'email' => sanitize_email($_POST['email']),
-            'organization' => sanitize_text_field($_POST['organization'])
-        );
-    
-        // Validate email
-        if (!is_email($user_data['email'])) {
-            wp_send_json_error('Invalid email address.');
-            return;
-        }
-    
-        try {
-            // Attempt to register user via API
-            $api_response = $this->core->api->register_ssl_user(
-                $user_data['first_name'],
-                $user_data['last_name'],
-                $user_data['email'],
-                $user_data['organization']
-            );
-    
-            if ($api_response['success']) {
-                update_option('wpspeedtestpro_user_ssl_email', $user_data['email']);
-                wp_send_json_success('Registration successful!');
-            } else {
-                wp_send_json_error($api_response['message'] ?? 'Registration failed.');
-            }
-        } catch (Exception $e) {
-            wp_send_json_error('An error occurred during registration. Please try again.');
-        }
-    }
-    
-    public function ajax_ssl_login_user() {
-        // Verify nonce
-        if (!check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce', false)) {
-            wp_send_json_error('Invalid security token.');
-            return;
-        }
-    
-        // Validate email
-        $email = sanitize_email($_POST['email']);
-        if (!is_email($email)) {
-            wp_send_json_error('Invalid email address.');
-            return;
-        }
-    
-        try {
-            // You might want to verify the email exists in your system here
-            update_option('wpspeedtestpro_user_ssl_email', $email);
-            wp_send_json_success('Email Saved! ');
-        } catch (Exception $e) {
-            wp_send_json_error('An error occurred during login. Please try again.');
-        }
-    }
-
-
-
-    public function speedvitals_api_key_callback() {
-        $api_key = get_option('wpspeedtestpro_speedvitals_api_key');
-        echo '<input type="text" id="wpspeedtestpro_speedvitals_api_key" name="wpspeedtestpro_speedvitals_api_key" value="' . esc_attr($api_key) . '" class="regular-text">';
-        echo '<p class="description">Enter your SpeedVitals API key. You can find your API key in your <a href="https://app.speedvitals.com/account" target="_blank">SpeedVitals account settings</a>.</p>';
-    }
-
     public function uptimerobot_api_key_callback() {
         $api_key = get_option('wpspeedtestpro_uptimerobot_api_key');
         echo '<input type="text" id="wpspeedtestpro_uptimerobot_api_key" name="wpspeedtestpro_uptimerobot_api_key" value="' . esc_attr($api_key) . '" class="regular-text">';
         echo '<p class="description">Enter your UptimeRobot API key. You can find your API key in your <a href="https://dashboard.uptimerobot.com/integrations?rid=97f3dfd4e3a8a6" target="_blank">Uptime account settings</a>. <br /> Please create a <b>Main API key</b></p>';
     }
-
-    public function ssl_register_callback() {
-        $user_email = get_option('wpspeedtestpro_user_ssl_email', '');
-    
-        // If we have a saved email, default to login view, otherwise show register
-        $default_view = !empty($user_email) ? 'login' : 'register';
-        
-        echo '<div id="user-auth-form">';
-        echo '<select id="auth-action">';
-        echo '<option value="login" ' . selected($default_view, 'login', false) . '>Login</option>';
-        echo '<option value="register" ' . selected($default_view, 'register', false) . '>Register</option>';
-        echo '</select>';
-        
-        // Add proper spacing and styling
-        echo '<div class="auth-fields" style="margin-top: 10px;">';
-        
-        // Registration fields - hidden by default if we have an email
-        $reg_style = ($default_view === 'login') ? 'display:none;' : '';
-        echo '<input type="text" id="first-name" placeholder="First Name" style="' . $reg_style . 'margin-bottom: 5px; width: 100%; max-width: 25em;">';
-        echo '<input type="text" id="last-name" placeholder="Last Name" style="' . $reg_style . 'margin-bottom: 5px; width: 100%; max-width: 25em;">';
-        echo '<input type="text" id="organization" placeholder="Organization" style="' . $reg_style . 'margin-bottom: 5px; width: 100%; max-width: 25em;">';
-        
-        // Email field - always visible with saved value
-        echo '<input type="email" id="email" placeholder="Email" value="' . esc_attr($user_email) . '" style="margin-bottom: 5px; width: 100%; max-width: 25em;">';
-        
-        echo '</div>';
-        
-        // Submit button
-        echo '<button id="auth-submit" class="button button-secondary">' . 
-             ($default_view === 'login' ? 'Login' : 'Register') . 
-             '</button>';
-        
-        // Message container
-        echo '<p id="auth-message" style="display: none;"></p>';
-        echo '</div>';
-        
-        // Description
-        echo '<p class="description">The information for SSL testing is sent to SSLLabs.com. ' .
-             '<a href="https://www.qualys.com/company/privacy" target="_blank">View their Privacy Policy</a>.</p>';
-    }   
-
 
     public static function render_api_key_field() {
         $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
