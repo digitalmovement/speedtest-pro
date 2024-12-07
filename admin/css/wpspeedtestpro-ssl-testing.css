@@ -4,14 +4,19 @@
 
 #start-ssl-test {
     margin-bottom: 20px;
+    padding: 10px 12px;
 }
 
+
+/*
 #ssl-test-results {
     background-color: #fff;
     border: 1px solid #ccc;
     padding: 20px;
     margin-top: 20px;
 }
+*/
+
 
 .ssl-tabs {
     margin-top: 20px;
