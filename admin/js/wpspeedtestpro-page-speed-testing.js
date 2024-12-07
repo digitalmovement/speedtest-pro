@@ -366,12 +366,11 @@ jQuery(document).ready(function($) {
         // This could open a modal or expand the row with more details
     });
 
-    function toggleNotice(element, type = 'info') {
+    function toggleNotice($element, type = 'info') {
         const baseClass = 'notice-';
-        element.classList.remove(baseClass + 'info', baseClass + 'error');
-        element.classList.add(baseClass + type);
+        $element.removeClass(baseClass + 'info ' + baseClass + 'error')
+                .addClass(baseClass + type);
     }
-
 
     // Initialize page
     loadScheduledTests();
