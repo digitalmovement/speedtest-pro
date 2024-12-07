@@ -92,3 +92,20 @@
     color: #d63638;
 }
 
+.test-progress {
+    height: 4px;
+    background: #e5e5e5;
+    margin-top: 10px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+
+.test-progress::after {
+    content: '';
+    display: block;
+    width: 30%;
+    height: 100%;
+    background: #2271b1;
+    animation: progress 1s infinite linear;
+}

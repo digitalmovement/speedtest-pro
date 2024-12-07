@@ -87,6 +87,10 @@
     </div>
     <?php endif; ?>
 
+    <div id="test-status" class="notice notice-info" style="display: none;!important">
+            <p>Test in progress... Please wait!</p>
+    </div>
+
     <div id="latency-test-container">
         <button id="run-once-test" class="button button-primary">Run Once</button>
         <button id="continuous-test" class="button button-primary">Start Continuous Testing</button>

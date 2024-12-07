@@ -8,7 +8,6 @@
 
     <div id="test-status" class="notice notice-info" style="display: none;!important">
             <p>Test in progress... Please wait!</p>
-            
     </div>
 
     <div class="pagespeed-form-container">

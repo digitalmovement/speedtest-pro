@@ -92,8 +92,8 @@ jQuery(document).ready(function($) {
     function updateButtonState(isRunning, isContinuous) {
         $('#run-once-test').prop('disabled', isRunning);
         $('#continuous-test').prop('disabled', isRunning);
-        $('#run-once-test').toggle(!isRunning);
-        $('#continuous-test').toggle(!isRunning);
+//        $('#run-once-test').toggle(!isRunning);
+//        $('#continuous-test').toggle(!isRunning);
         $('#stop-test').toggle(isRunning && isContinuous);
     }
 
@@ -169,11 +169,11 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').text('Running one-time test...');
+                    $('#test-status').html('Running one-time test...<div class="test-progress"></div>');
                     setTimeout(function() {
                         isRunning = false;
                         updateButtonState(false, false);
-                        $('#test-status').text('Test completed.');
+                        $('#test-status').html('Test completed.');
                         updateResults(getStoredTimeRange());
                     }, 30000); // Wait 30 seconds for test to complete
                 }
