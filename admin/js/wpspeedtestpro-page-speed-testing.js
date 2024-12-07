@@ -73,7 +73,7 @@ jQuery(document).ready(function($) {
     
             if (response.data.status === 'running') {
                 // Update progress message
-                $status.html('<p>Test in progress... <span class="spinner is-active"></span></p>');
+                $status.html('<p>Test in progress.... <span class="spinner is-active"></span></p>');
                 // Check again in 5 seconds
                 setTimeout(() => checkTestStatus(url), 5000);
             } else if (response.data.status === 'complete') {
@@ -96,7 +96,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    
+
     // Function to cancel a scheduled test
     function cancelScheduledTest(id) {
         $.post(ajaxurl, {

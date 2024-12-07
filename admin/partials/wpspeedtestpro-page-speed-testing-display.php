@@ -74,7 +74,7 @@
 
     <div id="test-status" style="display: none;">
         <div class="notice notice-info">
-            <p>Test in progress... Please wait.</p>
+            <p>Test in progress... Please wait!</p>
             <div class="test-progress"></div>
         </div>
     </div>
