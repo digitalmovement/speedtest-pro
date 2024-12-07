@@ -127,5 +127,6 @@ jQuery(document).ready(function($) {
        initializeTabs();
    }
 
+   checkStatus();
    startStatusCheck();
 });

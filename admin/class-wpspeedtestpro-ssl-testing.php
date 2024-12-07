@@ -170,7 +170,7 @@ class Wpspeedtestpro_SSL_Testing {
             $this->cache_ssl_results($result);
             wp_send_json_success(array('status' => 'completed', 'data' => $this->format_ssl_test_results($result)));
         } elseif (is_array($result) && isset($result['status'])) {
-            wp_send_json_success(array('status' => 'in_progress', 'message' => 'SSL test still in progress. Status: ' . $result['status']));
+            wp_send_json_success(array('status' => 'in_progress', 'message' => 'SSL test still in progress. Testing can take upto 3 minutes ' . $result['status']));
         } else {
             wp_send_json_error('Failed to check SSL test status.');
         }
