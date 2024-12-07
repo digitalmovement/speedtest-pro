@@ -4,6 +4,7 @@ jQuery(document).ready(function($) {
     var isRunning = false;
     var chartInstances = {};
     const MIN_DATA_POINTS = 5;
+    const $status = $('#test-status');
 
     const regionGroups = {
         'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris'],
@@ -92,8 +93,6 @@ jQuery(document).ready(function($) {
     function updateButtonState(isRunning, isContinuous) {
         $('#run-once-test').prop('disabled', isRunning);
         $('#continuous-test').prop('disabled', isRunning);
-//        $('#run-once-test').toggle(!isRunning);
-//        $('#continuous-test').toggle(!isRunning);
         $('#stop-test').toggle(isRunning && isContinuous);
     }
 
@@ -169,11 +168,14 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').html('Running one-time test...<div class="test-progress"></div>');
+                    $status.html('Running one-time test...<div class="test-progress"></div>');
+                    toggleNotice($status, 'info');
                     setTimeout(function() {
                         isRunning = false;
                         updateButtonState(false, false);
-                        $('#test-status').html('Test completed.');
+                        $status.html('Test completed.');
+                        toggleNotice($status, 'success');
+  
                         updateResults(getStoredTimeRange());
                     }, 30000); // Wait 30 seconds for test to complete
                 }
@@ -195,7 +197,7 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        $('#test-status').text('Continuous testing enabled.');
+                        $status.text('Continuous testing enabled.');
                         startNextTestCountdown();
                     }
                 }
@@ -215,7 +217,7 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').text('Continuous testing stopped.');
+                    $status.text('Continuous testing stopped.');
                     clearInterval(nextTestCountdownInterval);
                     $('#next-test-countdown').text('');
                     isRunning = false;
@@ -237,7 +239,8 @@ jQuery(document).ready(function($) {
                 if (response.success && response.data.is_continuous) {
                     isRunning = true;
                     updateButtonState(true, true);
-                    $('#test-status').text('Continuous testing enabled.');
+                    toggleNotice ($status, 'success');
+                    $status.text('Continuous testing enabled.');
                     startNextTestCountdown();
                 }
             }
@@ -251,7 +254,7 @@ jQuery(document).ready(function($) {
         countdownInterval = setInterval(function () {
             if (timer <= 0) {
                 clearInterval(countdownInterval);
-                $('#test-status').text('Test completed.');
+                $status.text('Test completed.');
                 isRunning = false;
                 updateButtonState(false);
                 return;
@@ -274,7 +277,8 @@ jQuery(document).ready(function($) {
             var currentTime = Math.floor(Date.now() / 1000);
             var elapsedTime = currentTime - startTime;
             if (elapsedTime < 3600) {
-                $('#test-status').text('Test running...');
+                $status.text('Test running...');
+                toggleNotice($status, 'info');
                 isRunning = true;
                 updateButtonState(true);
                 startCountdown(3600, startTime);
@@ -470,7 +474,8 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').text('Test started. Running for 1 hour.');
+                    $status.text('Test started. Running for 1 hour.');
+                    toggleNotice($status, 'info');
                     startCountdown(3600, Math.floor(Date.now() / 1000));
                 } else {
                     alert(response.data);
@@ -491,7 +496,8 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    $('#test-status').text('Test stopped.');
+                    $status.text('Test stopped.');
+                    toggleNotice($status, 'info');
                     clearInterval(countdownInterval);
                     isRunning = false;
                     updateButtonState(false);
@@ -659,6 +665,13 @@ jQuery(document).ready(function($) {
         $('#time-range').val(storedTimeRange);
         updateResults(storedTimeRange);
     }
+
+    function toggleNotice($element, type = 'info') {
+        const baseClass = 'notice-';
+        $element.removeClass(baseClass + 'info ' + baseClass + 'error' + baseClass + 'success')
+                .addClass(baseClass + type);
+    }
+
 
     $(function() {
         $("#tabs").tabs();
