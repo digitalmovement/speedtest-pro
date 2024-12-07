@@ -92,6 +92,12 @@
     color: #d63638;
 }
 
+/* Status and Progress */
+#test-status {
+    margin: 20px 0;
+}
+
+
 .test-progress {
     height: 4px;
     background: #e5e5e5;
@@ -109,3 +115,10 @@
     background: #2271b1;
     animation: progress 1s infinite linear;
 }
+
+@keyframes progress {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(400%); }
+}
+
+

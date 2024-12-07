@@ -158,7 +158,8 @@ jQuery(document).ready(function($) {
     $('#run-once-test').on('click', function() {
         isRunning = true;
         updateButtonState(true, false);
-
+        $status.html('One-time test started...<div class="test-progress"></div>');
+        toggleNotice($status, 'info');
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
