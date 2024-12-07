@@ -97,8 +97,8 @@
 
     <?php $server_info = $this->get_server_info(); ?>
     
-    <div id="wpspeedtestpro-server-tabs">
-        <ul>
+    <div id="wpspeedtestpro-tabs">
+        <ul class="wpspeedtestpro-tab-links">
             <li><a href="#hosting-tab">Hosting Information</a></li>
             <li><a href="#database-tab">Database Information</a></li>
             <li><a href="#php-tab">PHP Information</a></li>
@@ -106,7 +106,7 @@
         </ul>
 
         <!-- Hosting Information Tab -->
-        <div id="hosting-tab">
+        <div id="hosting-tab" class="wpspeedtestpro-tab">
             <table class="wp-list-table widefat fixed striped">
                 <tbody>
                     <?php foreach ($server_info['hosting'] as $key => $value): ?>
@@ -120,7 +120,7 @@
         </div>
 
         <!-- Database Information Tab -->
-        <div id="database-tab">
+        <div id="database-tab"  class="wpspeedtestpro-tab">
             <table class="wp-list-table widefat fixed striped">
                 <tbody>
                     <?php foreach ($server_info['database'] as $key => $value): ?>
@@ -134,7 +134,7 @@
         </div>
 
         <!-- PHP Information Tab -->
-        <div id="php-tab">
+        <div id="php-tab"  class="wpspeedtestpro-tab">
             <div class="phpinfo-wrapper">
                 <?php
         
@@ -150,7 +150,7 @@
         </div>
 
         <!-- WordPress Information Tab -->
-        <div id="wordpress-tab">
+        <div id="wordpress-tab"  class="wpspeedtestpro-tab">
             <table class="wp-list-table widefat fixed striped">
                 <tbody>
                     <tr>
