@@ -1,6 +1,6 @@
 jQuery(document).ready(function($) {
 
-    $('#wpspeedtestpro-server-tabs').tabs();
+    //$('#wpspeedtestpro-server-tabs').tabs();
 
     // Make tables responsive
     $('.wp-list-table').wrap('<div class="table-responsive"></div>');
