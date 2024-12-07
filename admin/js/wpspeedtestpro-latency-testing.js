@@ -158,7 +158,7 @@ jQuery(document).ready(function($) {
     $('#run-once-test').on('click', function() {
         isRunning = true;
         updateButtonState(true, false);
-        $status.html('One-time test started...<div class="test-progress"></div>');
+        $status.html('One-time test is initializing, please wait! <div class="test-progress"></div>');
         toggleNotice($status, 'info');
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
@@ -188,7 +188,8 @@ jQuery(document).ready(function($) {
         showContinuousWarning().then(() => {
             isRunning = true;
             updateButtonState(true, true);
-
+            $status.html('Continuous test is initializing, please wait! <div class="test-progress"></div>');
+            toggleNotice($status, 'info');
             $.ajax({
                 url: wpspeedtestpro_ajax.ajax_url,
                 type: 'POST',
@@ -198,7 +199,8 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        $status.text('Continuous testing enabled.');
+                        $status.html('Continuous testing enabled.');
+                        toggleNotice($status, 'success');
                         startNextTestCountdown();
                     }
                 }
@@ -219,6 +221,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     $status.text('Continuous testing stopped.');
+                    toggleNotice($status, 'success');
                     clearInterval(nextTestCountdownInterval);
                     $('#next-test-countdown').text('');
                     isRunning = false;
@@ -242,6 +245,7 @@ jQuery(document).ready(function($) {
                     updateButtonState(true, true);
                     toggleNotice ($status, 'success');
                     $status.text('Continuous testing enabled.');
+                    toggleNotice($status, 'success');
                     startNextTestCountdown();
                 }
             }
