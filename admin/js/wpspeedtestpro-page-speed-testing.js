@@ -283,7 +283,7 @@ jQuery(document).ready(function($) {
     }
 
     function displayScheduledTests(tests) {
-        const $tbody = $('#pagespeed-scheduled-body');
+        const $tbody = $('#scheduled-tests');
         $tbody.empty();
     
         if (tests.length === 0) {
