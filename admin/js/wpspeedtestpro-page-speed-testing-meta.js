@@ -52,7 +52,7 @@ jQuery(document).ready(function($) {
         
         $.post(ajaxurl, {
             action: 'pagespeed_check_test_status',
-            nonce: $('#pagespeed_meta_box_nonce').val(),
+            nonce: $('#pagespeed_test_nonce').val(),
             url: url
         }, function(response) {
             if (!response.success) {
