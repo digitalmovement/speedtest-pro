@@ -321,7 +321,7 @@ public function ajax_check_test_status() {
  * 
  * @since 1.0.0
  */
-    public function ajax_run_scheduled_tests() {
+    public function ajax_run_scheduled_test() {
         check_ajax_referer('pagespeed_test_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
