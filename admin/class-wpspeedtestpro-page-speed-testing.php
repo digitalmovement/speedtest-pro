@@ -34,7 +34,9 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_check_scheduled_test_status', array($this, 'ajax_check_scheduled_test_status'));
         add_action('wp_ajax_pagespeed_get_test_details', array($this, 'ajax_get_test_details'));
 
-
+        add_action('transition_post_status', array($this, 'handle_post_status_change'), 10, 3);
+        add_filter('heartbeat_received', array($this, 'handle_heartbeat'), 10, 2);
+    
  
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -753,6 +755,36 @@ public function ajax_get_test_details() {
         }
     }
 
+    public function handle_post_status_change($new_status, $old_status, $post) {
+        // Only proceed if transitioning to published
+        if ($new_status === 'publish' && $old_status !== 'publish') {
+            // Get the post URL
+            $url = get_permalink($post);
+            
+            // Store this information for the JavaScript to pick up
+            update_post_meta($post->ID, '_pagespeed_test_enabled', true);
+            update_post_meta($post->ID, '_pagespeed_test_url', $url);
+        }
+    }
+    
+    public function handle_heartbeat($response, $data) {
+        if (!empty($data['check_post_status'])) {
+            // Get current post ID
+            $post_id = get_the_ID();
+            if ($post_id) {
+                $post_status = get_post_status($post_id);
+                $response['post_status'] = $post_status;
+                
+                if ($post_status === 'publish') {
+                    $response['post_url'] = get_permalink($post_id);
+                }
+            }
+        }
+        return $response;
+    }
+
+    
+
     public function add_meta_box() {
         $post_types = array('post', 'page');
         foreach ($post_types as $post_type) {
@@ -770,14 +802,18 @@ public function ajax_get_test_details() {
         // Get post status and URL
         $post_status = get_post_status($post);
         $url = get_permalink($post->ID);
-        
+         $test_enabled = get_post_meta($post->ID, '_pagespeed_test_enabled', true);
+ 
         // Get latest results
         $results = $this->get_latest_result($url, 'both');
         $has_results = !empty($results['desktop']) || !empty($results['mobile']);
     
          wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce'); 
         ?>
-        <div class="pagespeed-meta-box">
+        <div class="pagespeed-meta-box" 
+         data-post-id="<?php echo esc_attr($post->ID); ?>"
+         data-test-enabled="<?php echo esc_attr($test_enabled ? '1' : '0'); ?>">
+
             <div class="test-status" style="display: none;"></div>
             
             <?php if ($has_results): ?>
@@ -841,11 +877,11 @@ public function ajax_get_test_details() {
             <?php endif; ?>
     
             <?php if ($post_status !== 'publish'): ?>
-                <div class="notice notice-warning inline">
-                    <p>Please publish this post before running PageSpeed tests.</p>
-                </div>
+            <div class="notice notice-warning inline">
+                <p>Please publish this post before running PageSpeed tests.</p>
+            </div>
             <?php endif; ?>
-    
+
             <button type="button" class="button run-pagespeed-test" 
                     data-url="<?php echo esc_attr($url); ?>"
                     data-post-status="<?php echo esc_attr($post_status); ?>"
