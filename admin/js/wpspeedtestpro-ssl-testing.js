@@ -34,6 +34,7 @@ jQuery(document).ready(function($) {
         }
         testInProgress = true;
         $('#ssl-status-message').html('Starting SSL test... Testing can take up to 3 minutes to complete<div class="test-progress"></div>');
+        toggleNotice($('#ssl-status-message'), 'info');
         $('#start-ssl-test').prop('disabled', true);
 
         $.ajax({
@@ -47,6 +48,7 @@ jQuery(document).ready(function($) {
                 if (response.success) {
                     if (response.data.status === 'in_progress') {
                         $('#ssl-status-message').html("Testing is still in progress" + '<div class="test-progress"></div>');
+                        toggleNotice($('#ssl-status-message'), 'info');
                         startStatusCheck();
                     } else if (response.data.status === 'completed') {
                         displayResults(response.data.data);
@@ -55,12 +57,14 @@ jQuery(document).ready(function($) {
                     }
                 } else {
                     $('#ssl-status-message').html('Error: ' + response.data );
+                    toggleNotice($('#ssl-status-message'), 'error');
                     testInProgress = false;
                     $('#start-ssl-test').prop('disabled', false);
                 }
             },
             error: function() {
                 $('#ssl-status-message').html('An error occurred while starting the SSL test.');
+                toggleNotice($('#ssl-status-message'), 'error');
                 testInProgress = false;
                 $('#start-ssl-test').prop('disabled', false);
             }
@@ -88,17 +92,20 @@ jQuery(document).ready(function($) {
                         $('#start-ssl-test').prop('disabled', false);
                     } else if (response.data.status === 'in_progress') {
                         $('#ssl-status-message').html( "Testing is still in progress" + '<div class="test-progress"></div>' );
+                        toggleNotice($('#ssl-status-message'), 'info');
                     }
                 } else {
                     clearInterval(statusCheckInterval);
                     $('#ssl-status-message').html('Error: ' + response.data );
+                    toggleNotice($('#ssl-status-message'), 'error');
                     testInProgress = false;
                     $('#start-ssl-test').prop('disabled', false);
                 }
             },
             error: function() {
                 clearInterval(statusCheckInterval);
-                $('#ssl-test-results').html('An error occurred while checking the SSL test status');
+                $('#ssl-status-message').html('An error occurred while checking the SSL test status');
+                toggleNotice($('#ssl-status-message'), 'error');
                 testInProgress = false;
                 $('#start-ssl-test').prop('disabled', false);
             }
@@ -121,6 +128,14 @@ jQuery(document).ready(function($) {
         $('#ssl-test-results').html(results);
         initializeTabs();
     }
+
+    function toggleNotice($element, type = 'info') {
+        const baseClass = 'notice-';
+        $element.removeClass(baseClass + 'info ' + baseClass + 'error' + baseClass + 'success')
+                .addClass(baseClass + type);
+    }
+
+
 
           // Initialize tabs if there are cached results
     if ($('.ssl-tabs').length > 0) {
