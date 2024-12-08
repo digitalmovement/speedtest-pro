@@ -30,7 +30,7 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
         add_action('wp_ajax_pagespeed_get_test_results', array($this, 'ajax_get_test_results'));
         add_action('wp_ajax_pagespeed_check_test_status', array($this, 'ajax_check_test_status'));
-        add_action('wp_ajax_pagespeed_run_scheduled_tests', array($this, 'ajax_run_scheduled_tests'));
+        add_action('wp_ajax_pagespeed_run_scheduled_test', array($this, 'ajax_run_scheduled_test'));
         add_action('wp_ajax_pagespeed_check_scheduled_test_status', array($this, 'ajax_check_scheduled_test_status'));
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
@@ -455,7 +455,7 @@ public function ajax_check_test_status() {
         }
     }
 
-    
+
 
     private function initiate_pagespeed_test($url, $device) {
         $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
