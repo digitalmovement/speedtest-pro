@@ -816,8 +816,8 @@ public function ajax_get_test_details() {
 
             <div class="test-status" style="display: none;"></div>
             
-            <?php if ($has_results): ?>
-                <div class="results-grid">
+            
+                <div class="results-grid" <?php if (!$has_results): ?> style="display: none;" <?php endif; ?>>
                     <!-- Desktop Results -->
                     <div class="device-results desktop-results">
                         <div class="device-title">Desktop</div>
@@ -874,7 +874,6 @@ public function ajax_get_test_details() {
                         </div>
                     </div>
                 </div>
-            <?php endif; ?>
     
             <?php if ($post_status !== 'publish'): ?>
             <div class="notice notice-warning inline">
