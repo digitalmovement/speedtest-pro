@@ -349,3 +349,17 @@
     padding: 20px !important;
     font-style: italic;
 }
+
+.button.run-now {
+    margin-right: 5px;
+}
+.notice.inline {
+    margin: 5px 0;
+    padding: 5px 10px;
+}
+.spinner.is-active {
+    float: none;
+    margin: 0 0 0 5px;
+    vertical-align: middle;
+}
+

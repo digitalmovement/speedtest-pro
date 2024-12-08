@@ -30,7 +30,8 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
         add_action('wp_ajax_pagespeed_get_test_results', array($this, 'ajax_get_test_results'));
         add_action('wp_ajax_pagespeed_check_test_status', array($this, 'ajax_check_test_status'));
-
+        add_action('wp_ajax_pagespeed_run_scheduled_tests', array($this, 'ajax_run_scheduled_tests'));
+        add_action('wp_ajax_pagespeed_check_scheduled_test_status', array($this, 'ajax_check_scheduled_test_status'));
 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
@@ -39,7 +40,7 @@ class Wpspeedtestpro_PageSpeed {
         add_action('add_meta_boxes', array($this, 'add_meta_box'));
         
         // Schedule event for running tests
-        add_action('pagespeed_run_scheduled_tests', array($this, 'run_scheduled_tests'));
+
     }
 
 
@@ -315,6 +316,147 @@ public function ajax_check_test_status() {
         ));
     }
 
+    /**
+ * Run scheduled tests via AJAX
+ * 
+ * @since 1.0.0
+ */
+    public function ajax_run_scheduled_tests() {
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+
+        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+
+        if (!$schedule_id) {
+            wp_send_json_error('Invalid schedule ID');
+            return;
+        }
+
+        global $wpdb;
+        
+        // Get the scheduled test details
+        $scheduled_test = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
+            $schedule_id
+        ));
+
+        if (!$scheduled_test) {
+            wp_send_json_error('Scheduled test not found');
+            return;
+        }
+
+        // Run the test for both desktop and mobile
+        $desktop_test = $this->initiate_pagespeed_test($scheduled_test->url, 'desktop');
+        $mobile_test = $this->initiate_pagespeed_test($scheduled_test->url, 'mobile');
+
+        if (!$desktop_test['success'] || !$mobile_test['success']) {
+            wp_send_json_error('Failed to initiate tests');
+            return;
+        }
+
+        // Update the last run time
+        $wpdb->update(
+            $this->pagespeed_scheduled_table,
+            array(
+                'last_run' => current_time('mysql'),
+                'next_run' => $this->calculate_next_run($scheduled_test->frequency)
+            ),
+            array('id' => $schedule_id),
+            array('%s', '%s'),
+            array('%d')
+        );
+
+        // Store test IDs in transient
+        set_transient('pagespeed_scheduled_test_' . $schedule_id, [
+            'desktop_id' => $desktop_test['test_id'],
+            'mobile_id' => $mobile_test['test_id'],
+            'url' => $scheduled_test->url,
+            'status' => 'running',
+            'start_time' => time()
+        ], 3600);
+
+        wp_send_json_success([
+            'message' => 'Tests initiated successfully',
+            'test_ids' => [
+                'desktop' => $desktop_test['test_id'],
+                'mobile' => $mobile_test['test_id']
+            ]
+        ]);
+    }
+
+    public function ajax_check_scheduled_test_status() {
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+    
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+    
+        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+    
+        if (!$schedule_id) {
+            wp_send_json_error('Invalid schedule ID');
+            return;
+        }
+    
+        $test_data = get_transient('pagespeed_scheduled_test_' . $schedule_id);
+        
+        if (!$test_data) {
+            wp_send_json_error('No test found for this schedule');
+            return;
+        }
+    
+        // Check if test has been running too long (2 minutes timeout)
+        if (time() - $test_data['start_time'] > 120) {
+            delete_transient('pagespeed_scheduled_test_' . $schedule_id);
+            wp_send_json_error('Test timeout');
+            return;
+        }
+    
+        $all_complete = true;
+        $results = [];
+    
+        // Check desktop result
+        $desktop_result = $this->check_test_result($test_data['desktop_id']);
+        if ($desktop_result['status'] !== 'complete') {
+            $all_complete = false;
+        } else {
+            $results['desktop'] = $desktop_result['data'];
+        }
+    
+        // Check mobile result
+        $mobile_result = $this->check_test_result($test_data['mobile_id']);
+        if ($mobile_result['status'] !== 'complete') {
+            $all_complete = false;
+        } else {
+            $results['mobile'] = $mobile_result['data'];
+        }
+    
+        if ($all_complete) {
+            // Save results
+            $this->save_results($test_data['url'], 'desktop', $desktop_result['data'], $desktop_result['raw_data']);
+            $this->save_results($test_data['url'], 'mobile', $mobile_result['data'], $mobile_result['raw_data']);
+            
+            // Clean up transient
+            delete_transient('pagespeed_scheduled_test_' . $schedule_id);
+            
+            wp_send_json_success([
+                'status' => 'complete',
+                'results' => $results
+            ]);
+        } else {
+            wp_send_json_success([
+                'status' => 'running'
+            ]);
+        }
+    }
+
+    
+
     private function initiate_pagespeed_test($url, $device) {
         $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
         $api_url = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
@@ -388,6 +530,7 @@ public function ajax_check_test_status() {
             'test_id' => $result['id']
         ];
     }
+
 
     private function check_test_result($test_id) {
         $result = get_transient('pagespeed_test_result_' . $test_id);

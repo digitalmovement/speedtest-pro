@@ -110,7 +110,7 @@ jQuery(document).ready(function($) {
         $.post(ajaxurl, {
             action: 'pagespeed_cancel_scheduled_test',
             nonce: $('#pagespeed_test_nonce').val(),
-            test_id: id
+            schedule_id: id
         }, function(response) {
             if (response.success) {
                 loadScheduledTests();
@@ -122,20 +122,95 @@ jQuery(document).ready(function($) {
 
     // Function to run a scheduled test immediately
     function runScheduledTest(id) {
-        $.post(ajaxurl, {
-            action: 'pagespeed_run_scheduled_test',
-            nonce: $('#pagespeed_test_nonce').val(),
-            test_id: id
-        }, function(response) {
-            if (response.success) {
-                loadScheduledTests();
-                loadTestHistory();
-            } else {
-                alert('Error running test: ' + response.data);
+        const $button = $(`.run-now[data-id="${id}"]`);
+        const originalText = $button.text();
+        
+        // Disable button and show loading state
+        $button.prop('disabled', true).text('Running...');
+        
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'pagespeed_run_scheduled_test',
+                nonce: $('#pagespeed_test_nonce').val(),
+                schedule_id: id
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Show success message
+                    const $row = $button.closest('tr');
+                    const $status = $('<div class="notice notice-success inline"><p>Test initiated successfully</p></div>')
+                        .insertAfter($row);
+                    
+                    // Start monitoring the test status
+                    checkScheduledTestStatus(id);
+                    
+                    // Add a loading indicator
+                    $row.find('td:last').append('<span class="spinner is-active"></span>');
+                } else {
+                    alert('Error running test: ' + (response.data || 'Unknown error'));
+                    $button.prop('disabled', false).text(originalText);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', error);
+                alert('Failed to run test. Please try again.');
+                $button.prop('disabled', false).text(originalText);
             }
         });
     }
-
+    
+    function checkScheduledTestStatus(scheduleId) {
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'pagespeed_check_scheduled_test_status',
+                nonce: $('#pagespeed_test_nonce').val(),
+                schedule_id: scheduleId
+            },
+            success: function(response) {
+                if (response.success) {
+                    if (response.data.status === 'complete') {
+                        // Remove any existing status messages and spinners
+                        $('.notice.inline').remove();
+                        $('.spinner').remove();
+                        
+                        // Show completion message
+                        const $row = $(`.run-now[data-id="${scheduleId}"]`).closest('tr');
+                        $('<div class="notice notice-success inline"><p>Test completed successfully</p></div>')
+                            .insertAfter($row)
+                            .delay(3000)
+                            .fadeOut(400, function() { $(this).remove(); });
+                        
+                        // Re-enable the Run Now button
+                        $(`.run-now[data-id="${scheduleId}"]`).prop('disabled', false).text('Run Now');
+                        
+                        // Reload the data
+                        loadScheduledTests();
+                        loadTestHistory();
+                    } else if (response.data.status === 'running') {
+                        // Check again in 5 seconds
+                        setTimeout(() => checkScheduledTestStatus(scheduleId), 5000);
+                    } else {
+                        // Handle error or unknown status
+                        $('.spinner').remove();
+                        $(`.run-now[data-id="${scheduleId}"]`).prop('disabled', false).text('Run Now');
+                        alert('Test status unknown. Please check the results page.');
+                    }
+                }
+            },
+            error: function() {
+                // Handle error
+                $('.spinner').remove();
+                $(`.run-now[data-id="${scheduleId}"]`).prop('disabled', false).text('Run Now');
+                alert('Failed to check test status. Please check the results page.');
+            }
+        });
+    }
+    
+    
     // Display test results
     function displayResults(results) {
         const $results = $('#latest-results');
@@ -308,17 +383,16 @@ jQuery(document).ready(function($) {
                         </span>
                     </td>
                     <td>
+                        <button type="button" class="button button-small run-now" 
+                                data-id="${test.id}">Run Now</button>
                         <button type="button" class="button button-small cancel-schedule" 
                                 data-id="${test.id}">Cancel</button>
-                        ${test.status === 'overdue' ? `
-                            <button type="button" class="button button-small run-now" 
-                                    data-id="${test.id}">Run Now</button>
-                        ` : ''}
                     </td>
                 </tr>
             `);
         });
     }
+    
     
     function getStatusClass(status) {
         switch(status) {
