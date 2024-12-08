@@ -457,6 +457,6 @@
 }
 
 /* Score classes */
-.audit-list .good { background-color: #0CCE6B; color: white; } 
-.audit-list .average { background-color: #FFA400; color: white; }
-.audit-list .poor { background-color: #FF4E42; color: white; }
+.audits-list .good { background-color: #0CCE6B; color: white; } 
+.audits-list .average { background-color: #FFA400; color: white; }
+.audits-list .poor { background-color: #FF4E42; color: white; }
