@@ -233,7 +233,7 @@ public function ajax_check_test_status() {
      * @since 1.0.0
      */
     public function ajax_delete_old_results() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
@@ -282,7 +282,7 @@ public function ajax_check_test_status() {
      */
 
     public function ajax_cancel_scheduled_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
