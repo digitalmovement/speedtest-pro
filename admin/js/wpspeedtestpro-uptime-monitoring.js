@@ -113,7 +113,7 @@
         const $container = $canvas.parent();
         var response_times = "";
 
-        if (!pingData.average_response_time  || !cronData.average_response_time ) {
+        if (!pingData.average_response_time == undefined || !cronData.average_response_time == undefined) {
             response_times = "Ping Average Response Time: " + pingData.average_response_time + ' ms<br>' +
             'Cron Average Response Time: ' + cronData.average_response_time + ' ms';
         }
@@ -280,8 +280,8 @@
 
     function uptimerobot_getLogType(type) {
         switch(type) {
-            case 1: return '<i class="down">Down</i>';
-            case 2: return '<i class="up">Up</i>';
+            case 1: return 'Down';
+            case 2: return 'Up';
             case 98: return 'Started';
             case 99: return 'Paused';
             default: return 'Unknown';
