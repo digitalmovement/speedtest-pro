@@ -31,3 +31,11 @@
 .uptime-info-banner .notice-dismiss:hover {
     color: #d63638;
 }
+
+i.up {
+    color: #28a745;
+}
+
+i.down {
+    color: #dc3545;
+}

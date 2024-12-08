@@ -94,17 +94,19 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_setup_monitors() {
+        $this_site_url = parse_url(get_site_url(), PHP_URL_HOST);
+
         $ping_filename = $this->uptimerobot_create_ping_file();
         if (!$ping_filename) {
             return array('success' => false, 'message' => 'Failed to create ping file.');
         }
 
-        $ping_monitor = $this->uptimerobot_create_monitor(site_url('/'.$ping_filename), 'WPSpeedTestPro Ping Monitor');
+        $ping_monitor = $this->uptimerobot_create_monitor(site_url('/'.$ping_filename), 'WPSpeedTestPro Ping Monitor - '.$this_site_url);
         if (!$ping_monitor['success']) {
             return $ping_monitor; // Return the error message from create_monitor
         }
 
-        $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor');
+        $cron_monitor = $this->uptimerobot_create_monitor(site_url('/wp-cron.php'), 'WPSpeedTestPro Cron Monitor ' . $this_site_url); 
         if (!$cron_monitor['success']) {
             return $cron_monitor; // Return the error message from create_monitor
         }

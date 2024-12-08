@@ -111,7 +111,13 @@
     function uptimerobot_updateCombinedGraph(canvasId, pingData, cronData) {
         const $canvas = $('#' + canvasId);
         const $container = $canvas.parent();
-    
+        var response_times = "";
+
+        if (!pingData.average_response_time  || !cronData.average_response_time ) {
+            response_times = "Ping Average Response Time: " + pingData.average_response_time + ' ms<br>' +
+            'Cron Average Response Time: ' + cronData.average_response_time + ' ms';
+        }
+
         if (!pingData.response_times || !cronData.response_times || 
             (pingData.response_times.length < MIN_DATAPOINTS && cronData.response_times.length < MIN_DATAPOINTS)) {
             $canvas.hide();
@@ -119,16 +125,13 @@
             if ($message.length === 0) {
                 $message = $('<p class="not-enough-data">').html(
                     'Not enough data to display the graph yet. Please wait for more data to be collected.<br>' +
-                    'Ping Average Response Time: ' + pingData.average_response_time + ' ms<br>' +
-                    'Cron Average Response Time: ' + cronData.average_response_time + ' ms'
+                    response_times
                 );
                 $container.append($message);
             } else {
                 $message.html(
                     'Not enough data to display the graph yet. Please wait for more data to be collected.<br>' +
-                    'Ping Average Response Time: ' + pingData.average_response_time + ' ms<br>' +
-                    'Cron Average Response Time: ' + cronData.average_response_time + ' ms'
-                );
+                    response_times );
             }
             return;
         }
@@ -277,8 +280,8 @@
 
     function uptimerobot_getLogType(type) {
         switch(type) {
-            case 1: return 'Down';
-            case 2: return 'Up';
+            case 1: return '<i class="down">Down</i>';
+            case 2: return '<i class="up">Up</i>';
             case 98: return 'Started';
             case 99: return 'Paused';
             default: return 'Unknown';
