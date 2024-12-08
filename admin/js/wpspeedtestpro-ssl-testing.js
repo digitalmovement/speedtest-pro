@@ -33,7 +33,7 @@ jQuery(document).ready(function($) {
             return;
         }
         testInProgress = true;
-        $('#ssl-test-results').html('Starting SSL test... Testing can take up to 3 minutes to complete<div class="test-progress"></div>');
+        $('#ssl-status-message').html('Starting SSL test... Testing can take up to 3 minutes to complete<div class="test-progress"></div>');
         $('#start-ssl-test').prop('disabled', true);
 
         $.ajax({
@@ -46,7 +46,7 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     if (response.data.status === 'in_progress') {
-                        $('#ssl-test-results').html("Testing is still in progress" + '<div class="test-progress"></div>');
+                        $('#ssl-status-message').html("Testing is still in progress" + '<div class="test-progress"></div>');
                         startStatusCheck();
                     } else if (response.data.status === 'completed') {
                         displayResults(response.data.data);
@@ -54,13 +54,13 @@ jQuery(document).ready(function($) {
                         $('#start-ssl-test').prop('disabled', false);
                     }
                 } else {
-                    $('#ssl-test-results').html('Error: ' + response.data );
+                    $('#ssl-status-message').html('Error: ' + response.data );
                     testInProgress = false;
                     $('#start-ssl-test').prop('disabled', false);
                 }
             },
             error: function() {
-                $('#ssl-test-results').html('An error occurred while starting the SSL test.');
+                $('#ssl-status-message').html('An error occurred while starting the SSL test.');
                 testInProgress = false;
                 $('#start-ssl-test').prop('disabled', false);
             }
@@ -87,11 +87,11 @@ jQuery(document).ready(function($) {
                         testInProgress = false;
                         $('#start-ssl-test').prop('disabled', false);
                     } else if (response.data.status === 'in_progress') {
-                        $('#ssl-test-results').html( "Testing is still in progress" + '<div class="test-progress"></div>' );
+                        $('#ssl-status-message').html( "Testing is still in progress" + '<div class="test-progress"></div>' );
                     }
                 } else {
                     clearInterval(statusCheckInterval);
-                    $('#ssl-test-results').html('Error: ' + response.data );
+                    $('#ssl-status-message').html('Error: ' + response.data );
                     testInProgress = false;
                     $('#start-ssl-test').prop('disabled', false);
                 }

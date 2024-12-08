@@ -77,7 +77,7 @@
                 <p style="margin-top: 15px; color: #555;">Regular SSL testing helps ensure your website maintains strong security standards and protects your visitors' data effectively.</p>
             </div>
             <?php endif; ?>
-
+            <div id="ssl-status-message" class="notice notice-info" style="display: none;"></div>
             <button id="start-ssl-test" class="button button-primary">Start SSL Test</button>
         <?php endif; ?>
         
