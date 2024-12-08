@@ -47,13 +47,15 @@ jQuery(document).ready(function($) {
             success: function(response) {
                 if (response.success) {
                     if (response.data.status === 'in_progress') {
-                        $('#ssl-status-message').html("Testing is still in progress" + '<div class="test-progress"></div>');
+                        $('#ssl-status-message').html("Testing is still in progress..." + '<div class="test-progress"></div>');
                         toggleNotice($('#ssl-status-message'), 'info');
                         startStatusCheck();
                     } else if (response.data.status === 'completed') {
                         displayResults(response.data.data);
                         testInProgress = false;
                         $('#start-ssl-test').prop('disabled', false);
+                        $('#ssl-status-message').html('SSL testing completed');
+                        toggleNotice($('#ssl-status-message'), 'success');
                     }
                 } else {
                     $('#ssl-status-message').html('Error: ' + response.data );
