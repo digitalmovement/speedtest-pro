@@ -159,6 +159,8 @@ class Wpspeedtestpro_Admin {
                     'home_url' => home_url()
                 )
             );
+    
+
     }
 
     /**

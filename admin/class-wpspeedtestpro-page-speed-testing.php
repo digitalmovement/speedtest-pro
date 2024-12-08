@@ -76,9 +76,27 @@ class Wpspeedtestpro_PageSpeed {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce')
         ));
+    }
 
+
+    public function enqueue_meta_scripts($hook) {
+        
+        // Only load on post/page edit screens
+        if (!in_array($hook, ['post.php', 'post-new.php'])) {
+            return;
+        }
+    
+        wp_enqueue_style($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing-meta.css', array(), $this->version, 'all');
+
+        wp_enqueue_script($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing-meta.js', array('jquery'), $this->version, false);
+
+        wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce')
+        ));
 
     }
+
 
     public function display_page_speed_testing() {
         
