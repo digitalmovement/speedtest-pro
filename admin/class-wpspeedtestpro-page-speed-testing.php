@@ -42,7 +42,7 @@ class Wpspeedtestpro_PageSpeed {
         // Add meta box for pages and posts
         add_action('add_meta_boxes', array($this, 'add_meta_box'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_meta_scripts'));
-               
+
         // Schedule event for running tests
 
     }
@@ -775,7 +775,7 @@ public function ajax_get_test_details() {
         $results = $this->get_latest_result($url, 'both');
         $has_results = !empty($results['desktop']) || !empty($results['mobile']);
     
-        wp_nonce_field('pagespeed_meta_box', 'pagespeed_meta_box_nonce');
+         wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce'); 
         ?>
         <div class="pagespeed-meta-box">
             <div class="test-status" style="display: none;"></div>
