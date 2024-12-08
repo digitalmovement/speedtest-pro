@@ -59,24 +59,23 @@ class Wpspeedtestpro_PageSpeed {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        wp_enqueue_style($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing.css', array(), $this->version, 'all');
-
         if (!$this->is_this_the_right_plugin_page()) {
             return;
         }
+        wp_enqueue_style($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing.css', array(), $this->version, 'all');
 
     }
 
     public function enqueue_scripts() {
+        if (!$this->is_this_the_right_plugin_page()) {
+            return;
+        }
 
         wp_enqueue_script($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce')
         ));
-        if (!$this->is_this_the_right_plugin_page()) {
-            return;
-        }
 
 
     }
@@ -748,42 +747,91 @@ public function ajax_get_test_details() {
     }
 
     public function render_meta_box($post) {
+        // Get post status and URL
+        $post_status = get_post_status($post);
         $url = get_permalink($post->ID);
+        
+        // Get latest results
         $results = $this->get_latest_result($url, 'both');
         $has_results = !empty($results['desktop']) || !empty($results['mobile']);
-
+    
         wp_nonce_field('pagespeed_meta_box', 'pagespeed_meta_box_nonce');
         ?>
         <div class="pagespeed-meta-box">
+            <div class="test-status" style="display: none;"></div>
+            
             <?php if ($has_results): ?>
                 <div class="results-grid">
-                    <div class="desktop-results">
-                        <h4>Desktop</h4>
+                    <!-- Desktop Results -->
+                    <div class="device-results desktop-results">
+                        <div class="device-title">Desktop</div>
                         <div class="score <?php echo $this->get_score_class($results['desktop']->performance_score); ?>">
                             <?php echo $results['desktop']->performance_score; ?>%
+                        </div>
+                        <div class="web-vitals">
+                            <div class="vital-metric">
+                                <span class="label">FCP:</span> <?php echo $this->format_timing($results['desktop']->fcp); ?>
+                            </div>
+                            <div class="vital-metric">
+                                <span class="label">LCP:</span> <?php echo $this->format_timing($results['desktop']->lcp); ?>
+                            </div>
+                            <div class="vital-metric">
+                                <span class="label">CLS:</span> <?php echo number_format($results['desktop']->cls, 3); ?>
+                            </div>
                         </div>
                         <div class="last-tested">
                             <?php echo human_time_diff(strtotime($results['desktop']->test_date)) . ' ago'; ?>
                         </div>
+                        <div class="actions">
+                            <button type="button" class="button button-small view-details" 
+                                    data-id="<?php echo esc_attr($results['desktop']->id); ?>">
+                                View Details
+                            </button>
+                        </div>
                     </div>
-                    <div class="mobile-results">
-                        <h4>Mobile</h4>
+    
+                    <!-- Mobile Results -->
+                    <div class="device-results mobile-results">
+                        <div class="device-title">Mobile</div>
                         <div class="score <?php echo $this->get_score_class($results['mobile']->performance_score); ?>">
                             <?php echo $results['mobile']->performance_score; ?>%
+                        </div>
+                        <div class="web-vitals">
+                            <div class="vital-metric">
+                                <span class="label">FCP:</span> <?php echo $this->format_timing($results['mobile']->fcp); ?>
+                            </div>
+                            <div class="vital-metric">
+                                <span class="label">LCP:</span> <?php echo $this->format_timing($results['mobile']->lcp); ?>
+                            </div>
+                            <div class="vital-metric">
+                                <span class="label">CLS:</span> <?php echo number_format($results['mobile']->cls, 3); ?>
+                            </div>
                         </div>
                         <div class="last-tested">
                             <?php echo human_time_diff(strtotime($results['mobile']->test_date)) . ' ago'; ?>
                         </div>
+                        <div class="actions">
+                            <button type="button" class="button button-small view-details" 
+                                    data-id="<?php echo esc_attr($results['mobile']->id); ?>">
+                                View Details
+                            </button>
+                        </div>
                     </div>
                 </div>
-            <?php else: ?>
-                <p>No PageSpeed test results available.</p>
             <?php endif; ?>
-            
-            <button type="button" class="button run-pagespeed-test" data-url="<?php echo esc_attr($url); ?>">
+    
+            <?php if ($post_status !== 'publish'): ?>
+                <div class="notice notice-warning inline">
+                    <p>Please publish this post before running PageSpeed tests.</p>
+                </div>
+            <?php endif; ?>
+    
+            <button type="button" class="button run-pagespeed-test" 
+                    data-url="<?php echo esc_attr($url); ?>"
+                    data-post-status="<?php echo esc_attr($post_status); ?>"
+                    <?php echo $post_status !== 'publish' ? 'disabled' : ''; ?>>
                 Run PageSpeed Test
             </button>
-            <span class="spinner"></span>
         </div>
         <?php
     }
