@@ -86,7 +86,7 @@
             if ($cached_result) {
                 echo $this->format_ssl_test_results($cached_result);
             } elseif (!empty($user_email)) {
-                echo '<p>No SSL test results available. Click "Start SSL Test" to begin.</p>';
+                echo '<div class="notice notice-info" style="display: none;"><p>No SSL test results available. Click "Start SSL Test" to begin.</p></div';
             }
             ?>
         </div>

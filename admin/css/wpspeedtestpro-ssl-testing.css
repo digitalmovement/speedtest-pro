@@ -13,6 +13,11 @@
     margin-top: 20px;
 }
 
+#ssl-status-message {
+    margin: 10px 0;
+    padding: 10px 12px;
+}
+
 /*
 .ssl-tabs {
     margin-top: 20px;
