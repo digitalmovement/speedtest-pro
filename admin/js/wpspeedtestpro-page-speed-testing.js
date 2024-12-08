@@ -60,6 +60,113 @@ jQuery(document).ready(function($) {
         });
     });
 
+    $('body').append(`
+        <div id="test-details-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>PageSpeed Test Details</h2>
+                <div id="test-details-content">
+                    <div class="loading">Loading...</div>
+                </div>
+            </div>
+        </div>
+    `);
+
+    // Update the view details handler
+    $(document).on('click', '.view-details', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        showTestDetails(id);
+    });
+
+    // Close modal when clicking the close button or outside the modal
+    $('.close-modal, .modal').on('click', function(e) {
+        if (e.target === this) {
+            $('#test-details-modal').hide();
+        }
+    });
+
+    function showTestDetails(testId) {
+        const $modal = $('#test-details-modal');
+        const $content = $('#test-details-content');
+        
+        $modal.show();
+        $content.html('<div class="loading">Loading...</div>');
+
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'pagespeed_get_test_details',
+                nonce: $('#pagespeed_test_nonce').val(),
+                test_id: testId
+            },
+            success: function(response) {
+                if (!response.success) {
+                    $content.html('<div class="error">Error loading test details</div>');
+                    return;
+                }
+
+                const data = response.data;
+                let html = `
+                    <div class="test-details-grid">
+                        <div class="basic-info">
+                            <h3>Test Information</h3>
+                            <p><strong>URL:</strong> ${escapeHtml(data.basic_info.url)}</p>
+                            <p><strong>Device:</strong> ${data.basic_info.device}</p>
+                            <p><strong>Test Date:</strong> ${data.basic_info.test_date}</p>
+                        </div>
+
+                        <div class="scores-section">
+                            <h3>Performance Scores</h3>
+                            <div class="scores-grid">
+                                ${Object.entries(data.scores).map(([key, value]) => `
+                                    <div class="score-item ${value.class}">
+                                        <div class="score-label">${key.replace('_', ' ')}</div>
+                                        <div class="score-value">${value.score}%</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="metrics-section">
+                            <h3>Core Web Vitals & Metrics</h3>
+                            <div class="metrics-grid">
+                                ${Object.entries(data.metrics).map(([key, value]) => `
+                                    <div class="metric-item">
+                                        <div class="metric-label">${key}</div>
+                                        <div class="metric-value">${value}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="audits-section">
+                            <h3>Detailed Audits</h3>
+                            <div class="audits-list">
+                                ${Object.entries(data.audits)
+                                    .filter(([_, audit]) => audit.score !== null)
+                                    .map(([key, audit]) => `
+                                        <div class="audit-item ${getScoreClass(audit.score * 100)}">
+                                            <div class="audit-title">${audit.title}</div>
+                                            <div class="audit-score">${Math.round(audit.score * 100)}%</div>
+                                            <div class="audit-description">${audit.description}</div>
+                                        </div>
+                                    `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $content.html(html);
+            },
+            error: function() {
+                $content.html('<div class="error">Failed to load test details</div>');
+            }
+        });
+    }
+
+    
 
     function checkTestStatus(url) {
         const $status = $('#test-status');
