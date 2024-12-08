@@ -35,12 +35,14 @@ class Wpspeedtestpro_PageSpeed {
         add_action('wp_ajax_pagespeed_get_test_details', array($this, 'ajax_get_test_details'));
 
 
+ 
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
 
         // Add meta box for pages and posts
         add_action('add_meta_boxes', array($this, 'add_meta_box'));
-        
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_meta_scripts'));
+               
         // Schedule event for running tests
 
     }
