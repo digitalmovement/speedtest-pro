@@ -3,7 +3,7 @@
 class Wpspeedtestpro_Cron {
     public function __construct() {
         add_filter('cron_schedules', array($this, 'add_cron_interval'));
-        add_filter('cron_schedules', array($this,'speedvitals_add_cron_interval'));
+        add_filter('cron_schedules', array($this,'pagespeed_add_cron_interval'));
 
     }
 
@@ -15,7 +15,7 @@ class Wpspeedtestpro_Cron {
         return $schedules;
     }    
 
-    function speedvitals_add_cron_interval($schedules) {
+    function pagespeed_add_cron_interval($schedules) {
         $schedules['five_minutes'] = array(
             'interval' => 300,
             'display'  => esc_html__('Every Five Minutes'),

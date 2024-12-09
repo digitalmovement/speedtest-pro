@@ -87,8 +87,8 @@ class Wpspeedtestpro_Deactivator {
             $tables = array(
                 $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results',
                 $wpdb->prefix . 'wpspeedtestpro_benchmark_results',
-                $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests',
-                $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests'
+                $wpdb->prefix . 'wpspeedtestpro_pagespeed_results',
+                $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled'
             );
 
             foreach ($tables as $table) {
@@ -100,10 +100,8 @@ class Wpspeedtestpro_Deactivator {
 
             // Clear any scheduled cron events
             wp_clear_scheduled_hook('wpspeedtestpro_hourly_test');
-            wp_clear_scheduled_hook('speedvitals_check_scheduled_tests');
-            wp_clear_scheduled_hook('speedvitals_check_pending_tests');
             wp_clear_scheduled_hook('wpspeedtestpro_cron_hook');
-            wp_clear_scheduled_hook('speedvitals_run_scheduled_tests');
+            wp_clear_scheduled_hook('pagespeed_run_scheduled_tests');
             wp_clear_scheduled_hook('wpspeedtestpro_daily_pagespeed_check');
             
 
@@ -128,7 +126,7 @@ class Wpspeedtestpro_Deactivator {
 
     public static function deactivate() {
         // Handle basic deactivation tasks
-        wp_clear_scheduled_hook('speedvitals_check_scheduled_tests');
+        wp_clear_scheduled_hook('pagespeed_check_scheduled_tests');
         wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
         // Data deletion is handled via AJAX before deactivation
     }
