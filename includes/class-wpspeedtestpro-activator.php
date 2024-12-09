@@ -53,6 +53,11 @@ class Wpspeedtestpro_Activator {
                 wp_schedule_event(time(), 'daily', 'wpspeedtestpro_daily_pagespeed_check');
             }
     
+            if (!wp_next_scheduled('wpspeedtestpro_check_scheduled_pagespeed_tests')) {
+                wp_schedule_event(time(), 'fifteen_minutes', 'wpspeedtestpro_check_scheduled_pagespeed_tests');
+            }
+
+            
             // Add default options
             add_option('wpspeedtestpro_pagespeed_settings', [
                 'retention_days' => 90,

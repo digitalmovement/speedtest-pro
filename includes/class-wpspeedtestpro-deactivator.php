@@ -128,6 +128,13 @@ class Wpspeedtestpro_Deactivator {
         // Handle basic deactivation tasks
         wp_clear_scheduled_hook('pagespeed_check_scheduled_tests');
         wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
+
+        $timestamp = wp_next_scheduled('wpspeedtestpro_check_scheduled_pagespeed_tests');
+        if ($timestamp) {
+            wp_unschedule_event($timestamp, 'wpspeedtestpro_check_scheduled_pagespeed_tests');
+        }
+
+        
         // Data deletion is handled via AJAX before deactivation
     }
 }

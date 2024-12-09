@@ -1,22 +1,24 @@
 <?php
 
 class Wpspeedtestpro_Cron {
-    // Register activation/deactivation hooks
+
     public function __construct() {
-        add_filter('cron_schedules', array($this, 'add_cron_interval'));
+    //    add_filter('cron_schedules', array($this, 'add_cron_interval'));
         add_filter('cron_schedules', array($this, 'register_cron_schedules'));
 
-        register_activation_hook(__FILE__, array($this, 'setup_cron'));
-        register_deactivation_hook(__FILE__, array($this, 'remove_cron'));    
+//        register_activation_hook( dirname( __FILE__ ), array($this, 'setup_cron'));
+//        register_deactivation_hook( dirname( __FILE__ ), array($this, 'remove_cron'));    
     }
 
-    public function add_cron_interval($schedules) {
+    /*public function add_cron_interval($schedules) {
         $schedules['wpspeedtestpro_fifteen_minutes'] = array(
             'interval' => 900,
             'display'  => esc_html__('Every 15 minutes'),
         );
         return $schedules;
     }    
+*/
+
 
 
     public function register_cron_schedules($schedules) {
