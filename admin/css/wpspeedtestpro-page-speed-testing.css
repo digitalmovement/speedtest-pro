@@ -98,28 +98,56 @@
 /* Scores Grid */
 .scores-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    margin: 20px 0;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 0;
 }
 
 .score-item {
-    padding: 10px;
+    background: #f8f9fa;
+    padding: 12px;
     border-radius: 4px;
-    background: #f0f0f1;
+    border: 1px solid #e2e4e7;
+    text-align: left;
 }
 
-.score-item.good { background-color: rgba(0, 204, 102, 0.1); }
-.score-item.average { background-color: rgba(255, 170, 51, 0.1); }
-.score-item.poor { background-color: rgba(220, 50, 50, 0.1); }
-
-.score-item .label {
+.score-item .score-label {
     display: block;
     font-size: 12px;
-    color: #50575e;
-    margin-bottom: 5px;
+    color: #646970;
+    margin-bottom: 8px;
 }
 
+.score-item .score {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Score colors with background */
+.score-item .score.good {
+    background-color: rgba(0, 204, 102, 0.1);
+    color: #0c6;
+}
+
+.score-item .score.average {
+    background-color: rgba(255, 170, 51, 0.1);
+    color: #fa3;
+}
+
+.score-item .score.poor {
+    background-color: rgba(220, 50, 50, 0.1);
+    color: #dc3232;
+}
+
+.score-item .score.no-data {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #666;
+}
 .score-item .value {
     display: block;
     font-size: 16px;
