@@ -102,7 +102,7 @@ class Wpspeedtestpro_Dashboard {
                 'performance_nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
                 'ssl_nonce' => wp_create_nonce('ssl_testing_nonce'),
                 'uptime_nonce' => wp_create_nonce('wpspeedtestpro_uptime_nonce'),
-                'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce'),
+                'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro_page-speed-testing_nonce'),
                 'selected_region' => get_option('wpspeedtestpro_selected_region'),
                 'home_url' => home_url()
             ));    
@@ -345,7 +345,7 @@ class Wpspeedtestpro_Dashboard {
     }
 
     public function get_pagespeed_data() {
-        check_ajax_referer('wpspeedtestpro_pagespeed_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_page-speed-testing_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');

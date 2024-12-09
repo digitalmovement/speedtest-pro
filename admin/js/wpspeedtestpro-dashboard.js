@@ -246,7 +246,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'wpspeedtestpro_check_ssl_test_status',
+                action: 'wpspeedtestpro_get_ssl_data',
                 nonce: wpspeedtestpro_ajax.ssl_nonce
             },
             success: function(response) {
