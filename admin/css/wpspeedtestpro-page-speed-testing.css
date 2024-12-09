@@ -253,9 +253,9 @@
     border-bottom: none;
 }
 
-.wp-list-table td.good { color: #0c6; font-weight: 600; }
-.wp-list-table td.average { color: #fa3; font-weight: 600; }
-.wp-list-table td.poor { color: #dc3232; font-weight: 600; }
+.wp-list-table td.good { color: #0c6; font-weight: 600;     background-color: rgba(0, 204, 102, 0.1); }
+.wp-list-table td.average { color: #fa3; font-weight: 600;     background-color: rgba(255, 170, 51, 0.1);}
+.wp-list-table td.poor { color: #dc3232; font-weight: 600;     background-color: rgba(220, 50, 50, 0.1); }
 
 .wp-list-table .button.view-details {
     background: #f8f9fa;
