@@ -132,63 +132,70 @@
         </div>
 
         <!-- Page Speed Card -->
-    <div class="dashboard-card" id="pagespeed-card">
-        <h2><i class="fas fa-rocket"></i> Page Speed</h2>
-        <div class="card-content">
-            <div class="pagespeed-grid">
-                <!-- Desktop Results -->
-                <div class="device-section">
-                    <h3>Desktop</h3>
+        <div class="dashboard-card" id="pagespeed-card">
+    <h2><i class="fas fa-rocket"></i> Page Speed</h2>
+    <div class="card-content">
+        <div class="pagespeed-grid">
+            <!-- Desktop Results -->
+            <div class="device-section">
+                <h3>Desktop</h3>
+                <div class="scores-grid">
                     <div class="metric">
-                        <span class="label">Performance Score:</span>
-                        <span class="value" id="performance-score">Loading...</span>
+                        <span class="label">Performance:</span>
+                        <span class="value" id="desktop-performance">Loading...</span>
                     </div>
-                    <div class="pagespeed-metrics">
-                        <div class="metric">
-                            <span class="label">First Contentful Paint:</span>
-                            <span class="value" id="fcp-value">Loading...</span>
-                        </div>
-                        <div class="metric">
-                            <span class="label">Largest Contentful Paint:</span>
-                            <span class="value" id="lcp-value">Loading...</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mobile Results -->
-                <div class="device-section">
-                    <h3>Mobile</h3>
                     <div class="metric">
-                        <span class="label">Performance Score:</span>
-                        <span class="value" id="mobile-performance-score">Loading...</span>
+                        <span class="label">Accessibility:</span>
+                        <span class="value" id="desktop-accessibility">Loading...</span>
                     </div>
-                    <div class="pagespeed-metrics">
-                        <div class="metric">
-                            <span class="label">First Contentful Paint:</span>
-                            <span class="value" id="mobile-fcp-value">Loading...</span>
-                        </div>
-                        <div class="metric">
-                            <span class="label">Largest Contentful Paint:</span>
-                            <span class="value" id="mobile-lcp-value">Loading...</span>
-                        </div>
+                    <div class="metric">
+                        <span class="label">Best Practices:</span>
+                        <span class="value" id="desktop-best-practices">Loading...</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">SEO:</span>
+                        <span class="value" id="desktop-seo">Loading...</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Common Information -->
-            <div class="common-info">
-                <div class="metric">
-                    <span class="label">URL Tested:</span>
-                    <span class="value" id="tested-url">Loading...</span>
-                </div>
-                <div class="metric">
-                    <span class="label">Last Tested:</span>
-                    <span class="value" id="pagespeed-last-tested">Loading...</span>
+            <!-- Mobile Results -->
+            <div class="device-section">
+                <h3>Mobile</h3>
+                <div class="scores-grid">
+                    <div class="metric">
+                        <span class="label">Performance:</span>
+                        <span class="value" id="mobile-performance">Loading...</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Accessibility:</span>
+                        <span class="value" id="mobile-accessibility">Loading...</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Best Practices:</span>
+                        <span class="value" id="mobile-best-practices">Loading...</span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">SEO:</span>
+                        <span class="value" id="mobile-seo">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Common Information -->
+        <div class="common-info">
+            <div class="metric">
+                <span class="label">URL Tested:</span>
+                <span class="value" id="tested-url">Loading...</span>
+            </div>
+            <div class="metric">
+                <span class="label">Last Tested:</span>
+                <span class="value" id="pagespeed-last-tested">Loading...</span>
+            </div>
+        </div>
     </div>
-    </div>
+</div>
     <!-- Quick Actions Section -->
     <div class="quick-actions-section">
         <h2>Quick Actions</h2>

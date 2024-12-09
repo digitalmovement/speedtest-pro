@@ -520,6 +520,9 @@ jQuery(document).ready(function($) {
     }
 
     // Page Speed Functions
+
+
+
     function loadPageSpeedData() {
         $.ajax({
             url: wpspeedtestpro_ajax.ajax_url,
@@ -540,9 +543,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
-
-
-
+    
     
     function displayNoPageSpeedData(message = 'No Page Speed data available') {
         // Remove any existing loading states
@@ -606,38 +607,18 @@ jQuery(document).ready(function($) {
     
         // Update desktop metrics if available
         if (data.desktop) {
-            $('#performance-score')
-                .text(data.desktop.performance_score)
-                .removeClass('good warning poor no-data')
-                .addClass(getPerformanceScoreClass(data.desktop.performance_score));
-    
-            $('#fcp-value')
-                .text(formatTiming(data.desktop.fcp))
-                .removeClass('no-data')
-                .addClass(getFCPClass(data.desktop.fcp));
-    
-            $('#lcp-value')
-                .text(formatTiming(data.desktop.lcp))
-                .removeClass('no-data')
-                .addClass(getLCPClass(data.desktop.lcp));
+            updateScoreMetric('desktop-performance', data.desktop.performance_score);
+            updateScoreMetric('desktop-accessibility', data.desktop.accessibility_score);
+            updateScoreMetric('desktop-best-practices', data.desktop.best_practices_score);
+            updateScoreMetric('desktop-seo', data.desktop.seo_score);
         }
     
         // Update mobile metrics if available
         if (data.mobile) {
-            $('#mobile-performance-score')
-                .text(data.mobile.performance_score)
-                .removeClass('good warning poor no-data')
-                .addClass(getPerformanceScoreClass(data.mobile.performance_score));
-    
-            $('#mobile-fcp-value')
-                .text(formatTiming(data.mobile.fcp))
-                .removeClass('no-data')
-                .addClass(getFCPClass(data.mobile.fcp));
-    
-            $('#mobile-lcp-value')
-                .text(formatTiming(data.mobile.lcp))
-                .removeClass('no-data')
-                .addClass(getLCPClass(data.mobile.lcp));
+            updateScoreMetric('mobile-performance', data.mobile.performance_score);
+            updateScoreMetric('mobile-accessibility', data.mobile.accessibility_score);
+            updateScoreMetric('mobile-best-practices', data.mobile.best_practices_score);
+            updateScoreMetric('mobile-seo', data.mobile.seo_score);
         }
     
         // Update common information
@@ -646,16 +627,18 @@ jQuery(document).ready(function($) {
     }
     
     
-    
     function displayNoPageSpeedData(message = 'No PageSpeed data available') {
-        // Remove any existing loading states
-        $('.pagespeed-metrics .loading').removeClass('loading');
+        const metrics = [
+            'desktop-performance', 'desktop-accessibility', 'desktop-best-practices', 'desktop-seo',
+            'mobile-performance', 'mobile-accessibility', 'mobile-best-practices', 'mobile-seo'
+        ];
         
-        // Clear any existing classes
-        $('#performance-score, #mobile-performance-score, #fcp-value, #mobile-fcp-value, #lcp-value, #mobile-lcp-value, #pagespeed-last-tested')
-            .removeClass('good warning poor')
-            .addClass('no-data')
-            .text('--');
+        metrics.forEach(metric => {
+            $(`#${metric}`)
+                .text('--')
+                .removeClass('good warning poor')
+                .addClass('no-data');
+        });
         
         $('#tested-url')
             .text('No data')
@@ -681,59 +664,32 @@ jQuery(document).ready(function($) {
             );
         }
     }
-    
-    // Helper functions for metric classifications
-    function getPerformanceScoreClass(score) {
-        if (score >= 90) return 'good';
-        if (score >= 50) return 'warning';
-        return 'poor';
-    }
-    
-    function formatTiming(value) {
-        // Handle null, undefined, or invalid values
-        if (value === null || value === undefined || value === '') {
-            return 'N/A';
+
+    function updateScoreMetric(elementId, score) {
+        const $element = $(`#${elementId}`);
+        if (score === null || score === undefined) {
+            $element
+                .text('N/A')
+                .removeClass('good warning poor')
+                .addClass('no-data');
+            return;
         }
     
-        // Convert string to number if necessary
-        const numValue = parseFloat(value);
-        
-        // Check if conversion was successful
-        if (isNaN(numValue)) {
-            return 'N/A';
-        }
-    
-        // Format based on value
-        if (numValue >= 1000) {
-            return (numValue / 1000).toFixed(2) + 's';
-        }
-        return Math.round(numValue) + 'ms';
+        $element
+            .text(score + '%')
+            .removeClass('good warning poor no-data')
+            .addClass(getScoreClass(score));
     }
     
-    function getFCPClass(value) {
-        if (!value || value === 'N/A') return '';
-        const seconds = parseFloat(value) / 1000;
-        if (seconds <= 1.8) return 'good';
-        if (seconds <= 3) return 'warning';
-        return 'poor';
-    }
     
-    function getLCPClass(value) {
-        if (!value || value === 'N/A') return '';
-        const seconds = parseFloat(value) / 1000;
-        if (seconds <= 2.5) return 'good';
-        if (seconds <= 4) return 'warning';
-        return 'poor';
-    }
-    
-    function getPerformanceScoreClass(score) {
+    function getScoreClass(score) {
         if (!score || score === 'N/A') return '';
         score = parseInt(score);
         if (score >= 90) return 'good';
         if (score >= 50) return 'warning';
         return 'poor';
     }
-
+    
     
     // Event Handlers
     function setupEventHandlers() {
@@ -846,7 +802,6 @@ jQuery(document).ready(function($) {
         url = url.replace(/^https?:\/\//, '');
         return url.length > maxLength ? url.substring(0, maxLength) + '...' : url;
     }
-    
     
     // Initialize the dashboard
     initDashboard();
