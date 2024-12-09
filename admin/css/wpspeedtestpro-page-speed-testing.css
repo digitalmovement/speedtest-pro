@@ -547,3 +547,163 @@
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* Test Details Content */
+.test-details-grid {
+    display: grid;
+    gap: 24px;
+}
+
+/* Basic Info Section with Circle Score */
+.basic-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    align-items: start;
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid #e2e4e7;
+}
+
+.basic-info .score-circle {
+    width: 150px;
+    height: 150px;
+    margin: 0;
+}
+
+.basic-info .scores-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.basic-info .meta-info {
+    margin-top: 16px;
+}
+
+.basic-info .meta-info p {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #50575e;
+}
+
+/* Metrics Panel in Modal */
+.modal .metrics-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #e2e4e7;
+}
+
+.modal .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.modal .metric-item {
+    position: relative;
+    background: white;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+    border: 1px solid #e2e4e7;
+}
+
+.modal .metric-item .metric-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1d2327;
+}
+
+.modal .metric-item .metric-value {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+/* Core Web Vitals Scoring */
+.metric-item.good .metric-value {
+    background-color: rgba(0, 204, 102, 0.1);
+    color: #0c6;
+}
+
+.metric-item.average .metric-value {
+    background-color: rgba(255, 170, 51, 0.1);
+    color: #fa3;
+}
+
+.metric-item.poor .metric-value {
+    background-color: rgba(220, 50, 50, 0.1);
+    color: #dc3232;
+}
+
+/* Audit Items with Score Bubbles */
+.audit-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: start;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    border: 1px solid #e2e4e7;
+}
+
+.audit-item .audit-content {
+    flex: 1;
+}
+
+.audit-item .audit-score {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    text-align: center;
+    min-width: 60px;
+}
+
+.audit-item.good .audit-score {
+    background-color: rgba(0, 204, 102, 0.1);
+    color: #0c6;
+}
+
+.audit-item.average .audit-score {
+    background-color: rgba(255, 170, 51, 0.1);
+    color: #fa3;
+}
+
+.audit-item.poor .audit-score {
+    background-color: rgba(220, 50, 50, 0.1);
+    color: #dc3232;
+}
+
+/* Responsive Adjustments for Modal */
+@media screen and (max-width: 782px) {
+    .basic-info {
+        grid-template-columns: 1fr;
+    }
+
+    .basic-info .score-circle {
+        margin: 0 auto;
+    }
+
+    .modal .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .audit-item {
+        grid-template-columns: 1fr;
+    }
+
+    .audit-item .audit-score {
+        margin-top: 10px;
+    }
+}
+
+

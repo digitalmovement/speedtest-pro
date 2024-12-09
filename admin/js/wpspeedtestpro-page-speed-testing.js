@@ -111,33 +111,37 @@ jQuery(document).ready(function($) {
                 let html = `
                     <div class="test-details-grid">
                         <div class="basic-info">
-                            <h3>Test Information</h3>
-                            <p><strong>URL:</strong> ${escapeHtml(data.basic_info.url)}</p>
-                            <p><strong>Device:</strong> ${data.basic_info.device}</p>
-                            <p><strong>Test Date:</strong> ${data.basic_info.test_date}</p>
-                        </div>
-
-                        <div class="scores-section">
-                            <h3>Performance Scores</h3>
-                            <div class="scores-grid">
-                                ${Object.entries(data.scores).map(([key, value]) => `
-                                    <div class="score-item ${value.class}">
-                                        <div class="score-label">${key.replace('_', ' ')}</div>
-                                        <div class="score-value">${value.score}%</div>
+                            <div class="score-circle ${getScoreClass(data.scores.performance.score)}">
+                                <span class="score-label">Performance</span>
+                                <span class="score-value">${data.scores.performance.score}</span>
+                            </div>
+                            <div>
+                                <div class="scores-grid">
+                                    <div class="score-item">
+                                        <span class="score-label">Accessibility</span>
+                                        <span class="score ${data.scores.accessibility.class}">${data.scores.accessibility.score}%</span>
                                     </div>
-                                `).join('')}
+                                    <div class="score-item">
+                                        <span class="score-label">Best Practices</span>
+                                        <span class="score ${data.scores.best_practices.class}">${data.scores.best_practices.score}%</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span class="score-label">SEO</span>
+                                        <span class="score ${data.scores.seo.class}">${data.scores.seo.score}%</span>
+                                    </div>
+                                </div>
+                                <div class="meta-info">
+                                    <p><strong>URL:</strong> ${escapeHtml(data.basic_info.url)}</p>
+                                    <p><strong>Device:</strong> ${data.basic_info.device}</p>
+                                    <p><strong>Test Date:</strong> ${data.basic_info.test_date}</p>
+                                </div>
                             </div>
                         </div>
 
                         <div class="metrics-section">
                             <h3>Core Web Vitals & Metrics</h3>
                             <div class="metrics-grid">
-                                ${Object.entries(data.metrics).map(([key, value]) => `
-                                    <div class="metric-item">
-                                        <div class="metric-label">${key}</div>
-                                        <div class="metric-value">${value}</div>
-                                    </div>
-                                `).join('')}
+                                ${generateMetricItems(data.metrics)}
                             </div>
                         </div>
 
@@ -148,9 +152,11 @@ jQuery(document).ready(function($) {
                                     .filter(([_, audit]) => audit.score !== null)
                                     .map(([key, audit]) => `
                                         <div class="audit-item ${getScoreClass(audit.score * 100)}">
-                                            <div class="audit-title">${audit.title}</div>
+                                            <div class="audit-content">
+                                                <div class="audit-title">${audit.title}</div>
+                                                <div class="audit-description">${audit.description}</div>
+                                            </div>
                                             <div class="audit-score">${Math.round(audit.score * 100)}%</div>
-                                            <div class="audit-description">${audit.description}</div>
                                         </div>
                                     `).join('')}
                             </div>
@@ -164,6 +170,143 @@ jQuery(document).ready(function($) {
                 $content.html('<div class="error">Failed to load test details</div>');
             }
         });
+    }
+
+    function generateMetricItems(metrics) {
+        const metricThresholds = {
+            'First Contentful Paint': {
+                good: 1800,
+                poor: 3000,
+                format: formatTiming
+            },
+            'Largest Contentful Paint': {
+                good: 2500,
+                poor: 4000,
+                format: formatTiming
+            },
+            'Cumulative Layout Shift': {
+                good: 0.1,
+                poor: 0.25,
+                format: formatCLS
+            },
+            'Total Blocking Time': {
+                good: 200,
+                poor: 600,
+                format: formatTiming
+            }
+        };
+
+        return Object.entries(metrics).map(([key, value]) => {
+            const threshold = metricThresholds[key];
+            if (!threshold) return '';
+
+            const numericValue = parseFloat(value);
+            const scoreClass = getMetricScoreClass(numericValue, threshold);
+            const formattedValue = threshold.format(value);
+
+            return `
+                <div class="metric-item ${scoreClass}">
+                    <div class="metric-label">${key}</div>
+                    <div class="metric-value">${formattedValue}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function getMetricScoreClass(value, threshold) {
+        if (value <= threshold.good) return 'good';
+        if (value <= threshold.poor) return 'average';
+        return 'poor';
+    }
+
+    function formatTiming(value) {
+        const numValue = parseFloat(value);
+        if (isNaN(numValue)) return 'N/A';
+        return numValue >= 1000 ? 
+            (numValue / 1000).toFixed(2) + 's' : 
+            Math.round(numValue) + 'ms';
+    }
+
+    function formatCLS(value) {
+        return parseFloat(value).toFixed(3);
+    }
+
+    function getScoreClass(score) {
+        if (score >= 90) return 'good';
+        if (score >= 50) return 'average';
+        return 'poor';
+    }
+
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // Update display results function to use new scoring
+    function displayResults(results) {
+        const $results = $('#latest-results');
+        
+        if (results.desktop) {
+            updateDeviceResults('desktop', results.desktop);
+        }
+        
+        if (results.mobile) {
+            updateDeviceResults('mobile', results.mobile);
+        }
+        
+        $results.show();
+    }
+
+    function updateDeviceResults(device, data) {
+        const $container = $(`.device-results.${device}`);
+        
+        // Update main performance score
+        const $score = $container.find('.score-circle.performance');
+        $score.find('.score-value').text(data.performance_score);
+        updateScoreClass($score, data.performance_score);
+
+        // Update other scores
+        $container.find('.scores-grid .score-item').each(function() {
+            const $item = $(this);
+            const metric = $item.find('.label').text().toLowerCase().replace(' ', '_') + '_score';
+            const value = data[metric];
+            $item.find('.value').text(value);
+            updateScoreClass($item, value);
+        });
+
+        // Update Core Web Vitals with new thresholds
+        updateWebVital($container, 'FCP', data.fcp, 1800, 3000);
+        updateWebVital($container, 'LCP', data.lcp, 2500, 4000);
+        updateWebVital($container, 'CLS', data.cls, 0.1, 0.25);
+        updateWebVital($container, 'TBT', data.tbt, 200, 600);
+    }
+
+    function updateWebVital($container, metric, value, goodThreshold, poorThreshold) {
+        const $metric = $container.find(`.metric-item:contains("${metric}")`);
+        const numValue = parseFloat(value);
+
+        let displayValue;
+        if (metric === 'CLS') {
+            displayValue = numValue.toFixed(3);
+        } else {
+            displayValue = numValue >= 1000 ? 
+                (numValue / 1000).toFixed(2) + 's' : 
+                Math.round(numValue) + 'ms';
+        }
+
+        $metric.find('.value').text(displayValue);
+        
+        // Apply color class based on thresholds
+        $metric.removeClass('good average poor');
+        if (numValue <= goodThreshold) {
+            $metric.addClass('good');
+        } else if (numValue <= poorThreshold) {
+            $metric.addClass('average');
+        } else {
+            $metric.addClass('poor');
+        }
     }
 
     
