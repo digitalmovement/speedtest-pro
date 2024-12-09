@@ -536,7 +536,7 @@ jQuery(document).ready(function($) {
                 }
             },
             error: function() {
-                displayNoPageSpeedData('Error loading Page Speed data');
+                displayNoPageSpeedData('Error loading PageSpeed data');
             }
         });
     }
@@ -595,103 +595,53 @@ jQuery(document).ready(function($) {
         }
     }
     
-    function updatePageSpeedCard(result) {
-        if (!result || !result.status) {
+    function updatePageSpeedCard(data) {
+        if (!data.desktop && !data.mobile) {
             displayNoPageSpeedData();
             return;
         }
     
-        // Performance Score
-        if (result.performance_score !== null && result.performance_score !== undefined) {
+        // Update desktop metrics if available
+        if (data.desktop) {
             $('#performance-score')
-                .text(result.performance_score)
+                .text(data.desktop.performance_score)
                 .removeClass('good warning poor no-data')
-                .addClass(getPerformanceScoreClass(result.performance_score));
-        } else {
-            $('#performance-score')
-                .text('No data')
-                .addClass('no-data');
-        }
+                .addClass(getPerformanceScoreClass(data.desktop.performance_score));
     
-        // First Contentful Paint
-        if (result.first_contentful_paint) {
-            const fcpSeconds = (result.first_contentful_paint / 1000).toFixed(2);
             $('#fcp-value')
-                .text(fcpSeconds + 's')
+                .text(formatTiming(data.desktop.fcp))
                 .removeClass('no-data')
-                .addClass(getFCPClass(fcpSeconds));
-        } else {
-            $('#fcp-value')
-                .text('No data')
-                .addClass('no-data');
-        }
+                .addClass(getFCPClass(data.desktop.fcp));
     
-        // Largest Contentful Paint
-        if (result.largest_contentful_paint) {
-            const lcpSeconds = (result.largest_contentful_paint / 1000).toFixed(2);
             $('#lcp-value')
-                .text(lcpSeconds + 's')
+                .text(formatTiming(data.desktop.lcp))
                 .removeClass('no-data')
-                .addClass(getLCPClass(lcpSeconds));
-        } else {
-            $('#lcp-value')
-                .text('No data')
-                .addClass('no-data');
+                .addClass(getLCPClass(data.desktop.lcp));
         }
     
-        // URL Tested
-        if (result.url) {
-            $('#tested-url')
-                .text(truncateUrl(result.url))
+        // Update mobile metrics in a new section
+        if (data.mobile) {
+            $('#mobile-performance-score')
+                .text(data.mobile.performance_score)
+                .removeClass('good warning poor no-data')
+                .addClass(getPerformanceScoreClass(data.mobile.performance_score));
+    
+            $('#mobile-fcp-value')
+                .text(formatTiming(data.mobile.fcp))
                 .removeClass('no-data')
-                .attr('title', result.url);
-        } else {
-            $('#tested-url')
-                .text('No data')
-                .addClass('no-data');
+                .addClass(getFCPClass(data.mobile.fcp));
+    
+            $('#mobile-lcp-value')
+                .text(formatTiming(data.mobile.lcp))
+                .removeClass('no-data')
+                .addClass(getLCPClass(data.mobile.lcp));
         }
     
-        // Test Location
-        if (result.location) {
-            $('#test-location')
-                .text(formatLocation(result.location))
-                .removeClass('no-data');
-        } else {
-            $('#test-location')
-                .text('No data')
-                .addClass('no-data');
-        }
-    
-        // Device Type
-        if (result.device) {
-            $('#test-device')
-                .text(formatDevice(result.device))
-                .removeClass('no-data');
-        } else {
-            $('#test-device')
-                .text('No data')
-                .addClass('no-data');
-        }
-    
-        // Last Tested
-        if (result.test_date) {
-            $('#pagespeed-last-tested')
-                .text(new Date(result.test_date).toLocaleString())
-                .removeClass('no-data');
-        } else {
-            $('#pagespeed-last-tested')
-                .text('No data')
-                .addClass('no-data');
-        }
-    
-        // Report Link
-        if (result.report_url) {
-            $('#report-link').attr('href', result.report_url);
-            $('#report-link-container').show();
-        } else {
-            $('#report-link-container').hide();
-        }
+        // Update common information
+        $('#tested-url').text(truncateUrl(data.test_url)).attr('title', data.test_url);
+        $('#pagespeed-last-tested').text(data.last_tested ? new Date(data.last_tested).toLocaleString() : 'Never');
     }
+    
     
     function displayNoPageSpeedData(message = 'No Page Speed data available') {
         // Reset all values to "No data"
@@ -863,33 +813,10 @@ jQuery(document).ready(function($) {
         return url.length > maxLength ? url.substring(0, maxLength) + '...' : url;
     }
     
-    function formatLocation(location) {
-        if (!location) return 'N/A';
-        const locations = {
-            'us': 'United States',
-            'ca': 'Canada',
-            'uk': 'United Kingdom',
-            'de': 'Germany',
-            'fr': 'France',
-            'jp': 'Japan',
-            'in': 'India',
-            'au': 'Australia',
-            // Add more locations as needed
-        };
-        return locations[location.toLowerCase()] || location;
+    function formatTiming(value) {
+        if (!value) return 'N/A';
+        return value >= 1000 ? (value / 1000).toFixed(2) + 's' : value.toFixed(0) + 'ms';
     }
-    
-    function formatDevice(device) {
-        if (!device) return 'N/A';
-        const devices = {
-            'mobile': 'Mobile',
-            'desktop': 'Desktop',
-            'tablet': 'Tablet',
-            // Add more device types as needed
-        };
-        return devices[device.toLowerCase()] || device;
-    }
-
     
     // Initialize the dashboard
     initDashboard();
