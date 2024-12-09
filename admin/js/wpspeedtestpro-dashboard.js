@@ -540,6 +540,9 @@ jQuery(document).ready(function($) {
             }
         });
     }
+
+
+
     
     function displayNoPageSpeedData(message = 'No Page Speed data available') {
         // Remove any existing loading states
@@ -619,7 +622,7 @@ jQuery(document).ready(function($) {
                 .addClass(getLCPClass(data.desktop.lcp));
         }
     
-        // Update mobile metrics in a new section
+        // Update mobile metrics if available
         if (data.mobile) {
             $('#mobile-performance-score')
                 .text(data.mobile.performance_score)
@@ -643,27 +646,40 @@ jQuery(document).ready(function($) {
     }
     
     
-    function displayNoPageSpeedData(message = 'No Page Speed data available') {
-        // Reset all values to "No data"
-        const metrics = [
-            'performance-score',
-            'fcp-value',
-            'lcp-value',
-            'tested-url',
-            'test-location',
-            'test-device',
-            'pagespeed-last-tested'
-        ];
     
-        metrics.forEach(id => {
-            $(`#${id}`)
-                .text('No data')
-                .removeClass('good warning poor')
-                .addClass('no-data');
-        });
+    function displayNoPageSpeedData(message = 'No PageSpeed data available') {
+        // Remove any existing loading states
+        $('.pagespeed-metrics .loading').removeClass('loading');
+        
+        // Clear any existing classes
+        $('#performance-score, #mobile-performance-score, #fcp-value, #mobile-fcp-value, #lcp-value, #mobile-lcp-value, #pagespeed-last-tested')
+            .removeClass('good warning poor')
+            .addClass('no-data')
+            .text('--');
+        
+        $('#tested-url')
+            .text('No data')
+            .addClass('no-data');
+        
+        $('#pagespeed-last-tested')
+            .text('Never tested')
+            .addClass('no-data');
     
-        // Hide report link
-        $('#report-link-container').hide();
+        // Show message in card
+        const $pageSpeedCard = $('#pagespeed-card .card-content');
+        const existingMessage = $pageSpeedCard.find('.no-data-message');
+        
+        if (!existingMessage.length) {
+            $pageSpeedCard.append(
+                $('<div/>', {
+                    class: 'no-data-message',
+                    html: `
+                        <p>${message}</p>
+                        <p class="no-data-hint">Click "Test Page Speed" to analyze your website's performance.</p>
+                    `
+                })
+            );
+        }
     }
     
     // Helper functions for metric classifications
@@ -673,34 +689,52 @@ jQuery(document).ready(function($) {
         return 'poor';
     }
     
-    function getFCPClass(seconds) {
-        const value = parseFloat(seconds);
-        if (value <= 1.8) return 'good';
-        if (value <= 3) return 'warning';
+    function formatTiming(value) {
+        // Handle null, undefined, or invalid values
+        if (value === null || value === undefined || value === '') {
+            return 'N/A';
+        }
+    
+        // Convert string to number if necessary
+        const numValue = parseFloat(value);
+        
+        // Check if conversion was successful
+        if (isNaN(numValue)) {
+            return 'N/A';
+        }
+    
+        // Format based on value
+        if (numValue >= 1000) {
+            return (numValue / 1000).toFixed(2) + 's';
+        }
+        return Math.round(numValue) + 'ms';
+    }
+    
+    function getFCPClass(value) {
+        if (!value || value === 'N/A') return '';
+        const seconds = parseFloat(value) / 1000;
+        if (seconds <= 1.8) return 'good';
+        if (seconds <= 3) return 'warning';
         return 'poor';
     }
     
-    function getLCPClass(seconds) {
-        const value = parseFloat(seconds);
-        if (value <= 2.5) return 'good';
-        if (value <= 4) return 'warning';
+    function getLCPClass(value) {
+        if (!value || value === 'N/A') return '';
+        const seconds = parseFloat(value) / 1000;
+        if (seconds <= 2.5) return 'good';
+        if (seconds <= 4) return 'warning';
         return 'poor';
     }
     
-    // Helper functions for metric classifications
-    function getFCPClass(seconds) {
-        const value = parseFloat(seconds);
-        if (value <= 1.8) return 'good';
-        if (value <= 3) return 'warning';
+    function getPerformanceScoreClass(score) {
+        if (!score || score === 'N/A') return '';
+        score = parseInt(score);
+        if (score >= 90) return 'good';
+        if (score >= 50) return 'warning';
         return 'poor';
     }
+
     
-    function getLCPClass(seconds) {
-        const value = parseFloat(seconds);
-        if (value <= 2.5) return 'good';
-        if (value <= 4) return 'warning';
-        return 'poor';
-    }
     // Event Handlers
     function setupEventHandlers() {
         $('#test-latency').on('click', function() {
@@ -813,10 +847,6 @@ jQuery(document).ready(function($) {
         return url.length > maxLength ? url.substring(0, maxLength) + '...' : url;
     }
     
-    function formatTiming(value) {
-        if (!value) return 'N/A';
-        return value >= 1000 ? (value / 1000).toFixed(2) + 's' : value.toFixed(0) + 'ms';
-    }
     
     // Initialize the dashboard
     initDashboard();
