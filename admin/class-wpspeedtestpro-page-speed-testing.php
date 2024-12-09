@@ -584,24 +584,49 @@ public function ajax_check_test_status() {
         // Get the full report data
         $full_report = json_decode($result->full_report, true);
     
-        // Clean up audits descriptions
+        // Helper function to clean text
+        function clean_text($text) {
+            // Remove markdown bold syntax
+            $text = preg_replace('/\*\*(.*?)\*\*/', '$1', $text);
+            
+            // Remove markdown links but keep the text
+            $text = preg_replace('/\[([^\]]+)\]\([^\)]+\)/', '$1', $text);
+            
+            // Remove markdown backticks
+            $text = str_replace('`', '', $text);
+            
+            // Remove markdown list symbols
+            $text = preg_replace('/^\s*[\-\*]\s+/m', '', $text);
+            
+            // Remove HTML comments
+            $text = preg_replace('/<!--.*?-->/s', '', $text);
+            
+            // Convert HTML entities to their characters
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            
+            // Strip any remaining HTML tags
+            $text = strip_tags($text);
+            
+            // Remove extra whitespace
+            $text = preg_replace('/\s+/', ' ', $text);
+            
+            // Trim
+            $text = trim($text);
+            
+            return $text;
+        }
+    
+        // Clean up audits
         $audits = $full_report['lighthouseResult']['audits'] ?? [];
         foreach ($audits as $key => &$audit) {
+            if (isset($audit['title'])) {
+                $audit['title'] = clean_text($audit['title']);
+            }
             if (isset($audit['description'])) {
-                // Remove markdown bold syntax
-                $audit['description'] = preg_replace('/\*\*(.*?)\*\*/', '$1', $audit['description']);
-                
-                // Remove markdown links but keep the text
-                $audit['description'] = preg_replace('/\[([^\]]+)\]\([^\)]+\)/', '$1', $audit['description']);
-                
-                // Remove markdown backticks
-                $audit['description'] = str_replace('`', '', $audit['description']);
-                
-                // Convert HTML entities to their characters
-                $audit['description'] = html_entity_decode($audit['description'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                
-                // Strip any remaining HTML tags
-                $audit['description'] = strip_tags($audit['description']);
+                $audit['description'] = clean_text($audit['description']);
+            }
+            if (isset($audit['displayValue'])) {
+                $audit['displayValue'] = clean_text($audit['displayValue']);
             }
         }
         unset($audit); // Break the reference
@@ -609,7 +634,7 @@ public function ajax_check_test_status() {
         // Format the response with detailed metrics
         $response = [
             'basic_info' => [
-                'url' => $result->url,
+                'url' => esc_url($result->url),
                 'device' => ucfirst($result->device),
                 'test_date' => wp_date('F j, Y g:i a', strtotime($result->test_date))
             ],
@@ -643,8 +668,7 @@ public function ajax_check_test_status() {
         ];
     
         wp_send_json_success($response);
-    }
-    private function check_test_result($test_id) {
+    }    private function check_test_result($test_id) {
         $result = get_transient('pagespeed_test_result_' . $test_id);
         
         if (!$result) {
