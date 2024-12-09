@@ -132,46 +132,58 @@
         </div>
 
         <!-- Page Speed Card -->
-        <div class="dashboard-card" id="pagespeed-card">
-            <h2><i class="fas fa-rocket"></i> Page Speed</h2>
-            <div class="card-content">
-                <div class="metric">
-                    <span class="label">Performance Score:</span>
-                    <span class="value" id="performance-score">Loading...</span>
+    <div class="dashboard-card" id="pagespeed-card">
+        <h2><i class="fas fa-rocket"></i> Page Speed</h2>
+        <div class="card-content">
+            <div class="pagespeed-grid">
+                <!-- Desktop Results -->
+                <div class="device-section">
+                    <h3>Desktop</h3>
+                    <div class="metric">
+                        <span class="label">Performance Score:</span>
+                        <span class="value" id="performance-score">Loading...</span>
+                    </div>
+                    <div class="pagespeed-metrics">
+                        <div class="metric">
+                            <span class="label">First Contentful Paint:</span>
+                            <span class="value" id="fcp-value">Loading...</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">Largest Contentful Paint:</span>
+                            <span class="value" id="lcp-value">Loading...</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="pagespeed-metrics">
+
+                <!-- Mobile Results -->
+                <div class="device-section">
+                    <h3>Mobile</h3>
                     <div class="metric">
-                        <span class="label">First Contentful Paint:</span>
-                        <span class="value" id="fcp-value">Loading...</span>
+                        <span class="label">Performance Score:</span>
+                        <span class="value" id="mobile-performance-score">Loading...</span>
                     </div>
-                    <div class="metric">
-                        <span class="label">Largest Contentful Paint:</span>
-                        <span class="value" id="lcp-value">Loading...</span>
+                    <div class="pagespeed-metrics">
+                        <div class="metric">
+                            <span class="label">First Contentful Paint:</span>
+                            <span class="value" id="mobile-fcp-value">Loading...</span>
+                        </div>
+                        <div class="metric">
+                            <span class="label">Largest Contentful Paint:</span>
+                            <span class="value" id="mobile-lcp-value">Loading...</span>
+                        </div>
                     </div>
-                    <div class="metric">
-                        <span class="label">URL Tested:</span>
-                        <span class="value" id="tested-url">Loading...</span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Test Location:</span>
-                        <span class="value" id="test-location">Loading...</span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Device Type:</span>
-                        <span class="value" id="test-device">Loading...</span>
-                    </div>
-                    <div class="metric">
-                        <span class="label">Last Tested:</span>
-                        <span class="value" id="pagespeed-last-tested">Loading...</span>
-                    </div>
-                    <div class="metric" id="report-link-container" style="display: none;">
-                        <span class="label">Full Report:</span>
-                        <span class="value">
-                            <a href="#" id="report-link" target="_blank" class="report-button">
-                                <i class="fas fa-external-link-alt"></i> View Report
-                            </a>
-                        </span>
-                    </div>
+                </div>
+            </div>
+
+            <!-- Common Information -->
+            <div class="common-info">
+                <div class="metric">
+                    <span class="label">URL Tested:</span>
+                    <span class="value" id="tested-url">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span class="label">Last Tested:</span>
+                    <span class="value" id="pagespeed-last-tested">Loading...</span>
                 </div>
             </div>
         </div>

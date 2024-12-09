@@ -165,12 +165,7 @@ class Wpspeedtestpro_Dashboard {
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         return $this->uptime_monitoring->uptimerobot_get_monitor_data();
     }
-
-    private function get_latest_pagespeed_test() {
-        $results = $this->core->db->speedvitals_get_test_results(1);
-        return !empty($results) ? $results[0] : null;
-    }
-
+    
     public function get_chart_data($type, $period = '24_hours') {
         switch ($type) {
             case 'performance':
@@ -269,9 +264,96 @@ class Wpspeedtestpro_Dashboard {
         return $data;
     }
 
-    private function get_pagespeed_summary() {
-        $results = $this->core->db->speedvitals_get_test_results(1);
-        return !empty($results) ? $results[0] : array();
+    private function get_latest_pagespeed_data() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
+        
+        // Get latest desktop result
+        $desktop = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name 
+                WHERE device = %s 
+                ORDER BY test_date DESC 
+                LIMIT 1",
+                'desktop'
+            )
+        );
+
+        // Get latest mobile result
+        $mobile = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name 
+                WHERE device = %s 
+                ORDER BY test_date DESC 
+                LIMIT 1",
+                'mobile'
+            )
+        );
+
+        return array(
+            'desktop' => $desktop,
+            'mobile' => $mobile,
+            'test_url' => $desktop ? $desktop->url : home_url(),
+            'last_tested' => $desktop ? $desktop->test_date : null
+        );
+    }
+
+    private function get_latest_pagespeed_test() {
+        $results = $this->get_latest_pagespeed_data();
+        
+        // Format the results for the dashboard
+        $formatted = array();
+        
+        foreach (['desktop', 'mobile'] as $device) {
+            if ($results[$device]) {
+                $formatted[$device] = array(
+                    'performance_score' => $results[$device]->performance_score,
+                    'accessibility_score' => $results[$device]->accessibility_score,
+                    'best_practices_score' => $results[$device]->best_practices_score,
+                    'seo_score' => $results[$device]->seo_score,
+                    'fcp' => $results[$device]->fcp,
+                    'lcp' => $results[$device]->lcp,
+                    'cls' => $results[$device]->cls,
+                    'si' => $results[$device]->si,
+                    'tti' => $results[$device]->tti,
+                    'tbt' => $results[$device]->tbt,
+                    'test_date' => $results[$device]->test_date,
+                    'url' => $results[$device]->url
+                );
+            }
+        }
+
+        return array(
+            'results' => $formatted,
+            'test_url' => $results['test_url'],
+            'last_tested' => $results['last_tested']
+        );
+    }
+
+    public function get_pagespeed_summary() {
+        $latest_results = $this->get_latest_pagespeed_test();
+        
+        $desktop = isset($latest_results['results']['desktop']) ? $latest_results['results']['desktop'] : null;
+        $mobile = isset($latest_results['results']['mobile']) ? $latest_results['results']['mobile'] : null;
+
+        return array(
+            'desktop' => $desktop,
+            'mobile' => $mobile,
+            'test_url' => $latest_results['test_url'],
+            'last_tested' => $latest_results['last_tested']
+        );
+    }
+
+    public function ajax_get_latest_pagespeed() {
+        check_ajax_referer('wpspeedtestpro_pagespeed_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized');
+            return;
+        }
+
+        $data = $this->get_pagespeed_summary();
+        wp_send_json_success($data);
     }
 
 }

@@ -838,7 +838,7 @@ public function ajax_get_test_details() {
                         <div class="last-tested">
                             <?php echo human_time_diff(strtotime($results['desktop']->test_date)) . ' ago'; ?>
                         </div>
-                        <div class="actions">
+                        <div class="actions" style="display:none;">
                             <button type="button" class="button button-small view-details" 
                                     data-id="<?php echo esc_attr($results['desktop']->id); ?>">
                                 View Details
@@ -866,7 +866,7 @@ public function ajax_get_test_details() {
                         <div class="last-tested">
                             <?php echo human_time_diff(strtotime($results['mobile']->test_date)) . ' ago'; ?>
                         </div>
-                        <div class="actions">
+                        <div class="actions" style="display:none;">
                             <button type="button" class="button button-small view-details" 
                                     data-id="<?php echo esc_attr($results['mobile']->id); ?>">
                                 View Details
