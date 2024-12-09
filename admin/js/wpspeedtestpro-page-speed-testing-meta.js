@@ -165,58 +165,69 @@ jQuery(document).ready(function($) {
             $button.prop('disabled', false);
         });
     }
-
     function updateMetaBoxResults($metabox, results) {
         const $results = $metabox.find('.results-grid');
         
         // Update desktop results
         if (results.desktop) {
-            updateMetaBoxDeviceResults($results.find('.desktop-results'), results.desktop);
+            updateDeviceScores($results.find('.device-results').first(), results.desktop);
         }
         
         // Update mobile results
         if (results.mobile) {
-            updateMetaBoxDeviceResults($results.find('.mobile-results'), results.mobile);
+            updateDeviceScores($results.find('.device-results').last(), results.mobile);
         }
         
         $results.show();
     }
 
-    function updateMetaBoxDeviceResults($container, data) {
-        const scoreClass = getScoreClass(data.performance_score);
+    function updateDeviceScores($container, data) {
+        // Update Performance Score
+        updateScore($container, 'Performance', data.performance_score);
         
-        $container.find('.score')
-            .removeClass('good average poor')
-            .addClass(scoreClass)
-            .html(`${data.performance_score}%`);
-
-        // Update Core Web Vitals
-        $container.find('.web-vitals').html(`
-            <div class="vital-metric">
-                <span class="label">FCP:</span> ${formatTiming(data.fcp)}
-            </div>
-            <div class="vital-metric">
-                <span class="label">LCP:</span> ${formatTiming(data.lcp)}
-            </div>
-            <div class="vital-metric">
-                <span class="label">CLS:</span> ${data.cls.toFixed(3)}
-            </div>
-        `);
-
-        // Update last tested time
-        $container.find('.last-tested').text('Just now');
+        // Update Accessibility Score
+        updateScore($container, 'Accessibility', data.accessibility_score);
         
-        // Add view details button
-        $container.find('.actions').html(`
-            <button type="button" class="button button-small view-details" 
-                    data-id="${data.id}">View Details</button>
-        `);
+        // Update Best Practices Score
+        updateScore($container, 'Best Practices', data.best_practices_score);
+        
+        // Update SEO Score
+        updateScore($container, 'SEO', data.seo_score);
+    }
+
+    function updateScore($container, type, score) {
+        const $scoreItem = $container.find(`.score-item:contains('${type}')`);
+        if ($scoreItem.length) {
+            const $scoreValue = $scoreItem.find('.score');
+            $scoreValue
+                .removeClass('good warning poor')
+                .addClass(getScoreClass(score))
+                .text(score ? score + '%' : '--');
+        }
     }
 
     function getScoreClass(score) {
+        if (!score || score === 'N/A') return '';
+        score = parseInt(score);
         if (score >= 90) return 'good';
         if (score >= 50) return 'average';
         return 'poor';
+    }
+
+
+    function showError($container, message) {
+        $container.find('.scores-grid').hide();
+        $container.append(
+            $('<div/>', {
+                class: 'notice notice-error',
+                html: `<p>${message}</p>`
+            })
+        );
+    }
+
+    function clearError($container) {
+        $container.find('.notice-error').remove();
+        $container.find('.scores-grid').show();
     }
 
     function formatTiming(value) {
