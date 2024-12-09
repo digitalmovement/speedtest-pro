@@ -356,4 +356,16 @@ class Wpspeedtestpro_Dashboard {
         wp_send_json_success($data);
     }
 
+    public function get_ssl_data() {
+        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized');
+            return;
+        }
+
+        $data = $this->get_ssl_summary();
+        wp_send_json_success($data);
+    }
+
 }
