@@ -309,7 +309,7 @@ jQuery(document).ready(function($) {
         }
     }
 
-    
+
 
     function checkTestStatus(url) {
         const $status = $('#test-status');
@@ -549,10 +549,10 @@ jQuery(document).ready(function($) {
                 <tr>
                     <td>${escapeHtml(result.url)}</td>
                     <td>${result.device}</td>
-                    <td class="${result.performance.class}">${result.performance.score}%</td>
-                    <td class="${result.accessibility.class}">${result.accessibility.score}%</td>
-                    <td class="${result.best_practices.class}">${result.best_practices.score}%</td>
-                    <td class="${result.seo.class}">${result.seo.score}%</td>
+                    <td class="${result.performance.class}"><span>${result.performance.score}%</span></td>
+                    <td class="${result.accessibility.class}"><span>${result.accessibility.score}%</span></td>
+                    <td class="${result.best_practices.class}"><span>${result.best_practices.score}%</span></td>
+                    <td class="${result.seo.class}"><span>${result.seo.score}%</span></td>
                     <td>${result.test_date}</td>
                     <td>
                         <button type="button" class="button button-small view-details" 
@@ -562,7 +562,6 @@ jQuery(document).ready(function($) {
             `);
         });
     }
-
     function updatePagination(pagination) {
         const $pagination = $('.tablenav-pages');
         if (pagination.total_pages <= 1) {
