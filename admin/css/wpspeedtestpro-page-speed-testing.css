@@ -488,3 +488,121 @@
 .audits-list .good { background-color: #0CCE6B; color: white; } 
 .audits-list .average { background-color: #FFA400; color: white; }
 .audits-list .poor { background-color: #FF4E42; color: white; }
+
+/* Updated Scores Styling */
+.device-results {
+    background: white;
+    padding: 20px;
+    border: 1px solid #e2e4e7;
+    border-radius: 8px;
+}
+
+.device-results h3 {
+    margin: 0 0 20px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e4e7;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.scores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 0;
+}
+
+.score-item {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #e2e4e7;
+    text-align: left;
+}
+
+.score-item .score-label {
+    display: block;
+    font-size: 12px;
+    color: #646970;
+    margin-bottom: 8px;
+}
+
+.score-item .score {
+    font-size: 16px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 12px;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+}
+
+/* Score colors with background */
+.score-item .score.good {
+    background-color: rgba(0, 204, 102, 0.1);
+    color: #0c6;
+}
+
+.score-item .score.warning {
+    background-color: rgba(255, 170, 51, 0.1);
+    color: #fa3;
+}
+
+.score-item .score.poor {
+    background-color: rgba(220, 50, 50, 0.1);
+    color: #dc3232;
+}
+
+.score-item .score.no-data {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #666;
+}
+
+/* Results Panel Updates */
+.results-panel {
+    background: #fff;
+    border: 1px solid #e2e4e7;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 782px) {
+    .scores-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading State */
+.score-item.loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.score-item.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #2271b1;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spinner 0.6s linear infinite;
+}
