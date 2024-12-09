@@ -68,7 +68,7 @@ class Wpspeedtestpro_Dashboard {
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
-
+    
     private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
             $screen = get_current_screen();

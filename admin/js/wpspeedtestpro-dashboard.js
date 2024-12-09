@@ -525,7 +525,7 @@ jQuery(document).ready(function($) {
             url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: 'wpspeedtestpro_get_latest_pagespeed',
+                action: 'get_pagespeed_data',
                 nonce: wpspeedtestpro_ajax.pagespeed_nonce
             },
             success: function(response) {
