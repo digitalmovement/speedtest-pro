@@ -129,17 +129,17 @@
 }
 
 /* Score colors with background */
-.score-item .score.good {
+.score-item .good {
     background-color: rgba(0, 204, 102, 0.1);
     color: #0c6;
 }
 
-.score-item .score.average {
+.score-item .average {
     background-color: rgba(255, 170, 51, 0.1);
     color: #fa3;
 }
 
-.score-item .score.poor {
+.score-item .poor {
     background-color: rgba(220, 50, 50, 0.1);
     color: #dc3232;
 }
