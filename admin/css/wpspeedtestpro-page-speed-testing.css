@@ -66,6 +66,9 @@
     justify-content: center;
     position: relative;
     border: 4px solid;
+    align-content: center;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .score-circle.good {
@@ -108,7 +111,7 @@
     padding: 12px;
     border-radius: 4px;
     border: 1px solid #e2e4e7;
-    text-align: left;
+    text-align: center;
 }
 
 .score-item .score-label {
