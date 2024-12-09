@@ -476,8 +476,8 @@ class Wpspeedtestpro_Sync_Handler {
                 if (!empty($unsynced_data['hosting_results'])) {
                     $this->db->mark_as_synced('hosting', array_column($unsynced_data['hosting_results'], 'id'));
                 }
-                if (!empty($unsynced_data['speedvitals_results'])) {
-                    $this->db->mark_as_synced('speedvitals', array_column($unsynced_data['speedvitals_results'], 'id'));
+                if (!empty($unsynced_data['pagespeed_results'])) {
+                    $this->db->mark_as_synced('pagespeed', array_column($unsynced_data['pagespeed_results'], 'id'));
                 }
             }
 

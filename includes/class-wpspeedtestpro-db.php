@@ -335,7 +335,7 @@ class Wpspeedtestpro_DB {
             case 'hosting':
                 $table = $this->hosting_benchmarking_table;
                 break;
-            case 'speedvitals':
+            case 'pagespeed':
                 $table = $this->pagespeed_table;
                 break;
         }
