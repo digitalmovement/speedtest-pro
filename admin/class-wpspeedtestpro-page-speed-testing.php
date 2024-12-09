@@ -555,73 +555,95 @@ public function ajax_check_test_status() {
         ];
     }
 
-public function ajax_get_test_details() {
-    check_ajax_referer('pagespeed_test_nonce', 'nonce');
-
-    if (!current_user_can('manage_options')) {
-        wp_send_json_error('Unauthorized access');
-        return;
-    }
-
-    $test_id = isset($_POST['test_id']) ? intval($_POST['test_id']) : 0;
-
-    if (!$test_id) {
-        wp_send_json_error('Invalid test ID');
-        return;
-    }
-
-    global $wpdb;
-    $result = $wpdb->get_row($wpdb->prepare(
-        "SELECT * FROM {$this->pagespeed_table} WHERE id = %d",
-        $test_id
-    ));
-
-    if (!$result) {
-        wp_send_json_error('Test result not found');
-        return;
-    }
-
-    // Get the full report data
-    $full_report = json_decode($result->full_report, true);
-
-    // Format the response with detailed metrics
-    $response = [
-        'basic_info' => [
-            'url' => $result->url,
-            'device' => ucfirst($result->device),
-            'test_date' => wp_date('F j, Y g:i a', strtotime($result->test_date))
-        ],
-        'scores' => [
-            'performance' => [
-                'score' => $result->performance_score,
-                'class' => $this->get_score_class($result->performance_score)
+    public function ajax_get_test_details() {
+        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+    
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+    
+        $test_id = isset($_POST['test_id']) ? intval($_POST['test_id']) : 0;
+    
+        if (!$test_id) {
+            wp_send_json_error('Invalid test ID');
+            return;
+        }
+    
+        global $wpdb;
+        $result = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$this->pagespeed_table} WHERE id = %d",
+            $test_id
+        ));
+    
+        if (!$result) {
+            wp_send_json_error('Test result not found');
+            return;
+        }
+    
+        // Get the full report data
+        $full_report = json_decode($result->full_report, true);
+    
+        // Clean up audits descriptions
+        $audits = $full_report['lighthouseResult']['audits'] ?? [];
+        foreach ($audits as $key => &$audit) {
+            if (isset($audit['description'])) {
+                // Remove markdown bold syntax
+                $audit['description'] = preg_replace('/\*\*(.*?)\*\*/', '$1', $audit['description']);
+                
+                // Remove markdown links but keep the text
+                $audit['description'] = preg_replace('/\[([^\]]+)\]\([^\)]+\)/', '$1', $audit['description']);
+                
+                // Remove markdown backticks
+                $audit['description'] = str_replace('`', '', $audit['description']);
+                
+                // Convert HTML entities to their characters
+                $audit['description'] = html_entity_decode($audit['description'], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                
+                // Strip any remaining HTML tags
+                $audit['description'] = strip_tags($audit['description']);
+            }
+        }
+        unset($audit); // Break the reference
+    
+        // Format the response with detailed metrics
+        $response = [
+            'basic_info' => [
+                'url' => $result->url,
+                'device' => ucfirst($result->device),
+                'test_date' => wp_date('F j, Y g:i a', strtotime($result->test_date))
             ],
-            'accessibility' => [
-                'score' => $result->accessibility_score,
-                'class' => $this->get_score_class($result->accessibility_score)
+            'scores' => [
+                'performance' => [
+                    'score' => $result->performance_score,
+                    'class' => $this->get_score_class($result->performance_score)
+                ],
+                'accessibility' => [
+                    'score' => $result->accessibility_score,
+                    'class' => $this->get_score_class($result->accessibility_score)
+                ],
+                'best_practices' => [
+                    'score' => $result->best_practices_score,
+                    'class' => $this->get_score_class($result->best_practices_score)
+                ],
+                'seo' => [
+                    'score' => $result->seo_score,
+                    'class' => $this->get_score_class($result->seo_score)
+                ]
             ],
-            'best_practices' => [
-                'score' => $result->best_practices_score,
-                'class' => $this->get_score_class($result->best_practices_score)
+            'metrics' => [
+                'First Contentful Paint' => $this->format_timing($result->fcp),
+                'Largest Contentful Paint' => $this->format_timing($result->lcp),
+                'Cumulative Layout Shift' => number_format($result->cls, 3),
+                'Total Blocking Time' => $this->format_timing($result->tbt),
+                'Speed Index' => $this->format_timing($result->si),
+                'Time to Interactive' => $this->format_timing($result->tti)
             ],
-            'seo' => [
-                'score' => $result->seo_score,
-                'class' => $this->get_score_class($result->seo_score)
-            ]
-        ],
-        'metrics' => [
-            'First Contentful Paint' => $this->format_timing($result->fcp),
-            'Largest Contentful Paint' => $this->format_timing($result->lcp),
-            'Cumulative Layout Shift' => number_format($result->cls, 3),
-            'Total Blocking Time' => $this->format_timing($result->tbt),
-            'Speed Index' => $this->format_timing($result->si),
-            'Time to Interactive' => $this->format_timing($result->tti)
-        ],
-        'audits' => $full_report['lighthouseResult']['audits'] ?? []
-    ];
-
-    wp_send_json_success($response);
-}
+            'audits' => $audits
+        ];
+    
+        wp_send_json_success($response);
+    }
     private function check_test_result($test_id) {
         $result = get_transient('pagespeed_test_result_' . $test_id);
         
