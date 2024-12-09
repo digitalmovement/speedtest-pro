@@ -220,6 +220,55 @@
     color: #2271b1;
 }
 
+.pagespeed-card .metric {
+    transition: opacity 0.3s ease;
+}
+
+.pagespeed-card .good {
+    color: #00a32a;
+}
+
+.pagespeed-card .warning {
+    color: #dba617;
+}
+
+.pagespeed-card .poor {
+    color: #d63638;
+}
+
+.pagespeed-card .no-data {
+    color: #666;
+    font-style: italic;
+}
+
+.pagespeed-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.device-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.device-section h3 {
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e4e7;
+    font-size: 14px;
+    color: #1d2327;
+}
+
+.common-info {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #e2e4e7;
+}
+
+/* ---------------------------------------- */
 .scores-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -291,19 +340,22 @@
         gap: 20px;
     }
 }
-.device-section h3 {
-    margin: 0 0 15px 0;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #e2e4e7;
-    font-size: 14px;
-    color: #1d2327;
-}
+/* ---------------------------------------- */
 
-.common-info {
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid #e2e4e7;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @media screen and (max-width: 782px) {
     .pagespeed-grid {
