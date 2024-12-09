@@ -435,7 +435,7 @@ class Wpspeedtestpro_Sync_Handler {
             
             if (empty($unsynced_data['benchmark_results']) && 
                 empty($unsynced_data['hosting_results']) && 
-                empty($unsynced_data['speedvitals_results'])) {
+                empty($unsynced_data['pagespeed_results'])) {
                 return;
             }
 
