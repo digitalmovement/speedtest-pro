@@ -165,7 +165,7 @@ class Wpspeedtestpro_Dashboard {
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         return $this->uptime_monitoring->uptimerobot_get_monitor_data();
     }
-    
+
     public function get_chart_data($type, $period = '24_hours') {
         switch ($type) {
             case 'performance':
@@ -344,7 +344,7 @@ class Wpspeedtestpro_Dashboard {
         );
     }
 
-    public function ajax_get_latest_pagespeed() {
+    public function get_pagespeed_data() {
         check_ajax_referer('wpspeedtestpro_pagespeed_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
