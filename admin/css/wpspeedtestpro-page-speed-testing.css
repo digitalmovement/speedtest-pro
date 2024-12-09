@@ -113,7 +113,7 @@
 
 .score-item .score-label {
     display: block;
-    font-size: 12px;
+    font-size: 16px;
     color: #646970;
     margin-bottom: 8px;
 }
@@ -134,7 +134,7 @@
     color: #0c6;
 }
 
-.score-grid .average {
+.scores-grid .average {
     background-color: rgba(255, 170, 51, 0.1);
     color: #fa3;
 }
@@ -157,7 +157,7 @@
 
 /* Metrics Panel */
 .metrics-panel {
-    background: #f0f0f1;
+    background: #f8f9fa;
     padding: 15px;
     border-radius: 4px;
     margin-top: 20px;
@@ -175,7 +175,7 @@
 }
 
 .metric-item {
-    background: #fff;
+    background: #dfdfdf;
     padding: 10px;
     border-radius: 4px;
     text-align: center;
