@@ -188,7 +188,7 @@
             </div>
         </div>
     </div>
-
+    </div>
     <!-- Quick Actions Section -->
     <div class="quick-actions-section">
         <h2>Quick Actions</h2>
