@@ -802,85 +802,90 @@ public function ajax_get_test_details() {
         // Get post status and URL
         $post_status = get_post_status($post);
         $url = get_permalink($post->ID);
-         $test_enabled = get_post_meta($post->ID, '_pagespeed_test_enabled', true);
- 
+        $test_enabled = get_post_meta($post->ID, '_pagespeed_test_enabled', true);
+     
         // Get latest results
         $results = $this->get_latest_result($url, 'both');
         $has_results = !empty($results['desktop']) || !empty($results['mobile']);
     
-         wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce'); 
+        wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce'); 
         ?>
         <div class="pagespeed-meta-box" 
-         data-post-id="<?php echo esc_attr($post->ID); ?>"
-         data-test-enabled="<?php echo esc_attr($test_enabled ? '1' : '0'); ?>">
-
+             data-post-id="<?php echo esc_attr($post->ID); ?>"
+             data-test-enabled="<?php echo esc_attr($test_enabled ? '1' : '0'); ?>">
+    
             <div class="test-status" style="display: none;"></div>
             
-            
-                <div class="results-grid" <?php if (!$has_results): ?> style="display: none;" <?php endif; ?>>
-                    <!-- Desktop Results -->
-                    <div class="device-results desktop-results">
-                        <div class="device-title">Desktop</div>
-                        <div class="score <?php echo $this->get_score_class($results['desktop']->performance_score); ?>">
-                            <?php echo $results['desktop']->performance_score; ?>%
-                        </div>
-                        <div class="web-vitals">
-                            <div class="vital-metric">
-                                <span class="label">FCP:</span> <?php echo $this->format_timing($results['desktop']->fcp); ?>
-                            </div>
-                            <div class="vital-metric">
-                                <span class="label">LCP:</span> <?php echo $this->format_timing($results['desktop']->lcp); ?>
-                            </div>
-                            <div class="vital-metric">
-                                <span class="label">CLS:</span> <?php echo number_format($results['desktop']->cls, 3); ?>
+            <div class="results-grid" <?php if (!$has_results): ?> style="display: none;" <?php endif; ?>>
+                <!-- Desktop Results -->
+                <div class="device-results">
+                    <h4>Desktop</h4>
+                    <div class="scores-grid">
+                        <div class="score-item">
+                            <span class="score-label">Performance</span>
+                            <div class="score <?php echo $this->get_score_class($results['desktop']->performance_score ?? 0); ?>">
+                                <?php echo isset($results['desktop']->performance_score) ? $results['desktop']->performance_score . '%' : '--'; ?>
                             </div>
                         </div>
-                        <div class="last-tested">
-                            <?php echo human_time_diff(strtotime($results['desktop']->test_date)) . ' ago'; ?>
-                        </div>
-                        <div class="actions" style="display:none;">
-                            <button type="button" class="button button-small view-details" 
-                                    data-id="<?php echo esc_attr($results['desktop']->id); ?>">
-                                View Details
-                            </button>
-                        </div>
-                    </div>
-    
-                    <!-- Mobile Results -->
-                    <div class="device-results mobile-results">
-                        <div class="device-title">Mobile</div>
-                        <div class="score <?php echo $this->get_score_class($results['mobile']->performance_score); ?>">
-                            <?php echo $results['mobile']->performance_score; ?>%
-                        </div>
-                        <div class="web-vitals">
-                            <div class="vital-metric">
-                                <span class="label">FCP:</span> <?php echo $this->format_timing($results['mobile']->fcp); ?>
-                            </div>
-                            <div class="vital-metric">
-                                <span class="label">LCP:</span> <?php echo $this->format_timing($results['mobile']->lcp); ?>
-                            </div>
-                            <div class="vital-metric">
-                                <span class="label">CLS:</span> <?php echo number_format($results['mobile']->cls, 3); ?>
+                        <div class="score-item">
+                            <span class="score-label">Accessibility</span>
+                            <div class="score <?php echo $this->get_score_class($results['desktop']->accessibility_score ?? 0); ?>">
+                                <?php echo isset($results['desktop']->accessibility_score) ? $results['desktop']->accessibility_score . '%' : '--'; ?>
                             </div>
                         </div>
-                        <div class="last-tested">
-                            <?php echo human_time_diff(strtotime($results['mobile']->test_date)) . ' ago'; ?>
+                        <div class="score-item">
+                            <span class="score-label">Best Practices</span>
+                            <div class="score <?php echo $this->get_score_class($results['desktop']->best_practices_score ?? 0); ?>">
+                                <?php echo isset($results['desktop']->best_practices_score) ? $results['desktop']->best_practices_score . '%' : '--'; ?>
+                            </div>
                         </div>
-                        <div class="actions" style="display:none;">
-                            <button type="button" class="button button-small view-details" 
-                                    data-id="<?php echo esc_attr($results['mobile']->id); ?>">
-                                View Details
-                            </button>
+                        <div class="score-item">
+                            <span class="score-label">SEO</span>
+                            <div class="score <?php echo $this->get_score_class($results['desktop']->seo_score ?? 0); ?>">
+                                <?php echo isset($results['desktop']->seo_score) ? $results['desktop']->seo_score . '%' : '--'; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
     
-            <?php if ($post_status !== 'publish'): ?>
-            <div class="notice notice-warning inline">
-                <p>Please publish this post before running PageSpeed tests.</p>
+                <!-- Mobile Results -->
+                <div class="device-results">
+                    <h4>Mobile</h4>
+                    <div class="scores-grid">
+                        <div class="score-item">
+                            <span class="score-label">Performance</span>
+                            <div class="score <?php echo $this->get_score_class($results['mobile']->performance_score ?? 0); ?>">
+                                <?php echo isset($results['mobile']->performance_score) ? $results['mobile']->performance_score . '%' : '--'; ?>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">Accessibility</span>
+                            <div class="score <?php echo $this->get_score_class($results['mobile']->accessibility_score ?? 0); ?>">
+                                <?php echo isset($results['mobile']->accessibility_score) ? $results['mobile']->accessibility_score . '%' : '--'; ?>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">Best Practices</span>
+                            <div class="score <?php echo $this->get_score_class($results['mobile']->best_practices_score ?? 0); ?>">
+                                <?php echo isset($results['mobile']->best_practices_score) ? $results['mobile']->best_practices_score . '%' : '--'; ?>
+                            </div>
+                        </div>
+                        <div class="score-item">
+                            <span class="score-label">SEO</span>
+                            <div class="score <?php echo $this->get_score_class($results['mobile']->seo_score ?? 0); ?>">
+                                <?php echo isset($results['mobile']->seo_score) ? $results['mobile']->seo_score . '%' : '--'; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+    
+            <?php if ($post_status !== 'publish'): ?>
+                <div class="notice notice-warning inline">
+                    <p>Please publish this post before running PageSpeed tests.</p>
+                </div>
             <?php endif; ?>
-
+    
             <button type="button" class="button run-pagespeed-test" 
                     data-url="<?php echo esc_attr($url); ?>"
                     data-post-status="<?php echo esc_attr($post_status); ?>"
@@ -890,7 +895,6 @@ public function ajax_get_test_details() {
         </div>
         <?php
     }
-
 
     public function ajax_get_scheduled_tests() {
         check_ajax_referer('pagespeed_test_nonce', 'nonce');

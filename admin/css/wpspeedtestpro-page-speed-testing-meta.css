@@ -1,90 +1,90 @@
-/* MetaBox Styles */
+/* Add to wpspeedtestpro-page-speed-testing-meta.css */
 .pagespeed-meta-box {
     padding: 12px;
 }
 
-.pagespeed-meta-box .test-status {
-    margin: 10px 0;
-    padding: 8px;
-    border-radius: 4px;
-}
-
 .pagespeed-meta-box .results-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin: 15px 0;
+    margin-bottom: 15px;
 }
 
 .pagespeed-meta-box .device-results {
-    background: #f0f0f1;
+    background: #f8f9fa;
     padding: 12px;
     border-radius: 4px;
-    text-align: center;
+    margin-bottom: 15px;
 }
 
-.pagespeed-meta-box .device-title {
-    font-weight: 600;
-    margin-bottom: 8px;
+.pagespeed-meta-box h4 {
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e2e4e7;
+    font-size: 13px;
+    color: #1d2327;
+}
+
+.pagespeed-meta-box .scores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.pagespeed-meta-box .score-item {
+    background: white;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #e2e4e7;
+}
+
+.pagespeed-meta-box .score-label {
+    display: block;
+    font-size: 11px;
+    color: #646970;
+    margin-bottom: 4px;
 }
 
 .pagespeed-meta-box .score {
-    font-size: 24px;
-    font-weight: bold;
-    padding: 8px;
-    margin: 10px 0;
-    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 8px;
+    text-align: center;
 }
 
-.pagespeed-meta-box .score.good { 
+.pagespeed-meta-box .score.good {
     background-color: rgba(0, 204, 102, 0.1);
     color: #0c6;
 }
 
-.pagespeed-meta-box .score.average { 
+.pagespeed-meta-box .score.warning {
     background-color: rgba(255, 170, 51, 0.1);
     color: #fa3;
 }
 
-.pagespeed-meta-box .score.poor { 
+.pagespeed-meta-box .score.poor {
     background-color: rgba(220, 50, 50, 0.1);
     color: #dc3232;
 }
 
-.pagespeed-meta-box .web-vitals {
-    margin: 10px 0;
-    font-size: 12px;
-}
-
-.pagespeed-meta-box .vital-metric {
-    margin: 4px 0;
-}
-
-.pagespeed-meta-box .vital-metric .label {
-    font-weight: 600;
-    margin-right: 4px;
-}
-
-.pagespeed-meta-box .last-tested {
-    font-size: 11px;
-    color: #646970;
-    margin: 8px 0;
-}
-
-.pagespeed-meta-box .actions {
-    margin-top: 10px;
-}
-
 .pagespeed-meta-box .run-pagespeed-test {
     width: 100%;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
-.pagespeed-meta-box .run-pagespeed-test[disabled] {
-    cursor: not-allowed;
+.pagespeed-meta-box .notice {
+    margin: 8px 0;
+    padding: 8px;
+}
+
+/* Loading state */
+.pagespeed-meta-box .loading {
     opacity: 0.6;
 }
 
+@media screen and (max-width: 782px) {
+    .pagespeed-meta-box .scores-grid {
+        grid-template-columns: 1fr;
+    }
+}
 .pagespeed-meta-box .test-progress {
     height: 3px;
     background: #e5e5e5;
@@ -106,3 +106,5 @@
     from { transform: translateX(-100%); }
     to { transform: translateX(400%); }
 }
+
+
