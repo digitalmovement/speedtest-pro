@@ -3,8 +3,6 @@
 class Wpspeedtestpro_DB {
     private $hosting_benchmarking_table;
     private $benchmark_results_table;
-    private $speedvitals_tests_table;
-    private $speedvitals_scheduled_tests_table;
     private $pagespeed_table;
     private $pagespeed_scheduled_table;
 
@@ -13,8 +11,6 @@ class Wpspeedtestpro_DB {
         global $wpdb;
         $this->hosting_benchmarking_table        = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results';
         $this->benchmark_results_table           = $wpdb->prefix . 'wpspeedtestpro_benchmark_results';
-        $this->speedvitals_tests_table           = $wpdb->prefix . 'wpspeedtestpro_speedvitals_tests';
-        $this->speedvitals_scheduled_tests_table = $wpdb->prefix . 'wpspeedtestpro_speedvitals_scheduled_tests';
         $this->pagespeed_table                   = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
         $this->pagespeed_scheduled_table         = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
     }
@@ -253,46 +249,6 @@ class Wpspeedtestpro_DB {
     }
 
 
-    public function speedvitals_create_tables() {
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $sql = "CREATE TABLE {$this->speedvitals_tests_table} (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            url varchar(255) NOT NULL,
-            location varchar(50) NOT NULL,
-            device varchar(50) NOT NULL,
-            test_id varchar(50) NOT NULL,
-            test_date datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-            status varchar(20) NOT NULL,
-            performance_score int(3),
-            first_contentful_paint int(11),
-            speed_index int(11),
-            largest_contentful_paint int(11),
-            time_to_interactive int(11),
-            total_blocking_time int(11),
-            cumulative_layout_shift float,
-            report_url varchar(255),
-            synced tinyint(1) DEFAULT 0,
-            PRIMARY KEY  (id),
-            KEY synced (synced)
-        ) $charset_collate;
-
-        CREATE TABLE {$this->speedvitals_scheduled_tests_table} (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
-            url varchar(255) NOT NULL,
-            location varchar(50) NOT NULL,
-            device varchar(50) NOT NULL,
-            frequency varchar(20) NOT NULL,
-            last_run datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-            next_run datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-            PRIMARY KEY  (id)
-        ) $charset_collate;";
-
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
-    }
-
 
     public function create_pagespeed_tables() {
         global $wpdb;
@@ -315,9 +271,11 @@ class Wpspeedtestpro_DB {
             tti int(11),
             tbt int(11),
             full_report longtext,
+            synced tinyint(1) DEFAULT 0,
             PRIMARY KEY  (id),
             KEY url (url),
-            KEY test_date (test_date)
+            KEY test_date (test_date),
+            KEY synced (synced)
         ) $charset_collate;
         
         CREATE TABLE  {$this->pagespeed_scheduled_table} (
@@ -335,185 +293,6 @@ class Wpspeedtestpro_DB {
 
 
 
-    public function speedvitals_insert_test_result($result) {
-        global $wpdb;
-
-        $wpdb->insert(
-            $this->speedvitals_tests_table,
-            array(
-                'url' => $result['url'],
-                'location' => $result['location'],
-                'device' => $result['device'],
-                'test_id' => $result['id'],
-                'test_date' => current_time('mysql'),
-                'status' => $result['status'],
-                'performance_score' => $result['metrics']['performance_score'] ?? null,
-                'first_contentful_paint' => $result['metrics']['first_contentful_paint'] ?? null,
-                'speed_index' => $result['metrics']['speed_index'] ?? null,
-                'largest_contentful_paint' => $result['metrics']['largest_contentful_paint'] ?? null,
-                'time_to_interactive' => $result['metrics']['time_to_interactive'] ?? null,
-                'total_blocking_time' => $result['metrics']['total_blocking_time'] ?? null,
-                'cumulative_layout_shift' => $result['metrics']['cumulative_layout_shift'] ?? null,
-                'report_url' => $result['report_url'] ?? null
-            )
-        );
-
-        return $wpdb->insert_id;
-    }
-
-    public function speedvitals_get_test_results($limit = 20) {
-        global $wpdb;
-
-        return $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$this->speedvitals_tests_table} ORDER BY test_date DESC LIMIT %d", $limit),
-            ARRAY_A
-        );
-    }
-
-    public function speedvitals_get_test_result($id) {
-        global $wpdb;
-
-        return $wpdb->get_row(
-            $wpdb->prepare("SELECT * FROM {$this->speedvitals_tests_table} WHERE id = %d", $id),
-            ARRAY_A
-        );
-    }
-
-    public function speedvitals_schedule_test($url, $location, $device, $frequency) {
-        global $wpdb;
-
-        $next_run = $this->speedvitals_calculate_next_run($frequency);
-
-        return $wpdb->insert(
-            $this->speedvitals_scheduled_tests_table,
-            array(
-                'url' => $url,
-                'location' => $location,
-                'device' => $device,
-                'frequency' => $frequency,
-                'last_run' => current_time('mysql'),
-                'next_run' => $next_run
-            )
-        );
-    }
-
-    private function speedvitals_calculate_next_run($frequency, $last_run = null) {
-        $now = new DateTime();
-        $last_run = $last_run ? new DateTime($last_run) : $now;
-    
-        switch ($frequency) {
-            case 'daily':
-                $next_run = clone $last_run;
-                $next_run->modify('+1 day');
-                $next_run->setTime(0, 0, 0); // Set to midnight
-    
-                // If next run is in the past, set it to the next day
-                if ($next_run <= $now) {
-                    $next_run->modify('+1 day');
-                }
-                break;
-    
-            case 'weekly':
-                $next_run = clone $last_run;
-                $next_run->modify('+1 week');
-                $next_run->setTime(0, 0, 0); // Set to midnight
-    
-                // If next run is in the past, set it to the next week
-                if ($next_run <= $now) {
-                    $next_run->modify('+1 week');
-                }
-                break;
-    
-            default:
-                return null;
-        }
-    
-        return $next_run->format('Y-m-d H:i:s');
-    }
-
-    public function speedvitals_get_scheduled_tests() {
-        global $wpdb;
-
-        return $wpdb->get_results("SELECT * FROM {$this->speedvitals_scheduled_tests_table} ORDER BY next_run ASC", ARRAY_A);
-    }
-
-    public function speedvitals_cancel_scheduled_test($id) {
-        global $wpdb;
-
-        return $wpdb->delete($this->speedvitals_scheduled_tests_table, array('id' => $id));
-    }
-
-    public function speedvitals_delete_old_results($days) {
-        global $wpdb;
-
-        $date = date('Y-m-d H:i:s', strtotime("-$days days"));
-
-        return $wpdb->query(
-            $wpdb->prepare("DELETE FROM {$this->speedvitals_tests_table} WHERE test_date < %s", $date)
-        );
-    }
-
-    public function speedvitals_update_test_result($id, $result) {
-        global $wpdb;
-
-        return $wpdb->update(
-            $this->speedvitals_tests_table,
-            array(
-                'status' => $result['status'],
-                'performance_score' => $result['metrics']['performance_score'] ?? null,
-                'first_contentful_paint' => $result['metrics']['first_contentful_paint'] ?? null,
-                'speed_index' => $result['metrics']['speed_index'] ?? null,
-                'largest_contentful_paint' => $result['metrics']['largest_contentful_paint'] ?? null,
-                'time_to_interactive' => $result['metrics']['time_to_interactive'] ?? null,
-                'total_blocking_time' => $result['metrics']['total_blocking_time'] ?? null,
-                'cumulative_layout_shift' => $result['metrics']['cumulative_layout_shift'] ?? null,
-                'report_url' => $result['report_url'] ?? null
-            ),
-            array('id' => $id)
-        );
-    }
-
-    public function speedvitals_get_pending_tests() {
-        global $wpdb;
-
-        return $wpdb->get_results(
-            "SELECT * FROM {$this->speedvitals_tests_table} WHERE status NOT IN ('success', 'failed') ORDER BY test_date ASC",
-            ARRAY_A
-        );
-    }
-
-    public function speedvitals_update_scheduled_test($id) {
-        global $wpdb;
-
-        $scheduled_test = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->speedvitals_scheduled_tests_table} WHERE id = %d", $id), ARRAY_A);
-
-        if (!$scheduled_test) {
-            return false;
-        }
-        
-        $next_run = $this->speedvitals_calculate_next_run($scheduled_test['frequency'], current_time('mysql'));
-
-        return $wpdb->update(
-            $this->speedvitals_scheduled_tests_table,
-            array(
-                'last_run' => current_time('mysql'),
-                'next_run' => $next_run
-            ),
-            array('id' => $id)
-        );
-    }
-
-    public function speedvitals_get_due_scheduled_tests() {
-        global $wpdb;
-
-        $current_time = current_time('mysql');
-
-        return $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$this->speedvitals_scheduled_tests_table} WHERE next_run <= %s", $current_time),
-            ARRAY_A
-        );
-    }       
-
     public function get_unsynced_data() {
         global $wpdb;
         
@@ -530,15 +309,15 @@ class Wpspeedtestpro_DB {
         );
 
         // Get unsynced speedvitals results
-        $speedvitals_results = $wpdb->get_results(
-            "SELECT * FROM {$this->speedvitals_tests_table} WHERE synced = 0 AND status = 'success'",
+        $pagespeed_results = $wpdb->get_results(
+            "SELECT * FROM {$this->pagespeed_table} WHERE synced = 0",
             ARRAY_A
         );
 
         return [
             'benchmark_results' => $benchmark_results,
             'hosting_results' => $hosting_results,
-            'speedvitals_results' => $speedvitals_results
+            'pagespeed_results' => $pagespeed_results
         ];
     }
 
@@ -557,7 +336,7 @@ class Wpspeedtestpro_DB {
                 $table = $this->hosting_benchmarking_table;
                 break;
             case 'speedvitals':
-                $table = $this->speedvitals_tests_table;
+                $table = $this->pagespeed_table;
                 break;
         }
         
