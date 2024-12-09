@@ -46,7 +46,8 @@ class Wpspeedtestpro_PageSpeed {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_meta_scripts'));
 
         // Schedule event for running tests
-
+        add_action('wpspeedtestpro_check_scheduled_pagespeed_tests', array($this, 'handle_scheduled_pagespeed_tests'));
+   
     }
 
 
@@ -1195,6 +1196,80 @@ public function ajax_check_test_status() {
         ));
     }
 
+    /**
+     * Handle scheduled tests
+     */
+    public function handle_scheduled_pagespeed_tests() {
+        global $wpdb;
 
+        // Get all tests that need to be run
+        $scheduled_tests = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->pagespeed_scheduled_table} 
+                WHERE next_run <= %s 
+                AND (last_run IS NULL OR last_run != %s)",
+                current_time('mysql'),
+                current_time('mysql', 'DATE')
+            )
+        );
 
-}
+        if (empty($scheduled_tests)) {
+            return;
+        }
+
+        foreach ($scheduled_tests as $test) {
+            // Check if we've already run this test today
+            if ($test->last_run && date('Y-m-d', strtotime($test->last_run)) === current_time('Y-m-d')) {
+                continue;
+            }
+
+            // Run tests for both desktop and mobile
+            $desktop_test = $this->initiate_pagespeed_test($test->url, 'desktop');
+            $mobile_test = $this->initiate_pagespeed_test($test->url, 'mobile');
+
+            if ($desktop_test['success'] && $mobile_test['success']) {
+                // Check desktop results
+                $desktop_result = $this->check_test_result($desktop_test['test_id']);
+                if ($desktop_result['status'] === 'complete') {
+                    $this->save_results($test->url, 'desktop', $desktop_result['data'], $desktop_result['raw_data']);
+                }
+
+                // Check mobile results
+                $mobile_result = $this->check_test_result($mobile_test['test_id']);
+                if ($mobile_result['status'] === 'complete') {
+                    $this->save_results($test->url, 'mobile', $mobile_result['data'], $mobile_result['raw_data']);
+                }
+
+                // Update last run and next run times
+                $wpdb->update(
+                    $this->pagespeed_scheduled_table,
+                    array(
+                        'last_run' => current_time('mysql'),
+                        'next_run' => $this->calculate_next_run($test->frequency)
+                    ),
+                    array('id' => $test->id),
+                    array('%s', '%s'),
+                    array('%d')
+                );
+
+                // Log the successful test
+                error_log(sprintf(
+                    'PageSpeed scheduled test completed for URL: %s, Schedule ID: %d',
+                    $test->url,
+                    $test->id
+                ));
+            } else {
+                // Log the error
+                error_log(sprintf(
+                    'PageSpeed scheduled test failed for URL: %s, Schedule ID: %d',
+                    $test->url,
+                    $test->id
+                ));
+            }
+
+            // Add a small delay between tests to avoid API rate limits
+            sleep(2);
+        }
+    }
+
+} // end class

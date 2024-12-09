@@ -43,6 +43,7 @@ class Wpspeedtestpro_Activator {
         $db->create_benchmark_table();
         $db->create_pagespeed_tables();
 
+        // API calls
         $api->fetch_and_store_ssl_emails();
 
         // Any other activation tasks can be added here
