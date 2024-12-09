@@ -1213,15 +1213,17 @@ public function ajax_check_test_status() {
             )
         );
 
+        error_log('Speed Scheduled tests found: ' . count($scheduled_tests));
+
         if (empty($scheduled_tests)) {
             return;
         }
 
         foreach ($scheduled_tests as $test) {
             // Check if we've already run this test today
-            if ($test->last_run && date('Y-m-d', strtotime($test->last_run)) === current_time('Y-m-d')) {
-                continue;
-            }
+//            if ($test->last_run && date('Y-m-d', strtotime($test->last_run)) === current_time('Y-m-d')) {
+//                continue;
+//            }
 
             // Run tests for both desktop and mobile
             $desktop_test = $this->initiate_pagespeed_test($test->url, 'desktop');
