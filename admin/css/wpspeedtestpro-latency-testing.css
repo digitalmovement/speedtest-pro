@@ -136,3 +136,11 @@
     0% { background-position: 0% 50%; }
     100% { background-position: 400% 50%; }
 }
+
+
+#latency-results td {
+    vertical-align: middle;
+}
+.flag-icon {
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}

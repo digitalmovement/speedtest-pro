@@ -13,6 +13,50 @@ jQuery(document).ready(function($) {
         'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
     };
 
+    
+    const countryMap = {
+        'Taiwan': 'tw',
+        'Johannesburg': 'za',
+        'Hong Kong': 'hk',
+        'Tokyo': 'jp',
+        'Osaka': 'jp',
+        'Seoul': 'kr',
+        'Mumbai': 'in',
+        'Delhi': 'in',
+        'Singapore': 'sg',
+        'Jakarta': 'id',
+        'Melbourne': 'au',
+        'Berlin': 'de',
+        'Belgium': 'be',
+        'Madrid': 'es',
+        'Finland': 'fi',
+        'Warsaw': 'pl',
+        'Sydney': 'au',
+        'Netherlands': 'nl',
+        'Dammam': 'sa',
+        'Doha': 'qa',
+        'Paris': 'fr',
+        'Zurich': 'ch',
+        'Frankfurt': 'de',
+        'London': 'gb',
+        'Turin': 'it',
+        'Milan': 'it',
+        'Tel Aviv': 'il',
+        'Montréal': 'ca',
+        'Toronto': 'ca',
+        'São Paulo': 'br',
+        'Santiago': 'cl',
+        'Columbus': 'us',
+        'North Virginia': 'us',
+        'South Carolina': 'us',
+        'Iowa': 'us',
+        'Dallas': 'us',
+        'Oregon': 'us',
+        'Los Angeles': 'us',
+        'Salt Lake City': 'us',
+        'Las Vegas': 'us'
+    };
+
     $('#latency-info-banner .notice-dismiss').on('click', function(e) {
         e.preventDefault();
         
@@ -584,6 +628,8 @@ jQuery(document).ready(function($) {
 
 
 
+
+    // Add this function to your existing updateResultsTable function
     function updateResultsTable(results) {
         var tableBody = $('#latency-results tbody');
         tableBody.empty();
@@ -595,27 +641,15 @@ jQuery(document).ready(function($) {
             return !isNaN(parsedValue) && isFinite(parsedValue);
         }
 
+        // Process results and create regionData object
         results.forEach(function(result) {
-            if (!result || typeof result !== 'object') {
-                console.error('Invalid result:', result);
-                return; // Skip this result
-            }
-
+            if (!result || typeof result !== 'object') return;
+            
             var region = result.region_name;
-            if (!region) {
-                console.error('Invalid result: missing region_name', result);
-                return; // Skip this result
-            }
+            if (!region) return;
 
-            if (!('latency' in result) || !('fastest_latency' in result) || !('slowest_latency' in result)) {
-                console.error('Missing latency data for region:', region, result);
-                return; // Skip this result
-            }
-
-            if (!isValidLatency(result.latency) || !isValidLatency(result.fastest_latency) || !isValidLatency(result.slowest_latency)) {
-                console.error('Invalid latency data for region:', region, result);
-                return; // Skip this result
-            }
+            if (!('latency' in result) || !('fastest_latency' in result) || !('slowest_latency' in result)) return;
+            if (!isValidLatency(result.latency) || !isValidLatency(result.fastest_latency) || !isValidLatency(result.slowest_latency)) return;
 
             var latency = parseFloat(result.latency);
             var fastestLatency = parseFloat(result.fastest_latency);
@@ -643,18 +677,39 @@ jQuery(document).ready(function($) {
             }
         });
 
+        // Create table rows with flags
         Object.keys(regionData).forEach(function(region) {
             var row = $('<tr>');
-
+            
             if (region === selectedRegion) {
                 row.addClass('highlight-row');
             }
 
-            row.append($('<td>').text(region));
+            // Create region cell with flag
+            var regionCell = $('<td>');
+            if (countryMap[region]) {
+                var flagSpan = $('<span>')
+                    .addClass('flag-icon')
+                    .css({
+                        'background-image': `url('https://flagcdn.com/w20/${countryMap[region]}.png')`,
+                        'display': 'inline-block',
+                        'width': '20px',
+                        'height': '20px',
+                        'background-size': 'cover',
+                        'border-radius': '50%',
+                        'vertical-align': 'middle',
+                        'margin-right': '8px'
+                    });
+                regionCell.append(flagSpan);
+            }
+            regionCell.append(region);
+            
+            row.append(regionCell);
             row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
             row.append($('<td>').text(regionData[region].fastestLatency.toFixed(1) + ' ms'));
             row.append($('<td>').text(regionData[region].slowestLatency.toFixed(1) + ' ms'));
             row.append($('<td>').text(formatDate(regionData[region].lastUpdated)));
+            
             tableBody.append(row);
         });
     }

@@ -56,14 +56,13 @@ class Wpspeedtestpro_Activator {
 
             if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
                 wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
-                return;
-            }
+            } else {
     
             // Schedule hourly sync if not already scheduled
-            if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
-                wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
+                if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
+                    wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
+                }
             }
-
             
 
             // Add default options
