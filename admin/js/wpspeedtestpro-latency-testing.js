@@ -54,7 +54,8 @@ jQuery(document).ready(function($) {
         'Oregon': 'us',
         'Los Angeles': 'us',
         'Salt Lake City': 'us',
-        'Las Vegas': 'us'
+        'Las Vegas': 'us',
+        'Global External HTTPS Load Balancer': 'un'
     };
 
     $('#latency-info-banner .notice-dismiss').on('click', function(e) {
