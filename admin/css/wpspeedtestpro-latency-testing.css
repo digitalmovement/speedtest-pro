@@ -144,3 +144,30 @@
 .flag-icon {
     box-shadow: 0 0 3px rgba(0,0,0,0.2);
 }
+
+
+#wpspeedtestpro .latency-bubble {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+#wpspeedtestpro .latency-bubble.faster {
+    background-color: #4CAF50;  /* Green */
+}
+
+#wpspeedtestpro .latency-bubble.slower {
+    background-color: #f44336;  /* Red */
+}
+
+#wpspeedtestpro .latency-bubble.same {
+    background-color: #9e9e9e;  /* Gray */
+}
+
+#wpspeedtestpro .latency-value {
+    display: inline-block;
+    vertical-align: middle;
+}

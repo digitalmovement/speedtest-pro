@@ -636,35 +636,38 @@ jQuery(document).ready(function($) {
         tableBody.empty();
         var regionData = {};
         var selectedRegion = wpspeedtestpro_ajax.selected_region;
-
+    
         function isValidLatency(value) {
             var parsedValue = parseFloat(value);
             return !isNaN(parsedValue) && isFinite(parsedValue);
         }
-
+    
         // Process results and create regionData object
         results.forEach(function(result) {
             if (!result || typeof result !== 'object') return;
             
             var region = result.region_name;
             if (!region) return;
-
+    
             if (!('latency' in result) || !('fastest_latency' in result) || !('slowest_latency' in result)) return;
             if (!isValidLatency(result.latency) || !isValidLatency(result.fastest_latency) || !isValidLatency(result.slowest_latency)) return;
-
+    
             var latency = parseFloat(result.latency);
             var fastestLatency = parseFloat(result.fastest_latency);
             var slowestLatency = parseFloat(result.slowest_latency);
             var testTime = result.test_time;
-
+    
             if (!regionData[region]) {
                 regionData[region] = {
                     currentLatency: latency,
                     fastestLatency: fastestLatency,
                     slowestLatency: slowestLatency,
-                    lastUpdated: testTime
+                    lastUpdated: testTime,
+                    previousLatency: null
                 };
             } else {
+                // Store the previous latency before updating
+                regionData[region].previousLatency = regionData[region].currentLatency;
                 if (fastestLatency < regionData[region].fastestLatency) {
                     regionData[region].fastestLatency = fastestLatency;
                 }
@@ -677,15 +680,15 @@ jQuery(document).ready(function($) {
                 }
             }
         });
-
-        // Create table rows with flags
+    
+        // Create table rows with flags and bubbles
         Object.keys(regionData).forEach(function(region) {
             var row = $('<tr>');
             
             if (region === selectedRegion) {
                 row.addClass('highlight-row');
             }
-
+    
             // Create region cell with flag
             var regionCell = $('<td>');
             if (countryMap[region]) {
@@ -705,8 +708,31 @@ jQuery(document).ready(function($) {
             }
             regionCell.append(region);
             
+            // Create latency cell with bubble
+            var latencyCell = $('<td>');
+            var bubbleSpan = $('<span>').addClass('latency-bubble');
+            
+            // Determine bubble color based on comparison with previous latency
+            if (regionData[region].previousLatency !== null) {
+                if (regionData[region].currentLatency < regionData[region].previousLatency) {
+                    bubbleSpan.addClass('faster');
+                } else if (regionData[region].currentLatency > regionData[region].previousLatency) {
+                    bubbleSpan.addClass('slower');
+                } else {
+                    bubbleSpan.addClass('same');
+                }
+            } else {
+                bubbleSpan.addClass('same');
+            }
+            
+            var latencyValue = $('<span>')
+                .addClass('latency-value')
+                .text(regionData[region].currentLatency.toFixed(1) + ' ms');
+            
+            latencyCell.append(bubbleSpan).append(latencyValue);
+            
             row.append(regionCell);
-            row.append($('<td>').text(regionData[region].currentLatency.toFixed(1) + ' ms'));
+            row.append(latencyCell);
             row.append($('<td>').text(regionData[region].fastestLatency.toFixed(1) + ' ms'));
             row.append($('<td>').text(regionData[region].slowestLatency.toFixed(1) + ' ms'));
             row.append($('<td>').text(formatDate(regionData[region].lastUpdated)));
