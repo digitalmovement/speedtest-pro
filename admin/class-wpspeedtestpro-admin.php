@@ -349,16 +349,7 @@ class Wpspeedtestpro_Sync_Handler {
 
     public function init() {
         // Check if data collection is allowed
-        if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
-            wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
-            return;
-        }
-
-        // Schedule hourly sync if not already scheduled
-        if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
-            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
-        }
-
+  
         add_action('wpspeedtestpro_sync_data', array($this, 'sync_data'));
     }
 
