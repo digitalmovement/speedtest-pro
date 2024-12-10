@@ -439,10 +439,11 @@ class Wpspeedtestpro_Sync_Handler {
                 return;
             }
 
-            // Remove full_report from pagespeed results to anonymize data
+            // Remove full_report and URL from pagespeed results to anonymize data
             if (!empty($unsynced_data['pagespeed_results'])) {
                 $unsynced_data['pagespeed_results'] = array_map(function($result) {
                     unset($result['full_report']);
+                    unset($result['url']);
                     return $result;
                 }, $unsynced_data['pagespeed_results']);
             }
