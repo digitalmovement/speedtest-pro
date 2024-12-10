@@ -328,7 +328,6 @@ class Wpspeedtestpro_Sync_Handler {
            update_option('wpspeedtestpro_site_key', $this->site_key);
        }
 
-       $this->init();
     }
 
     private function generate_site_key() {
