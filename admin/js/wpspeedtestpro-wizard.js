@@ -47,7 +47,8 @@ jQuery(document).ready(function($) {
                                         <input type="checkbox" id="allow-data-collection" name="allow-data-collection" checked>
                                         Help improve WP Speed Test Pro by allowing anonymous data collection
                                     </label>
-                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community.</p>
+                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. You can stop sharing ay any time in Settings</p>
+                                    <p class="privacy-note">For more information you can view our full <a target="_new" href="https://wpspeedtestpro.com/privacy">privacy policy</a></p>
                                 </div>
                             </div>
                         </div>
