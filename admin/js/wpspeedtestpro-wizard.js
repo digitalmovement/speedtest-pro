@@ -242,65 +242,6 @@ jQuery(document).ready(function($) {
             });
         }
 
-        function getRegionFlag(regionName) {
-            // Mapping of region names to two-letter country codes for FlagCDN
-            const flagMapping = {
-                'Johannesburg': 'za',
-                'Taiwan': 'tw',
-                'Hong Kong': 'hk',
-                'Tokyo': 'jp',
-                'Osaka': 'jp',
-                'Seoul': 'kr',
-                'Mumbai': 'in',
-                'Delhi': 'in',
-                'Singapore': 'sg',
-                'Jakarta': 'id',
-                'Sydney': 'au',
-                'Melbourne': 'au',
-                'Warsaw': 'pl',
-                'Finland': 'fi',
-                'Madrid': 'es',
-                'Belgium': 'be',
-                'Berlin': 'de',
-                'Turin': 'it',
-                'London': 'gb',
-                'Frankfurt': 'de',
-                'Netherlands': 'nl',
-                'Zurich': 'ch',
-                'Milan': 'it',
-                'Paris': 'fr',
-                'Doha': 'qa',
-                'Dammam': 'sa',
-                'Tel Aviv': 'il',
-                'Montréal': 'ca',
-                'Toronto': 'ca',
-                'São Paulo': 'br',
-                'Santiago': 'cl',
-                'Iowa': 'us',
-                'South Carolina': 'us',
-                'North Virginia': 'us',
-                'Columbus': 'us',
-                'Dallas': 'us',
-                'Oregon': 'us',
-                'Los Angeles': 'us',
-                'Salt Lake City': 'us',
-                'Las Vegas': 'us'
-            };
-        
-            const countryCode = flagMapping[regionName] || 'globe';
-            if (countryCode === 'globe') {
-                return '<i class="fas fa-globe"></i>'; // FontAwesome globe icon as fallback
-            }
-            
-            return `<img src="https://flagcdn.com/24x18/${countryCode}.png" 
-                         srcset="https://flagcdn.com/48x36/${countryCode}.png 2x,
-                                 https://flagcdn.com/72x54/${countryCode}.png 3x"
-                         width="24" 
-                         height="18" 
-                         alt="${regionName} flag"
-                         class="region-flag">`;
-        }
-        
         function loadGCPRegions() {
             $.ajax({
                 url: ajaxurl,
@@ -312,81 +253,10 @@ jQuery(document).ready(function($) {
                 success: function(response) {
                     if (response.success) {
                         const $select = $('#gcp-region');
-                        $select.empty();
-                        
-                        // Add CSS for flag styling
-                        if (!$('#gcp-region-styles').length) {
-                            $('head').append(`
-                                <style id="gcp-region-styles">
-                                    .gcp-region-option {
-                                        display: flex;
-                                        align-items: center;
-                                        gap: 8px;
-                                        padding: 4px;
-                                    }
-                                    .region-flag {
-                                        border-radius: 2px;
-                                        box-shadow: 0 0 1px rgba(0,0,0,0.2);
-                                    }
-                                    .fa-globe {
-                                        width: 24px;
-                                        height: 18px;
-                                        display: flex;
-                                        align-items: center;
-                                        justify-content: center;
-                                        color: #666;
-                                    }
-                                    .select2-container {
-                                        min-width: 200px;
-                                    }
-                                </style>
-                            `);
-                        }
-        
-                        // Style select and initialize Select2
-                        if (!$select.hasClass('styled-select')) {
-                            $select.addClass('styled-select');
-                            $select.css({
-                                'padding': '8px',
-                                'line-height': '1.4',
-                                'height': 'auto'
-                            });
-                        }
-        
+                        $select.empty(); // Clear existing options
                         response.data.forEach(region => {
-                            const flag = getRegionFlag(region.region_name);
-                            $select.append(`
-                                <option value="${region.region}">
-                                    ${region.region_name}
-                                </option>
-                            `);
+                            $select.append(`<option value="${region.region}">${region.region_name}</option>`);
                         });
-        
-                        // Initialize Select2 with custom templates
-                        if (!$select.next('.select2-container').length) {
-                            $select.select2({
-                                templateResult: function(data) {
-                                    if (!data.id) return data.text;
-                                    const flag = getRegionFlag(data.text);
-                                    return $(`
-                                        <span class="gcp-region-option">
-                                            ${flag}
-                                            <span>${data.text}</span>
-                                        </span>
-                                    `);
-                                },
-                                templateSelection: function(data) {
-                                    if (!data.id) return data.text;
-                                    const flag = getRegionFlag(data.text);
-                                    return $(`
-                                        <span class="gcp-region-option">
-                                            ${flag}
-                                            <span>${data.text}</span>
-                                        </span>
-                                    `);
-                                }
-                            });
-                        }
                     } else {
                         console.error('Failed to load GCP regions');
                     }
