@@ -311,7 +311,7 @@ jQuery(document).ready(function($) {
         $('#ssl-grade, #ssl-last-checked, #ssl-expiry, #ssl-protocol')
             .removeClass('no-data');
     
-        if (data.success && data.data && data.data.endpoints && data.data.endpoints[0]) {
+        if (data && data.data && data.data.endpoints && data.data.endpoints[0]) {
             const endpoint = data.data.endpoints[0];
             const grade = endpoint.grade || 'N/A';
             

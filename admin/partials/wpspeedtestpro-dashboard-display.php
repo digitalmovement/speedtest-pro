@@ -100,8 +100,6 @@
                         <span class="label">Protocol Version:</span>
                         <span class="value" id="ssl-protocol">Loading...</span>
                     </div>
-
-
                 </div>
             </div>
         </div>
