@@ -247,7 +247,7 @@ jQuery(document).ready(function($) {
                 url: ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'wpspeedtestpro_get_gcp_regions',
+                    action: 'wpspeedtestpro_get_gcp_endpoints',
                     nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function(response) {
