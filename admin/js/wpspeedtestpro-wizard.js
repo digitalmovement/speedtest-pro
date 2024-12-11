@@ -367,7 +367,7 @@ jQuery(document).ready(function($) {
             const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
             let completedTests = 0;
             let failedTests = [];
-        
+
             // If UptimeRobot key is provided, add UptimeRobot setup to tests
             if (hasUptimeRobotKey) {
                 const $uptimeRobotItem = $(`
@@ -379,14 +379,16 @@ jQuery(document).ready(function($) {
                 $('.test-status-container').prepend($uptimeRobotItem);
                 tests.unshift('uptimerobot');
             }
-        
+
+            $('.progress-label').text('Starting tests...');
+
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
                 $testItem.find('.test-status')
                     .removeClass('pending')
                     .addClass('running')
                     .text('Running...');
-        
+
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
@@ -405,12 +407,12 @@ jQuery(document).ready(function($) {
                         .addClass('failed')
                         .text('Failed');
                 }
-        
+
                 // Update overall progress
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
             }
-        
+
             if (failedTests.length > 0) {
                 const failedTestsNames = failedTests.map(t => {
                     const name = t.charAt(0).toUpperCase() + t.slice(1);
@@ -426,8 +428,8 @@ jQuery(document).ready(function($) {
             } else {
                 $('.progress-label').text('All tests completed successfully!');
             }
-        
-            // Enable next step
+
+            // Show next step button after tests are complete
             $('.next-step').prop('disabled', false).show();
             $('.start-tests').hide();
         }
@@ -482,8 +484,9 @@ jQuery(document).ready(function($) {
         }
 
         function updateWizardStep() {
-            // Update step visibility
+            // Hide all steps
             $('.wizard-step').hide();
+            // Show current step
             $(`.wizard-step[data-step="${currentStep}"]`).show();
 
             // Update progress steps
@@ -496,12 +499,17 @@ jQuery(document).ready(function($) {
                     $step.addClass('active');
                 }
             }
-            
-            // Update navigation buttons
+
+            // Update button visibility based on current step
             $('.prev-step').toggle(currentStep > 1);
-            $('.next-step').toggle(currentStep < totalSteps && currentStep !== 4);
-            $('.start-tests').toggle(currentStep === 3);
+            $('.next-step').toggle(currentStep < totalSteps);
+            $('.start-tests').toggle(currentStep === 4);
             $('.finish-setup').toggle(currentStep === totalSteps);
+
+            // Hide next button during testing phase
+            if (currentStep === 4) {
+                $('.next-step').hide();
+            }
 
             // Update button text based on step
             if (currentStep === 1) {
