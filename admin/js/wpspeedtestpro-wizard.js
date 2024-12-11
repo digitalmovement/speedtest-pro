@@ -286,7 +286,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'wpspeedtestpro_get_provider_packages',
-                    provider_id: providerId,
+                    provider: providerId,
                     nonce: wpspeedtestpro_wizard.hosting_packages_nonce
                 },
                 success: function(response) {
