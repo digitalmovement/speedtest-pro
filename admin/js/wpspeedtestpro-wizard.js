@@ -253,14 +253,22 @@ jQuery(document).ready(function($) {
                 success: function(response) {
                     if (response.success) {
                         const $select = $('#gcp-region');
+                        $select.empty(); // Clear existing options
                         response.data.forEach(region => {
-                            $select.append(`<option value="${region.id}">${region.name}</option>`);
+                            $select.append(`<option value="${region.region}">${region.region_name}</option>`);
                         });
+                    } else {
+                        console.error('Failed to load GCP regions');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading GCP regions:', error);
+                    const $select = $('#gcp-region');
+                    $select.empty();
+                    $select.append('<option value="">Error loading regions</option>');
                 }
             });
         }
-
         function loadHostingProviders() {
             $.ajax({
                 url: ajaxurl,
