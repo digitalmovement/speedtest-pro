@@ -647,4 +647,5 @@ jQuery(document).ready(function($) {
                 $summary.append(`<li>${item}</li>`);
             });
         }
+    }
 });
