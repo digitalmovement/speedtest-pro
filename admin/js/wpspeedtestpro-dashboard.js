@@ -311,8 +311,7 @@ jQuery(document).ready(function($) {
         $('#ssl-grade, #ssl-last-checked, #ssl-expiry, #ssl-protocol')
             .removeClass('no-data');
     
-        // Check if we have valid data
-        if (data && data.data && data.data.endpoints && data.data.endpoints[0]) {
+        if (data.success && data.data && data.data.endpoints && data.data.endpoints[0]) {
             const endpoint = data.data.endpoints[0];
             const grade = endpoint.grade || 'N/A';
             
@@ -323,17 +322,22 @@ jQuery(document).ready(function($) {
                 month: 'long',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
+                second: '2-digit'
             });
     
-            // Update SSL Grade
+            // Update SSL Grade with visual indicator
             const $sslGrade = $('#ssl-grade');
             $sslGrade
                 .text(grade)
                 .removeClass('good warning poor')
                 .addClass(getSSLGradeClass(grade));
     
-            // Update Last Checked
+            // Add tooltip for grade explanation
+            let gradeExplanation = getGradeExplanation(grade);
+            $sslGrade.attr('title', gradeExplanation);
+    
+            // Update Last Checked with formatted time
             $('#ssl-last-checked')
                 .text(formattedTestTime)
                 .attr('title', 'Last SSL check performed');
@@ -342,42 +346,119 @@ jQuery(document).ready(function($) {
             if (data.data.certs && data.data.certs[0]) {
                 const cert = data.data.certs[0];
                 const expiryDate = new Date(cert.notAfter);
+                const today = new Date();
+                const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+                
                 const formattedExpiry = expiryDate.toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
-                $('#ssl-expiry').text(formattedExpiry);
+    
+                const $sslExpiry = $('#ssl-expiry');
+                $sslExpiry.text(formattedExpiry);
+                
+                // Add expiry warning classes and tooltip
+                if (daysUntilExpiry <= 30) {
+                    $sslExpiry.addClass('warning');
+                    $sslExpiry.attr('title', `Certificate expires in ${daysUntilExpiry} days!`);
+                } else {
+                    $sslExpiry.removeClass('warning');
+                    $sslExpiry.attr('title', `Valid for ${daysUntilExpiry} days`);
+                }
             } else {
                 $('#ssl-expiry')
                     .text('Not Available')
-                    .addClass('no-data');
+                    .addClass('no-data')
+                    .attr('title', 'Certificate expiry information not available');
             }
     
-            // Update Protocol
+            // Update Protocol Information
             if (endpoint.details && endpoint.details.protocols) {
                 const protocols = endpoint.details.protocols
                     .map(p => `${p.name} ${p.version}`)
                     .join(', ');
-                $('#ssl-protocol').text(protocols);
+                
+                $('#ssl-protocol')
+                    .text(protocols)
+                    .attr('title', 'Supported SSL/TLS protocols');
             } else {
                 $('#ssl-protocol')
                     .text('Not Available')
-                    .addClass('no-data');
+                    .addClass('no-data')
+                    .attr('title', 'Protocol information not available');
             }
     
+            // Update additional details if available
+            updateAdditionalSSLDetails(endpoint);
+    
         } else {
-            displayNoSSLData('Invalid or incomplete SSL data');
+            // Handle invalid or incomplete data
+            displayNoSSLData('Unable to retrieve SSL information');
         }
     }
     
+    // Helper function to determine grade class
     function getSSLGradeClass(grade) {
-        const gradeUpper = grade.toUpperCase();
-        if (['A+', 'A', 'A-'].includes(gradeUpper)) return 'good';
-        if (['B', 'C'].includes(gradeUpper)) return 'warning';
-        return 'poor';
+        switch (grade.toUpperCase()) {
+            case 'A+':
+            case 'A':
+            case 'A-':
+                return 'good';
+            case 'B':
+            case 'C':
+                return 'warning';
+            default:
+                return 'poor';
+        }
     }
     
+    // Helper function to get grade explanation
+    function getGradeExplanation(grade) {
+        const explanations = {
+            'A+': 'Exceptional SSL configuration',
+            'A': 'Very good SSL configuration',
+            'A-': 'Good SSL configuration',
+            'B': 'Adequate SSL configuration with minor weaknesses',
+            'C': 'SSL configuration needs improvement',
+            'D': 'SSL configuration has significant weaknesses',
+            'F': 'SSL configuration is inadequate',
+            'T': 'Certificate not trusted',
+            'M': 'Certificate name mismatch',
+            'N/A': 'Grade not available'
+        };
+        return explanations[grade] || 'Unknown grade';
+    }
+    
+    // Helper function to update additional SSL details
+    function updateAdditionalSSLDetails(endpoint) {
+        if (endpoint.details) {
+            // Add cipher suites information
+            if (endpoint.details.suites) {
+                const cipherInfo = endpoint.details.suites
+                    .flatMap(suite => suite.list)
+                    .map(cipher => cipher.name)
+                    .join(', ');
+                
+                $('#ssl-ciphers')
+                    .text(cipherInfo || 'Not Available')
+                    .attr('title', 'Supported cipher suites');
+            }
+    
+            // Add certificate chain information
+            if (endpoint.details.certChains) {
+                const chainInfo = endpoint.details.certChains
+                    .map(chain => `Chain of ${chain.certIds.length} certificates`)
+                    .join(', ');
+                
+                $('#ssl-cert-chain')
+                    .text(chainInfo || 'Not Available')
+                    .attr('title', 'Certificate chain information');
+            }
+        }
+    }
+    
+
     function displayNoSSLData(message) {
         const elements = ['#ssl-grade', '#ssl-last-checked', '#ssl-expiry', '#ssl-protocol'];
         elements.forEach(element => {
