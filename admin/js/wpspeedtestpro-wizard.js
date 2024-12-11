@@ -273,7 +273,7 @@ jQuery(document).ready(function($) {
                     if (response.success) {
                         const $select = $('#hosting-provider');
                         response.data.forEach(provider => {
-                            $select.append(`<option value="${provider.id}">${provider.name}</option>`);
+                            $select.append(`<option value="${provider.name}">${provider.name}</option>`);
                         });
                     }
                 }
@@ -287,7 +287,7 @@ jQuery(document).ready(function($) {
                 data: {
                     action: 'wpspeedtestpro_get_provider_packages',
                     provider_id: providerId,
-                    nonce: wpspeedtestpro_ajax.nonce
+                    nonce: wpspeedtestpro_wizard.nonce
                 },
                 success: function(response) {
                     if (response.success) {
