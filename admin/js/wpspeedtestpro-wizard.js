@@ -16,7 +16,7 @@ jQuery(document).ready(function($) {
                     
                     <div class="wizard-progress">
                         <div class="progress-bar">
-                            <div class="progress-fill"></div>
+                            <div class="progress-fill" style="width:25%"></div>
                         </div>
                         <div class="step-indicator">Step <span class="current-step">1</span> of 4</div>
                     </div>
@@ -122,7 +122,7 @@ jQuery(document).ready(function($) {
             </div>
         `;
 
-     //   $('body').append(wizardHtml);
+        $('body').append(wizardHtml);
 
         let currentStep = 1;
         const totalSteps = 4;
