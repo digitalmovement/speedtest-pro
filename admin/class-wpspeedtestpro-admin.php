@@ -87,6 +87,7 @@ class Wpspeedtestpro_Admin {
          * The class responsible for orchestrating the actions and filters of the
          * core plugin.
          */
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-wizard.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-dashboard.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-server-information.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-latency-testing.php';
@@ -95,7 +96,8 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-uptime-monitoring.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-page-speed-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-settings.php';
-
+        
+        $this->wizard               = new Wpspeedtestpro_Wizard($this->plugin_name, $this->version, $this->core);
         $this->dashboard            = new Wpspeedtestpro_Dashboard($this->plugin_name, $this->version, $this->core);
         $this->latency_testing      = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
         $this->settings             = new Wpspeedtestpro_Settings( $this->plugin_name, $this->version, $this->core );
