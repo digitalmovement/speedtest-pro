@@ -248,7 +248,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'wpspeedtestpro_get_gcp_endpoints',
-                    nonce: wpspeedtestpro_ajax.nonce
+                    nonce: wpspeedtestpro_wizard.gcp_endpoints_nonce
                 },
                 success: function(response) {
                     if (response.success) {
