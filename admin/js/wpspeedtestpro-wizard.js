@@ -27,10 +27,15 @@ jQuery(document).ready(function($) {
                             <div class="step-item">
                                 <div class="step-circle">3</div>
                                 <div class="step-line"></div>
-                                <div class="step-label">Testing</div>
+                                <div class="step-label">UptimeRobot</div>
                             </div>
                             <div class="step-item">
                                 <div class="step-circle">4</div>
+                                <div class="step-line"></div>
+                                <div class="step-label">Testing</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-circle">5</div>
                                 <div class="step-label">Complete</div>
                             </div>
                         </div>
@@ -103,8 +108,22 @@ jQuery(document).ready(function($) {
                             </div>
                         </div>
 
-                        <!-- Step 3: Testing -->
                         <div class="wizard-step" data-step="3" style="display: none;">
+                            <h3>UptimeRobot Integration</h3>
+                            <p>Monitor your website's uptime and performance with UptimeRobot integration.</p>
+                            <div class="form-group">
+                                <label for="uptimerobot-key">UptimeRobot API Key</label>
+                                <input type="text" id="uptimerobot-key" name="uptimerobot-key">
+                                <p class="help-text">
+                                    Don't have an API key? 
+                                    <a href="https://uptimerobot.com/signUp" target="_blank">Sign up for free</a>
+                                </p>
+                            </div>
+                            <p class="skip-note">You can skip this step and set it up later.</p>
+                        </div>
+
+                        <!-- Step 3: Testing -->
+                        <div class="wizard-step" data-step="4" style="display: none;">
                             <div class="testing-container">
                                 <h3>Initial Performance Analysis</h3>
                                 <p>We'll run a comprehensive series of tests to analyze your site's performance. This might take a few minutes.</p>
@@ -138,7 +157,7 @@ jQuery(document).ready(function($) {
                         </div>
 
                         <!-- Step 4: Completion -->
-                        <div class="wizard-step" data-step="4" style="display: none;">
+                        <div class="wizard-step" data-step="5" style="display: none;">
                             <h3>Setup Complete!</h3>
                             <p>You're all set to start monitoring your WordPress site's performance.</p>
                             <div class="completion-summary">
@@ -315,7 +334,7 @@ jQuery(document).ready(function($) {
         $('body').append(wizardHtml);
 
         let currentStep = 1;
-        const totalSteps = 4;
+        const totalSteps = 5;
 
         // Load initial data
         loadGCPRegions();
@@ -344,19 +363,36 @@ jQuery(document).ready(function($) {
         });
 
         async function runAllTests() {
+            const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
             const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
             let completedTests = 0;
             let failedTests = [];
-
+        
+            // If UptimeRobot key is provided, add UptimeRobot setup to tests
+            if (hasUptimeRobotKey) {
+                const $uptimeRobotItem = $(`
+                    <div class="test-item" data-test="uptimerobot">
+                        <span class="test-name">UptimeRobot Setup</span>
+                        <span class="test-status pending">Pending</span>
+                    </div>
+                `);
+                $('.test-status-container').prepend($uptimeRobotItem);
+                tests.unshift('uptimerobot');
+            }
+        
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
                 $testItem.find('.test-status')
                     .removeClass('pending')
                     .addClass('running')
                     .text('Running...');
-
+        
                 try {
-                    await runTest(testType);
+                    if (testType === 'uptimerobot') {
+                        await setupUptimeRobot($('#uptimerobot-key').val());
+                    } else {
+                        await runTest(testType);
+                    }
                     completedTests++;
                     $testItem.find('.test-status')
                         .removeClass('running')
@@ -369,14 +405,18 @@ jQuery(document).ready(function($) {
                         .addClass('failed')
                         .text('Failed');
                 }
-
+        
                 // Update overall progress
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
             }
-
+        
             if (failedTests.length > 0) {
-                const failedTestsNames = failedTests.map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(', ');
+                const failedTestsNames = failedTests.map(t => {
+                    const name = t.charAt(0).toUpperCase() + t.slice(1);
+                    return t === 'uptimerobot' ? 'UptimeRobot Setup' : name;
+                }).join(', ');
+                
                 $('.progress-label').html(`
                     <div class="test-failed-message" style="color: #c00;">
                         Some tests failed (${failedTestsNames}). You can still proceed, but some features might be limited.
@@ -386,12 +426,38 @@ jQuery(document).ready(function($) {
             } else {
                 $('.progress-label').text('All tests completed successfully!');
             }
-
+        
             // Enable next step
             $('.next-step').prop('disabled', false).show();
             $('.start-tests').hide();
         }
+        
+        // Add function to setup UptimeRobot
+        function setupUptimeRobot(apiKey) {
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'wpspeedtestpro_setup_uptimerobot',
+                        api_key: apiKey,
+                        nonce: wpspeedtestpro_wizard.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            resolve(response);
+                        } else {
+                            reject(new Error(response.data || 'UptimeRobot setup failed'));
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        reject(new Error(error));
+                    }
+                });
+            });
+        }
 
+        
         function runTest(testType) {
             return new Promise((resolve, reject) => {
                 $.ajax({
@@ -464,13 +530,15 @@ jQuery(document).ready(function($) {
                     }
                     return true;
                 case 3:
+                    return true; // UptimeRobot key is optional
+                case 4:
                     // Only allow proceeding if tests are complete or have been attempted
                     return $('.test-status.completed, .test-status.failed').length > 0;
                 default:
                     return true;
             }
         }
-
+        
         $('.close-wizard').on('click', function() {
             if (confirm('Are you sure you want to exit the setup wizard? You can always access these settings later.')) {
                 $('#wpspeedtestpro-setup-wizard').remove();
@@ -559,24 +627,24 @@ jQuery(document).ready(function($) {
         function updateCompletionSummary() {
             const $summary = $('.setup-summary');
             $summary.empty();
-
+        
             const summaryItems = [
                 `Region: ${$('#gcp-region option:selected').text()}`,
                 `Hosting Provider: ${$('#hosting-provider option:selected').text()}`,
                 `Package: ${$('#hosting-package option:selected').text()}`,
-                `Data Collection: ${$('#allow-data-collection').is(':checked') ? 'Enabled' : 'Disabled'}`
+                `Data Collection: ${$('#allow-data-collection').is(':checked') ? 'Enabled' : 'Disabled'}`,
+                `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`
             ];
-
+        
             // Add test results to summary
             $('.test-item').each(function() {
                 const testName = $(this).find('.test-name').text();
                 const status = $(this).find('.test-status').text();
                 summaryItems.push(`${testName}: ${status}`);
             });
-
+        
             summaryItems.forEach(item => {
                 $summary.append(`<li>${item}</li>`);
             });
         }
-    }
 });
