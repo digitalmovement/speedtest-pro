@@ -347,7 +347,7 @@ class Wpspeedtestpro_Settings {
         }
     }
 
-    private function ajax_get_gcp_endpoints() {
+    public function ajax_get_gcp_endpoints() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         try {
