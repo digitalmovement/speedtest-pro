@@ -390,7 +390,7 @@ jQuery(document).ready(function($) {
             }
     
             // Update additional details if available
-            updateAdditionalSSLDetails(endpoint);
+           // updateAdditionalSSLDetails(endpoint);
     
         } else {
             // Handle invalid or incomplete data

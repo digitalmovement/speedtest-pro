@@ -83,8 +83,9 @@
         <div class="dashboard-card" id="ssl-card">
             <h2><i class="fas fa-shield-alt"></i> SSL Security</h2>
             <div class="card-content">
-                <div class="ssl-grade">
-                    <span class="grade" id="ssl-grade">-</span>
+                <div class="metric">
+                    <span class="label">SSL Grade:</span>
+                    <span class="value" id="ssl-grade">Loading...</span>
                 </div>
                 <div class="metric">
                     <span class="label">Last Checked:</span>
@@ -99,12 +100,7 @@
                         <span class="label">Protocol Version:</span>
                         <span class="value" id="ssl-protocol">Loading...</span>
                     </div>
-                    <div id="ssl-grade"></div>
-<div id="ssl-last-checked"></div>
-<div id="ssl-expiry"></div>
-<div id="ssl-protocol"></div>
-<div id="ssl-ciphers"></div>
-<div id="ssl-cert-chain"></div>
+
 
                 </div>
             </div>
