@@ -347,6 +347,26 @@ class Wpspeedtestpro_Settings {
         }
     }
 
+    private function ajax_get_gcp_endpoints() {
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
+        try {
+            $gcp_endpoints = $this->core->api->get_gcp_endpoints();
+            if (empty($gcp_endpoints)) {
+                throw new Exception('No GCP endpoints returned from API');
+            }
+            return $gcp_endpoints;
+        } catch (Exception $e) {
+            error_log('Error fetching GCP endpoints: ' . $e->getMessage());
+            // Return some default regions if API call fails
+            return array(
+                array('region_name' => 'us-central1'),
+                array('region_name' => 'europe-west1'),
+                array('region_name' => 'asia-east1')
+            );
+        }
+    }
+
+
     private function get_hosting_providers() {
         try {
             $providers = $this->core->api->get_hosting_providers();
