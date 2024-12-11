@@ -61,7 +61,7 @@ class Wpspeedtestpro_Wizard {
 
         wp_localize_script(
             $this->plugin_name . '-wizard',
-            'wpspeedtestpro_wizard',
+            'wpspeedtestpro_ajax',
             array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'hosting_packages_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
