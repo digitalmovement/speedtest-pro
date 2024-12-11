@@ -266,7 +266,7 @@ jQuery(document).ready(function($) {
                 url: ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'wpspeedtestpro_get_hosting_providers',
+                    action: 'wpspeedtestpro_get_provider_packages',
                     nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function(response) {
@@ -285,7 +285,7 @@ jQuery(document).ready(function($) {
                 url: ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'wpspeedtestpro_get_hosting_packages',
+                    action: 'wpspeedtestpro_get_provider_packages',
                     provider_id: providerId,
                     nonce: wpspeedtestpro_ajax.nonce
                 },
