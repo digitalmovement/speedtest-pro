@@ -499,7 +499,7 @@ jQuery(document).ready(function($) {
             
             // Update navigation buttons
             $('.prev-step').toggle(currentStep > 1);
-            $('.next-step').toggle(currentStep < totalSteps && currentStep !== 3);
+            $('.next-step').toggle(currentStep < totalSteps && currentStep !== 4);
             $('.start-tests').toggle(currentStep === 3);
             $('.finish-setup').toggle(currentStep === totalSteps);
 
