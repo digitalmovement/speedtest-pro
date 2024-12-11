@@ -251,7 +251,12 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success && response.data) {
-                    updateSSLCard(response.data);
+                    // Create the expected data structure
+                    const sslData = {
+                        success: true,
+                         data: response.data // If response.data is already an object
+                    };
+                    updateSSLCard(sslData);
                 } else {
                     displayNoSSLData(response.data || 'No SSL data available');
                 }
@@ -306,47 +311,81 @@ jQuery(document).ready(function($) {
         $('#ssl-grade, #ssl-last-checked, #ssl-expiry, #ssl-protocol')
             .removeClass('no-data');
     
-        if (data.status === 'completed' && data.data && data.data.endpoints && data.data.endpoints[0]) {
+        // Check if we have valid data
+        if (data && data.data && data.data.endpoints && data.data.endpoints[0]) {
             const endpoint = data.data.endpoints[0];
-            const grade = endpoint.grade;
+            const grade = endpoint.grade || 'N/A';
+            
+            // Format timestamp to local date/time
+            const testTime = new Date(data.data.testTime);
+            const formattedTestTime = testTime.toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
     
             // Update SSL Grade
-            $('#ssl-grade')
+            const $sslGrade = $('#ssl-grade');
+            $sslGrade
                 .text(grade)
                 .removeClass('good warning poor')
-                .addClass(getSSLGradeClass(grade))
-                .removeAttr('title');
+                .addClass(getSSLGradeClass(grade));
     
             // Update Last Checked
             $('#ssl-last-checked')
-                .text(new Date().toLocaleString());
+                .text(formattedTestTime)
+                .attr('title', 'Last SSL check performed');
     
             // Update Certificate Details
             if (data.data.certs && data.data.certs[0]) {
                 const cert = data.data.certs[0];
                 const expiryDate = new Date(cert.notAfter);
-                $('#ssl-expiry').text(expiryDate.toLocaleDateString());
+                const formattedExpiry = expiryDate.toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                $('#ssl-expiry').text(formattedExpiry);
             } else {
-                $('#ssl-expiry').text('Certificate data not available')
+                $('#ssl-expiry')
+                    .text('Not Available')
                     .addClass('no-data');
             }
     
             // Update Protocol
-            if (endpoint.details && endpoint.details.protocols && endpoint.details.protocols[0]) {
-                const protocol = endpoint.details.protocols[0];
-                $('#ssl-protocol').text(protocol.name + ' ' + protocol.version);
+            if (endpoint.details && endpoint.details.protocols) {
+                const protocols = endpoint.details.protocols
+                    .map(p => `${p.name} ${p.version}`)
+                    .join(', ');
+                $('#ssl-protocol').text(protocols);
             } else {
-                $('#ssl-protocol').text('Protocol data not available')
+                $('#ssl-protocol')
+                    .text('Not Available')
                     .addClass('no-data');
             }
     
-        } else if (data.status === 'in_progress') {
-            // Handle in-progress state
-            displaySSLInProgress();
         } else {
-            // Handle invalid or incomplete data
-            displayNoSSLData('Invalid or incomplete SSL data received');
+            displayNoSSLData('Invalid or incomplete SSL data');
         }
+    }
+    
+    function getSSLGradeClass(grade) {
+        const gradeUpper = grade.toUpperCase();
+        if (['A+', 'A', 'A-'].includes(gradeUpper)) return 'good';
+        if (['B', 'C'].includes(gradeUpper)) return 'warning';
+        return 'poor';
+    }
+    
+    function displayNoSSLData(message) {
+        const elements = ['#ssl-grade', '#ssl-last-checked', '#ssl-expiry', '#ssl-protocol'];
+        elements.forEach(element => {
+            $(element)
+                .text('N/A')
+                .addClass('no-data')
+                .attr('title', message);
+        });
     }
     
     function displaySSLInProgress() {

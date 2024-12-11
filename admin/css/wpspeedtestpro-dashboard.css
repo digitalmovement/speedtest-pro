@@ -512,3 +512,7 @@
 
 
 
+.good { color: #28a745; }
+.warning { color: #ffc107; }
+.poor { color: #dc3545; }
+.no-data { color: #6c757d; font-style: italic; }

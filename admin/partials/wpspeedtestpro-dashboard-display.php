@@ -99,6 +99,13 @@
                         <span class="label">Protocol Version:</span>
                         <span class="value" id="ssl-protocol">Loading...</span>
                     </div>
+                    <div id="ssl-grade"></div>
+<div id="ssl-last-checked"></div>
+<div id="ssl-expiry"></div>
+<div id="ssl-protocol"></div>
+<div id="ssl-ciphers"></div>
+<div id="ssl-cert-chain"></div>
+
                 </div>
             </div>
         </div>
