@@ -65,9 +65,7 @@ class Wpspeedtestpro_Settings {
 
     private function add_hooks() {
         add_action('wp_ajax_wpspeedtestpro_get_provider_packages', array($this, 'ajax_get_provider_packages'));
-        add_action('wp_ajax_ssl_register_user', array($this, 'ajax_ssl_register_user'));
-        add_action('wp_ajax_ssl_login_user', array($this, 'ajax_ssl_login_user'));
-        add_action('wp_ajac_wpspeedtestopro_get_gcp_endpoints', array($this, 'ajax_get_gcp_endpoints'));
+        add_action('wp_ajax_wpspeedtestopro_get_gcp_endpoints', array($this, 'ajax_get_gcp_endpoints'));
     }
 
     private function is_this_the_right_plugin_page() {

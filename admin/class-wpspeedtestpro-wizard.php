@@ -64,7 +64,7 @@ class Wpspeedtestpro_Wizard {
             'wpspeedtestpro_wizard',
             array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_wizard_nonce'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
                 'regions' => $this->core->api->get_gcp_endpoints(),
                 'providers' => $this->core->api->get_hosting_providers()
             )
