@@ -16,7 +16,7 @@
             
             <div class="wizard-progress">
                 <div class="progress-bar">
-                    <div class="progress-fill" style="width: 25%;"></div>
+                    <div class="progress-fill" style="width: 25%;!important"></div>
                 </div>
                 <div class="step-indicator">Step <span class="current-step">1</span> of 4</div>
             </div>
