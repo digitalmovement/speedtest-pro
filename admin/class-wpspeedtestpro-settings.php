@@ -65,7 +65,7 @@ class Wpspeedtestpro_Settings {
 
     private function add_hooks() {
         add_action('wp_ajax_wpspeedtestpro_get_provider_packages', array($this, 'ajax_get_provider_packages'));
-        add_action('wp_ajax_wpspeedtestpro_get_hosting_provider', array($this, 'ajax_get_hosting_provider'));
+        add_action('wp_ajax_wpspeedtestpro_get_hosting_providers', array($this, 'ajax_get_hosting_providers'));
         add_action('wp_ajax_wpspeedtestpro_get_gcp_endpoints', array($this, 'ajax_get_gcp_endpoints'));
     }
 
@@ -382,7 +382,7 @@ class Wpspeedtestpro_Settings {
     }
 
 
-    public function ajax_get_hosting_provider() {
+    public function ajax_get_hosting_providers() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         $hosting_providers = $this->core->api->get_hosting_providers();
