@@ -122,7 +122,7 @@ jQuery(document).ready(function($) {
             </div>
         `;
 
-        $('body').append(wizardHtml);
+     //   $('body').append(wizardHtml);
 
         let currentStep = 1;
         const totalSteps = 4;
