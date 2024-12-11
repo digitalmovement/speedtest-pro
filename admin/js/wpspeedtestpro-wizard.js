@@ -294,7 +294,7 @@ jQuery(document).ready(function($) {
                         const $select = $('#hosting-package');
                         $select.empty();
                         response.data.forEach(package => {
-                            $select.append(`<option value="${package.id}">${package.name}</option>`);
+                            $select.append(`<option value="${package.type}">${package.type}</option>`);
                         });
                     }
                 }
