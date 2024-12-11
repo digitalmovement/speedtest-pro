@@ -287,7 +287,7 @@ jQuery(document).ready(function($) {
                 data: {
                     action: 'wpspeedtestpro_get_provider_packages',
                     provider_id: providerId,
-                    nonce: wpspeedtestpro_wizard.nonce
+                    nonce: wpspeedtestpro_wizard.hosting_packages_nonce
                 },
                 success: function(response) {
                     if (response.success) {
