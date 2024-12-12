@@ -327,8 +327,61 @@ jQuery(document).ready(function($) {
                     background: #e0e0e0;
                     cursor: not-allowed;
                 }
+                       .test-item {
+                    margin-bottom: 15px;
+                }
+
+                .test-info {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 5px;
+                }
+
+                .test-progress-bar {
+                    height: 4px;
+                    background: #e2e4e7;
+                    border-radius: 2px;
+                    overflow: hidden;
+                    margin-top: 5px;
+                }
+
+                .test-progress-bar .progress-fill {
+                    height: 100%;
+                    background: #2271b1;
+                    width: 0;
+                    transition: width 0.3s linear;
+                    animation: progress-animation 2s linear infinite;
+                }
+
+                @keyframes progress-animation {
+                    0% {
+                        width: 0%;
+                        opacity: 1;
+                    }
+                    50% {
+                        width: 100%;
+                        opacity: 0.5;
+                    }
+                    100% {
+                        width: 0%;
+                        opacity: 1;
+                    }
+                }
+
+                
             </style>
         `;
+
+        const testItemTemplate = `
+        <div class="test-item" data-test="${testType}">
+            <div class="test-info">
+                <span class="test-name">${testName}</span>
+                <span class="test-status pending">Pending</span>
+            </div>
+            <div class="test-progress-bar" style="display: none;">
+                <div class="progress-fill"></div>
+            </div>
+        </div>`;
 
         $('head').append(wizardStyles);
         $('body').append(wizardHtml);
@@ -508,6 +561,13 @@ jQuery(document).ready(function($) {
         
         function runTest(testType) {
             return new Promise((resolve, reject) => {
+                const $testItem = $(`.test-item[data-test="${testType}"]`);
+                const $progressBar = $testItem.find('.test-progress-bar');
+                
+                // Show progress bar
+                $progressBar.show();
+
+
                 let ajaxData = {
                     nonce: wpspeedtestpro_ajax.nonce
                 };
@@ -540,20 +600,28 @@ jQuery(document).ready(function($) {
                 }
         
                 $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: ajaxData,
-                    success: function(response) {
-                        if (response.success) {
-                            resolve(response);
-                        } else {
-                            reject(new Error(response.data || 'Test failed'));
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: ajaxData,
+                        success: function(response) {
+                            if (response.success) {
+                                if (['ssl', 'pagespeed'].includes(testType)) {
+                                    // Keep progress bar for tests that need status checking
+                                } else {
+                                    // Hide progress bar for completed tests
+                                    $progressBar.hide();
+                                }
+                                resolve(response);
+                            } else {
+                                $progressBar.hide();
+                                reject(new Error(response.data || 'Test failed'));
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            $progressBar.hide();
+                            reject(new Error(error));
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        reject(new Error(error));
-                    }
-                });
+                    });
             });
         }
 
@@ -610,15 +678,37 @@ jQuery(document).ready(function($) {
                         alert('Please complete all required fields before proceeding.');
                         return false;
                     }
+                    
+                    // Save settings after validation
+                    saveWizardSettings();
                     return true;
+                    
                 case 3:
-                    return true; // UptimeRobot key is optional
+                    // Save settings even if UptimeRobot is skipped
+                    saveWizardSettings();
+                    return true;
+                    
                 case 4:
-                    // Only allow proceeding if tests are complete or have been attempted
                     return $('.test-status.completed, .test-status.failed').length > 0;
                 default:
                     return true;
             }
+        }
+
+        function saveWizardSettings() {
+            return $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'wpspeedtestpro_save_wizard_settings',
+                    nonce: wpspeedtestpro_ajax.nonce,
+                    region: $('#gcp-region').val(),
+                    provider: $('#hosting-provider').val(),
+                    package: $('#hosting-package').val(),
+                    allow_data_collection: $('#allow-data-collection').is(':checked'),
+                    uptimerobot_key: $('#uptimerobot-key').val()
+                }
+            });
         }
         
         $('.close-wizard').on('click', function() {
@@ -649,6 +739,8 @@ jQuery(document).ready(function($) {
                     if (response.success) {
                         const $select = $('#gcp-region');
                         $select.empty();
+                        // Add default option
+                        $select.append('<option value="">Select a region</option>');
                         response.data.forEach(region => {
                             $select.append(`<option value="${region.region}">${region.region_name}</option>`);
                         });
@@ -664,7 +756,7 @@ jQuery(document).ready(function($) {
                 }
             });
         }
-
+        
         function loadHostingProviders() {
             $.ajax({
                 url: ajaxurl,
@@ -677,6 +769,8 @@ jQuery(document).ready(function($) {
                     if (response.success) {
                         const $select = $('#hosting-provider');
                         $select.empty();
+                        // Add default option
+                        $select.append('<option value="">Select your hosting provider</option>');
                         response.data.forEach(provider => {
                             $select.append(`<option value="${provider.name}">${provider.name}</option>`);
                         });
