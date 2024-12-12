@@ -98,7 +98,7 @@ class Wpspeedtestpro_Server_Performance {
                 'wpspeedtestpro_performance',
                 array(
                     'ajaxurl' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
+                    'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
                     'testStatus' => get_option('wpspeedtestpro_performance_test_status', 'stopped'),
                     'continuousTestStatus' => get_option('wpspeedtestpro_continuous_test_status', 'stopped'),
                     'wpspeedtestpro_continuous_data' => $data
@@ -125,14 +125,14 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function dismiss_performance_info() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         update_option('wpspeedtestpro_performance_info_dismissed', true);
         wp_send_json_success();
     }
 
 
     public function ajax_performance_start_continuous_test() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
        if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
@@ -145,7 +145,7 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function ajax_performance_stop_continuous_test() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
@@ -157,7 +157,7 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function ajax_performance_get_next_test_time() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
@@ -201,7 +201,7 @@ class Wpspeedtestpro_Server_Performance {
 
 
     public function ajax_performance_toggle_test() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
@@ -212,7 +212,7 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function ajax_performance_run_test() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }
@@ -226,7 +226,7 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function ajax_performance_get_results() {
-        check_ajax_referer('wpspeedtestpro_performance_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
         }

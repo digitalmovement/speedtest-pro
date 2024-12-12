@@ -70,7 +70,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
         wp_enqueue_script($this->plugin_name . '-uptime-monitoring', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-uptime-monitoring.js', array('jquery', 'chart-js'), $this->version, false);
         wp_localize_script($this->plugin_name . '-uptime-monitoring', 'wpspeedtestpro_uptime', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_uptime_nonce'),
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
         ));
     }
 
@@ -84,7 +84,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function dismiss_uptime_info() {
-        check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         update_option('wpspeedtestpro_uptime_info_dismissed', true);
         wp_send_json_success();
     }
@@ -279,7 +279,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
 
     // AJAX Handlers
     public function uptimerobot_get_monitor_data_handler() {
-        check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         $monitor_data = $this->uptimerobot_get_monitor_data();
 
@@ -291,7 +291,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_setup_monitors_handler() {
-        check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         $setup_result = $this->uptimerobot_setup_monitors();
 
@@ -303,7 +303,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_delete_monitors_handler() {
-        check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         $delete_result = $this->uptimerobot_delete_monitors();
 
@@ -315,7 +315,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_recreate_monitors_handler() {
-        check_ajax_referer('wpspeedtestpro_uptime_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         /* $delete_result = $this->uptimerobot_delete_monitors();
         if (!$delete_result) {

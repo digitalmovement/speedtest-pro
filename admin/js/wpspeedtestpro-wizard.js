@@ -489,7 +489,7 @@ jQuery(document).ready(function($) {
                     data: {
                         action: 'wpspeedtestpro_setup_uptimerobot',
                         api_key: apiKey,
-                        nonce: wpspeedtestpro_wizard.nonce
+                        nonce: wpspeedtestpro_ajax.nonce
                     },
                     success: function(response) {
                         if (response.success) {
@@ -516,6 +516,7 @@ jQuery(document).ready(function($) {
                 switch(testType) {
                     case 'performance':
                         ajaxData.action = 'wpspeedtestpro_performance_run_test';
+             
                         break;
                         
                     case 'latency':
@@ -642,7 +643,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'wpspeedtestpro_get_gcp_endpoints',
-                    nonce: wpspeedtestpro_wizard.gcp_endpoints_nonce
+                    nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function(response) {
                     if (response.success) {
@@ -670,7 +671,7 @@ jQuery(document).ready(function($) {
                 type: 'POST',
                 data: {
                     action: 'wpspeedtestpro_get_hosting_providers',
-                    nonce: wpspeedtestpro_wizard.hosting_packages_nonce
+                    nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function(response) {
                     if (response.success) {
@@ -691,7 +692,7 @@ jQuery(document).ready(function($) {
                 data: {
                     action: 'wpspeedtestpro_get_provider_packages',
                     provider: providerId,
-                    nonce: wpspeedtestpro_wizard.hosting_packages_nonce
+                    nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function(response) {
                     if (response.success) {

@@ -64,8 +64,7 @@ class Wpspeedtestpro_Wizard {
             'wpspeedtestpro_wizard',
             array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'hosting_packages_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
-                'gcp_endpoints_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
                 'regions' => $this->core->api->get_gcp_endpoints(),
                 'providers' => $this->core->api->get_hosting_providers()
             )
@@ -96,7 +95,7 @@ class Wpspeedtestpro_Wizard {
     }
 
     public function save_wizard_settings() {
-        check_ajax_referer('wpspeedtestpro_wizard_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');
@@ -129,7 +128,7 @@ class Wpspeedtestpro_Wizard {
     }
 
     public function get_wizard_data() {
-        check_ajax_referer('wpspeedtestpro_wizard_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');
@@ -148,7 +147,7 @@ class Wpspeedtestpro_Wizard {
     }
 
     public function dismiss_wizard() {
-        check_ajax_referer('wpspeedtestpro_wizard_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');

@@ -99,7 +99,7 @@ class Wpspeedtestpro_SSL_Testing {
         wp_enqueue_script($this->plugin_name . '-ssl-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-ssl-testing.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-ssl-testing', 'wpspeedtestpro_ssl', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('ssl_testing_nonce')
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
         ));
     }
 
@@ -119,13 +119,13 @@ class Wpspeedtestpro_SSL_Testing {
     }
 
     public function dismiss_ssl_info() {
-        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         update_option('wpspeedtestpro_ssl_info_dismissed', true);
         wp_send_json_success();
     }
 
     public function start_ssl_test() {
-        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         delete_transient($this->ssl_cached_results);
 
@@ -147,7 +147,7 @@ class Wpspeedtestpro_SSL_Testing {
     }
 
     public function check_ssl_test_status() {
-        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         $registered_user_email = get_option('wpspeedtestpro_user_ssl_email');
         $email = isset($registered_user_email) ? $registered_user_email : 'default@example.com';

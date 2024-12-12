@@ -118,7 +118,7 @@ class Wpspeedtestpro_Latency_Testing {
 
         wp_localize_script($this->plugin_name . '-latency-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
             'selected_region' => get_option('wpspeedtestpro_selected_region') // Pass the selected region     
         ));        
     }
@@ -139,20 +139,20 @@ class Wpspeedtestpro_Latency_Testing {
      */
 
      public function dismiss_latency_info() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         update_option('wpspeedtestpro_latency_info_dismissed', true);
         wp_send_json_success();
     }
     
 
      public function run_once_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         $this->execute_test();
         wp_send_json_success('Test completed successfully');
     }
 
     public function start_continuous_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         update_option('wpspeedtestpro_continuous_testing', true);
         
@@ -169,7 +169,7 @@ class Wpspeedtestpro_Latency_Testing {
     }
 
     public function stop_continuous_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         update_option('wpspeedtestpro_continuous_testing', false);
         wp_clear_scheduled_hook('wpspeedtestpro_hourly_test');
@@ -178,7 +178,7 @@ class Wpspeedtestpro_Latency_Testing {
     }
 
     public function get_continuous_status() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
         $is_continuous = get_option('wpspeedtestpro_continuous_testing', false);
         
@@ -190,7 +190,7 @@ class Wpspeedtestpro_Latency_Testing {
 
 
     public function start_latency_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!wp_next_scheduled('wpspeedtestpro_cron_hook')) {
             $start_time = time();
@@ -215,7 +215,7 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function reset_latency_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         wp_clear_scheduled_hook('wpspeedtestpro_cron_hook');
         delete_option('wpspeedtestpro_start_time');
@@ -229,7 +229,7 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function stop_latency_test() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         wp_clear_scheduled_hook('wpspeedtestpro_cron_hook');
         delete_option('wpspeedtestpro_start_time');
@@ -242,7 +242,7 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function get_latest_results() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
       
         if (!$this->core->db) {
             wp_send_json_error('Database object not initialized');
@@ -272,7 +272,7 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function get_results_for_time_range() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
         $time_range = isset($_POST['time_range']) ? sanitize_text_field($_POST['time_range']) : '24_hours';
     
@@ -304,7 +304,7 @@ class Wpspeedtestpro_Latency_Testing {
      * @since    1.0.0
      */
     public function delete_all_results() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         $this->core->db->delete_all_results();
         wp_send_json_success('All results deleted');
     }
@@ -333,7 +333,7 @@ class Wpspeedtestpro_Latency_Testing {
     
 
     public function get_next_test_time() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
         $next_scheduled = wp_next_scheduled('wpspeedtestpro_hourly_test');
         

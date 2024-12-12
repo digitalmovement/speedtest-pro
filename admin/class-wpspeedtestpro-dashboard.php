@@ -98,11 +98,11 @@ class Wpspeedtestpro_Dashboard {
 
             wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_nonce'),
-                'performance_nonce' => wp_create_nonce('wpspeedtestpro_performance_nonce'),
-                'ssl_nonce' => wp_create_nonce('ssl_testing_nonce'),
-                'uptime_nonce' => wp_create_nonce('wpspeedtestpro_uptime_nonce'),
-                'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro_page-speed-testing_nonce'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                'performance_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                'ssl_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                'uptime_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                'pagespeed_nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
                 'selected_region' => get_option('wpspeedtestpro_selected_region'),
                 'home_url' => home_url()
             ));    
@@ -206,7 +206,7 @@ class Wpspeedtestpro_Dashboard {
 
 
     public function get_dashboard_data() {
-        check_ajax_referer('wpspeedtestpro_dashboard_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         $data = array(
             'performance' => $this->get_performance_summary(),
@@ -345,7 +345,7 @@ class Wpspeedtestpro_Dashboard {
     }
 
     public function get_pagespeed_data() {
-        check_ajax_referer('wpspeedtestpro_page-speed-testing_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');
@@ -357,7 +357,7 @@ class Wpspeedtestpro_Dashboard {
     }
 
     public function get_ssl_data() {
-        check_ajax_referer('ssl_testing_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');

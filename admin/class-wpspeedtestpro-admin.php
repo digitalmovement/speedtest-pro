@@ -156,7 +156,7 @@ class Wpspeedtestpro_Admin {
                 'wpspeedtestpro_dashboard',
                 array(
                     'ajax_url' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('wpspeedtestpro_dashboard_nonce'),
+                    'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
                     'selected_region' => get_option('wpspeedtestpro_selected_region'),
                     'home_url' => home_url()
                 )

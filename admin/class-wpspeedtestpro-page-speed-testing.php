@@ -79,7 +79,7 @@ class Wpspeedtestpro_PageSpeed {
         wp_enqueue_script($this->plugin_name . '-page-speed-testing', plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing.js', array('jquery'), $this->version, false);
         wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce')
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
         ));
     }
 
@@ -97,7 +97,7 @@ class Wpspeedtestpro_PageSpeed {
 
         wp_localize_script($this->plugin_name . '-page-speed-testing', 'wpspeedtestpro_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro-page-speed-testing-nonce')
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
         ));
 
     }
@@ -109,7 +109,7 @@ class Wpspeedtestpro_PageSpeed {
     }
 
   public function ajax_run_test() {
-    check_ajax_referer('pagespeed_test_nonce', 'nonce');
+    check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
     if (!current_user_can('manage_options')) {
         wp_send_json_error('Unauthorized access');
@@ -169,7 +169,7 @@ class Wpspeedtestpro_PageSpeed {
 }
 
 public function ajax_check_test_status() {
-    check_ajax_referer('pagespeed_test_nonce', 'nonce');
+    check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
     if (!current_user_can('manage_options')) {
         wp_send_json_error('Unauthorized access');
@@ -259,7 +259,7 @@ public function ajax_check_test_status() {
      * @since 1.0.0
      */
     public function ajax_delete_old_results() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
@@ -308,7 +308,7 @@ public function ajax_check_test_status() {
      */
 
     public function ajax_cancel_scheduled_test() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
@@ -347,7 +347,7 @@ public function ajax_check_test_status() {
  * @since 1.0.0
  */
     public function ajax_run_scheduled_test() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized access');
@@ -414,7 +414,7 @@ public function ajax_check_test_status() {
     }
 
     public function ajax_check_scheduled_test_status() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized access');
@@ -557,7 +557,7 @@ public function ajax_check_test_status() {
     }
 
     public function ajax_get_test_details() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized access');
@@ -855,7 +855,7 @@ public function ajax_check_test_status() {
         $results = $this->get_latest_result($url, 'both');
         $has_results = !empty($results['desktop']) || !empty($results['mobile']);
     
-        wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce'); 
+        wp_nonce_field('wpspeedtestpro_ajax_nonce', 'wpspeedtestpro_ajax_nonce'); 
         ?>
         <div class="pagespeed-meta-box" 
              data-post-id="<?php echo esc_attr($post->ID); ?>"
@@ -944,7 +944,7 @@ public function ajax_check_test_status() {
     }
 
     public function ajax_get_scheduled_tests() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized access');
@@ -1001,7 +1001,7 @@ public function ajax_check_test_status() {
      */
     
     public function ajax_get_test_results() {
-        check_ajax_referer('pagespeed_test_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized access');

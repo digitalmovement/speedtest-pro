@@ -48,7 +48,7 @@ class Wpspeedtestpro_Server_Information {
 
         wp_localize_script($this->plugin_name . '-server-information', 'wpspeedtestpro_serverinfo', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('wpspeedtestpro_nonce')
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
         ));
 
     }
@@ -58,7 +58,7 @@ class Wpspeedtestpro_Server_Information {
     }
 
     public function dismiss_serverinfo_info() {
-        check_ajax_referer('wpspeedtestpro_nonce', 'nonce');
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         update_option('wpspeedtestpro_serverinfo_info_dismissed', true);
         wp_send_json_success();
     }
