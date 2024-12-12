@@ -83,7 +83,7 @@ class Wpspeedtestpro_Wizard {
         }
 
         // Check if wizard has been completed or dismissed
-        return !get_option('wpspeedtestpro_setup_completed', false);
+        return get_option('wpspeedtestpro_setup_completed', false);
     }
 
     public function render_wizard() {
