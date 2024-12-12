@@ -130,40 +130,41 @@ jQuery(document).ready(function($) {
                                 
                                 <div class="test-status-container">
                                     <div class="test-item" data-test="latency">
-                                        <span class="test-name">Latency Test</span>
-                                        <span class="test-status pending">Pending</span>
-
-                                    </div>
-                                                                            <div class="test-progress-bar" style="display: none;">
+                                        <div class="test-info">
+                                            <span class="test-name">Latency Test</span>
+                                            <span class="test-status pending">Pending</span>
+                                        </div>
+                                        <div class="test-progress-bar" style="display: none;">
                                             <div class="progress-fill"></div>
                                         </div>
+                                    </div>
                                     <div class="test-item" data-test="ssl">
-                                        <span class="test-name">SSL Security Test</span>
-                                        <span class="test-status pending">Pending</span>
-
-
-                                    </div>
-                                                                            <div class="test-progress-bar" style="display: none;">
+                                        <div class="test-info">
+                                            <span class="test-name">SSL Security Test</span>
+                                            <span class="test-status pending">Pending</span>
+                                        </div>
+                                        <div class="test-progress-bar" style="display: none;">
                                             <div class="progress-fill"></div>
                                         </div>
+                                    </div>
                                     <div class="test-item" data-test="performance">
-                                        <span class="test-name">Performance Test</span>
-                                        <span class="test-status pending">Pending</span>
-
-
-                                    </div>
-                                                                            <div class="test-progress-bar" style="display: none;">
+                                        <div class="test-info">
+                                            <span class="test-name">Performance Test</span>
+                                            <span class="test-status pending">Pending</span>
+                                        </div>
+                                        <div class="test-progress-bar" style="display: none;">
                                             <div class="progress-fill"></div>
                                         </div>
+                                    </div>
                                     <div class="test-item" data-test="pagespeed">
-                                        <span class="test-name">PageSpeed Analysis</span>
-                                        <span class="test-status pending">Pending</span>
-
-
-                                    </div>
-                                                                            <div class="test-progress-bar" style="display: none;">
+                                        <div class="test-info">
+                                            <span class="test-name">PageSpeed Analysis</span>
+                                            <span class="test-status pending">Pending</span>
+                                        </div>
+                                        <div class="test-progress-bar" style="display: none;">
                                             <div class="progress-fill"></div>
                                         </div>
+                                    </div>
                                 </div>
 
                                 <div class="overall-progress">
@@ -349,43 +350,46 @@ jQuery(document).ready(function($) {
                        .test-item {
                     margin-bottom: 15px;
                 }
+    .test-item {
+                margin-bottom: 15px;
+            }
 
-                .test-info {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-bottom: 5px;
-                }
+            .test-info {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 5px;
+            }
 
-                .test-progress-bar {
-                    height: 4px;
-                    background: #e2e4e7;
-                    border-radius: 2px;
-                    overflow: hidden;
-                    margin-top: 5px;
-                }
+            .test-progress-bar {
+                height: 4px;
+                background: #e2e4e7;
+                border-radius: 2px;
+                overflow: hidden;
+                margin-top: 5px;
+            }
 
-                .test-progress-bar .progress-fill {
-                    height: 100%;
-                    background: #2271b1;
-                    width: 0;
-                    transition: width 0.3s linear;
-                    animation: progress-animation 2s linear infinite;
-                }
+            .test-progress-bar .progress-fill {
+                height: 100%;
+                background: #2271b1;
+                width: 0;
+                transition: width 0.3s linear;
+                animation: progress-animation 2s linear infinite;
+            }
 
-                @keyframes progress-animation {
-                    0% {
-                        width: 0%;
-                        opacity: 1;
-                    }
-                    50% {
-                        width: 100%;
-                        opacity: 0.5;
-                    }
-                    100% {
-                        width: 0%;
-                        opacity: 1;
-                    }
+            @keyframes progress-animation {
+                0% {
+                    width: 0%;
+                    opacity: 1;
                 }
+                50% {
+                    width: 100%;
+                    opacity: 0.5;
+                }
+                100% {
+                    width: 0%;
+                    opacity: 1;
+                }
+            }
 
                 
             </style>
@@ -430,57 +434,54 @@ jQuery(document).ready(function($) {
             const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
             let completedTests = 0;
             let failedTests = [];
-        
-            // If UptimeRobot key is provided, add UptimeRobot setup to tests
+
             if (hasUptimeRobotKey) {
                 const $uptimeRobotItem = $(`
                     <div class="test-item" data-test="uptimerobot">
-                        <span class="test-name">UptimeRobot Setup</span>
-                        <span class="test-status pending">Pending</span>
+                        <div class="test-info">
+                            <span class="test-name">UptimeRobot Setup</span>
+                            <span class="test-status pending">Pending</span>
+                        </div>
+                        <div class="test-progress-bar" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
                     </div>
                 `);
                 $('.test-status-container').prepend($uptimeRobotItem);
                 tests.unshift('uptimerobot');
             }
-        
+
             $('.progress-label').text('Starting tests...');
-        
+
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
-                $testItem.find('.test-status')
-                    .removeClass('pending')
-                    .addClass('running')
-                    .text('Running...');
-
+                const $status = $testItem.find('.test-status');
+                const $progressBar = $testItem.find('.test-progress-bar');
+                
+                $status.removeClass('pending').addClass('running').text('Running...');
+                $progressBar.show();
 
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
                     } else {
-                        // Run the test and wait for initial response
                         await runTest(testType);
                         
-                        // For tests that need status checking
                         if (['ssl', 'pagespeed'].includes(testType)) {
                             await checkTestStatus(testType);
                         }
                     }
                     
                     completedTests++;
-                    $testItem.find('.test-status')
-                        .removeClass('running')
-                        .addClass('completed')
-                        .text('Completed');
+                    $status.removeClass('running').addClass('completed').text('Completed');
+                    $progressBar.hide();
                 } catch (error) {
                     failedTests.push(testType);
-                    $testItem.find('.test-status')
-                        .removeClass('running')
-                        .addClass('failed')
-                        .text('Failed');
+                    $status.removeClass('running').addClass('failed').text('Failed');
+                    $progressBar.hide();
                     console.error(`Test ${testType} failed:`, error);
                 }
-        
-                // Update overall progress
+
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
                 $('.progress-label').text(`${completedTests} of ${tests.length} tests completed`);
