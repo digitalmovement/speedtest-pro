@@ -72,6 +72,11 @@ class Wpspeedtestpro_Uptime_Monitoring {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
         ));
+
+        wp_localize_script($this->plugin_name . '-uptime-monitoring', 'wpspeedtestpro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+        ));
     }
 
     public function display_uptime_monitoring() {

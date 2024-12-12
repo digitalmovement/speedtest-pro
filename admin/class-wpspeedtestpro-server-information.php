@@ -51,6 +51,12 @@ class Wpspeedtestpro_Server_Information {
             'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
         ));
 
+        wp_localize_script($this->plugin_name . '-server-information', 'wpspeedtestpro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
+        ));
+
+
     }
 
     public function display_server_information() {

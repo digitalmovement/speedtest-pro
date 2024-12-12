@@ -104,6 +104,14 @@ class Wpspeedtestpro_Server_Performance {
                     'wpspeedtestpro_continuous_data' => $data
                 )
             );
+
+            wp_localize_script($this->plugin_name . '-server-performance', 'wpspeedtestpro_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
+            ));
+
+            
+
         }
     }
 

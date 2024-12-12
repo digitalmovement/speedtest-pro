@@ -161,12 +161,7 @@ class Wpspeedtestpro_Admin {
                     'home_url' => home_url()
                 )
             );
-            wp_localize_script($this->plugin_name . '-admin', 'wpspeedtestpro_ajax', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
-                'selected_region' => get_option('wpspeedtestpro_selected_region') // Pass the selected region     
-            ));      
-
+     
 
 
     }
