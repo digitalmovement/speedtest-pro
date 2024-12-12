@@ -69,7 +69,7 @@
                 </div>
 
                 <div class="pagespeed-form-column submit-column">
-                    <?php wp_nonce_field('pagespeed_test_nonce', 'pagespeed_test_nonce'); ?>
+                    <?php wp_nonce_field('wpspeedtestpro_ajax_nonce', 'wpspeedtestpro_ajax_nonce'); ?>
                     <button type="submit" class="button button-primary">Run Test</button>
                 </div>
             </div>

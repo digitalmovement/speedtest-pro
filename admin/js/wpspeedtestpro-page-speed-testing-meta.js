@@ -71,7 +71,7 @@ jQuery(document).ready(function($) {
         // Start the test
         $.post(ajaxurl, {
             action: 'pagespeed_run_test',
-            nonce: $('#pagespeed_test_nonce').val(),
+            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: url,
             device: 'both',
             frequency: 'once'
@@ -143,7 +143,7 @@ jQuery(document).ready(function($) {
         
         $.post(ajaxurl, {
             action: 'pagespeed_check_test_status',
-            nonce: $('#pagespeed_test_nonce').val(),
+            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: url
         }, function(response) {
             if (!response.success) {

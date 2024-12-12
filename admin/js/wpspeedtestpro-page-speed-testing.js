@@ -17,7 +17,7 @@ jQuery(document).ready(function($) {
         // Collect form data
         const data = {
             action: 'pagespeed_run_test',
-            nonce: $('#pagespeed_test_nonce').val(),
+            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: $('#test-url').val(),
             device: $('#test-device').val(),
             frequency: $('#test-frequency').val()
@@ -49,7 +49,7 @@ jQuery(document).ready(function($) {
         
         $.post(ajaxurl, {
             action: 'pagespeed_delete_old_results',
-            nonce: $('#pagespeed_test_nonce').val(),
+            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             days: days
         }, function(response) {
             if (response.success) {
@@ -98,7 +98,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_get_test_details',
-                nonce: $('#pagespeed_test_nonce').val(),
+                nonce: $('#wpspeedtestpro_ajax_nonce').val(),
                 test_id: testId
             },
             success: function(response) {
@@ -317,7 +317,7 @@ jQuery(document).ready(function($) {
         
         $.post(ajaxurl, {
             action: 'pagespeed_check_test_status',
-            nonce: $('#pagespeed_test_nonce').val(),
+            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: url
         }, function(response) {
             if (!response.success) {
@@ -359,7 +359,7 @@ jQuery(document).ready(function($) {
     function cancelScheduledTest(id) {
         $.post(ajaxurl, {
             action: 'pagespeed_cancel_scheduled_test',
-            nonce: $('#pagespeed_test_nonce').val(),
+            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             schedule_id: id
         }, function(response) {
             if (response.success) {
@@ -383,7 +383,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_run_scheduled_test',
-                nonce: $('#pagespeed_test_nonce').val(),
+                nonce: $('#wpspeedtestpro_ajax_nonce').val(),
                 schedule_id: id
             },
             success: function(response) {
@@ -417,7 +417,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_check_scheduled_test_status',
-                nonce: $('#pagespeed_test_nonce').val(),
+                nonce: $('#wpspeedtestpro_ajax_nonce').val(),
                 schedule_id: scheduleId
             },
             success: function(response) {
@@ -531,7 +531,7 @@ jQuery(document).ready(function($) {
     function loadTestHistory() {
         $.post(ajaxurl, {
             action: 'pagespeed_get_test_results',
-            nonce: $('#pagespeed_test_nonce').val()
+            nonce: $('#wpspeedtestpro_ajax_nonce').val()
         }, function(response) {
             if (response.success) {
                 updateTestHistory(response.data.results);
@@ -591,7 +591,7 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_get_scheduled_tests',
-                nonce: $('#pagespeed_test_nonce').val()
+                nonce: $('#wpspeedtestpro_ajax_nonce').val()
             },
             success: function(response) {
                 if (response.success) {
