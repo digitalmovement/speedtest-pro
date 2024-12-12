@@ -122,7 +122,7 @@ class Wpspeedtestpro_Wizard {
         }
 
         // Mark wizard as completed
-        update_option('wpspeedtestpro_setup_completed', true);
+       // update_option('wpspeedtestpro_setup_completed', true);
 
         wp_send_json_success('Settings saved successfully');
     }
