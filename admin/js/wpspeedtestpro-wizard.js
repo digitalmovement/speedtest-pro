@@ -199,200 +199,375 @@ jQuery(document).ready(function($) {
 
         // Add styles for the new UI
         const wizardStyles = `
-            <style>
-                .progress-steps {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin: 20px 0;
-                    padding: 0 20px;
-                }
+<style>
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px 0;
+        padding: 0 20px;
+    }
 
-                .step-item {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    flex: 1;
-                    position: relative;
-                }
+    .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        position: relative;
+    }
 
-                .step-circle {
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50%;
-                    background: #e0e0e0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: #666;
-                    margin-bottom: 8px;
-                    font-weight: bold;
-                }
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
 
-                .step-line {
-                    position: absolute;
-                    top: 15px;
-                    right: -50%;
-                    width: 100%;
-                    height: 2px;
-                    background: #e0e0e0;
-                    z-index: -1;
-                }
+    .step-line {
+        position: absolute;
+        top: 15px;
+        right: -50%;
+        width: 100%;
+        height: 2px;
+        background: #e0e0e0;
+        z-index: -1;
+    }
 
-                .step-item:last-child .step-line {
-                    display: none;
-                }
+    .step-item:last-child .step-line {
+        display: none;
+    }
 
-                .step-item.active .step-circle {
-                    background: #2271b1;
-                    color: white;
-                }
+    .step-item.active .step-circle {
+        background: #2271b1;
+        color: white;
+    }
 
-                .step-item.completed .step-circle {
-                    background: #00a32a;
-                    color: white;
-                }
+    .step-item.completed .step-circle {
+        background: #00a32a;
+        color: white;
+    }
 
-                .step-item.active ~ .step-item .step-line,
-                .step-item.completed ~ .step-item .step-line {
-                    background: #e0e0e0;
-                }
+    .step-item.active ~ .step-item .step-line,
+    .step-item.completed ~ .step-item .step-line {
+        background: #e0e0e0;
+    }
 
-                .step-item.completed .step-line {
-                    background: #00a32a;
-                }
+    .step-item.completed .step-line {
+        background: #00a32a;
+    }
 
-                .welcome-content {
-                    text-align: center;
-                    padding: 20px;
-                }
+    .welcome-content {
+        text-align: center;
+        padding: 20px;
+    }
 
-                .feature-grid {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 20px;
-                    margin: 30px 0;
-                }
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin: 30px 0;
+    }
 
-                .feature-item {
-                    padding: 20px;
-                    background: #f8f9fa;
-                    border-radius: 8px;
-                    text-align: center;
-                }
+    .feature-item {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        text-align: center;
+    }
 
-                .feature-icon {
-                    font-size: 2em;
-                    margin-bottom: 10px;
-                    display: block;
-                }
+    .feature-icon {
+        font-size: 2em;
+        margin-bottom: 10px;
+        display: block;
+    }
 
-                .test-status-container {
-                    margin: 20px 0;
-                }
+    .test-status-container {
+        margin: 20px 0;
+    }
 
-                .test-item {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 10px;
-                    border-bottom: 1px solid #eee;
-                }
-
-                .test-status {
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 0.9em;
-                }
-
-                .test-status.pending {
-                    background: #f0f0f1;
-                    color: #666;
-                }
-
-                .test-status.running {
-                    background: #fff4e5;
-                    color: #996300;
-                }
-
-                .test-status.completed {
-                    background: #edf7ed;
-                    color: #005200;
-                }
-
-                .test-status.failed {
-                    background: #fee;
-                    color: #c00;
-                }
-
-                .overall-progress {
-                    margin-top: 20px;
-                }
-
-                .start-tests {
-                    background: #2271b1;
-                    color: white;
-                    padding: 12px 24px;
-                    border-radius: 4px;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 1.1em;
-                }
-
-                .start-tests:hover {
-                    background: #135e96;
-                }
-
-                .start-tests:disabled {
-                    background: #e0e0e0;
-                    cursor: not-allowed;
-                }
-                       .test-item {
-                    margin-bottom: 15px;
-                }
     .test-item {
-                margin-bottom: 15px;
-            }
+        margin-bottom: 15px;
+    }
 
-            .test-info {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 5px;
-            }
+    .test-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
 
-            .test-progress-bar {
-                height: 4px;
-                background: #e2e4e7;
-                border-radius: 2px;
-                overflow: hidden;
-                margin-top: 5px;
-            }
+    .test-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
 
-            .test-progress-bar .progress-fill {
-                height: 100%;
-                background: #2271b1;
-                width: 0;
-                transition: width 0.3s linear;
-                animation: progress-animation 2s linear infinite;
-            }
+    .test-status.pending {
+        background: #f0f0f1;
+        color: #666;
+    }
 
-            @keyframes progress-animation {
-                0% {
-                    width: 0%;
-                    opacity: 1;
-                }
-                50% {
-                    width: 100%;
-                    opacity: 0.5;
-                }
-                100% {
-                    width: 0%;
-                    opacity: 1;
-                }
-            }
+    .test-status.running {
+        background: #fff4e5;
+        color: #996300;
+    }
 
-                
-            </style>
+    .test-status.completed {
+        background: #edf7ed;
+        color: #005200;
+    }
+
+    .test-status.failed {
+        background: #fee;
+        color: #c00;
+    }
+
+    .test-progress-bar {
+        height: 4px;
+        background: #e2e4e7;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
+    .test-progress-bar .progress-fill {
+        height: 100%;
+        background: #2271b1;
+        width: 0;
+        transition: width 0.3s linear;
+        animation: progress-animation 2s linear infinite;
+    }
+
+    @keyframes progress-animation {
+        0% {
+            width: 0%;
+            opacity: 1;
+        }
+        50% {
+            width: 100%;
+            opacity: 0.5;
+        }
+        100% {
+            width: 0%;
+            opacity: 1;
+        }
+    }
+
+    .overall-progress {
+        margin-top: 20px;
+    }
+
+    .overall-progress .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e2e4e7;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .overall-progress .progress-fill {
+        height: 100%;
+        background: #2271b1;
+        width: 0;
+        transition: width 0.3s ease-in-out;
+    }
+
+    .start-tests {
+        background: #2271b1;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1em;
+    }
+
+    .start-tests:hover {
+        background: #135e96;
+    }
+
+    .start-tests:disabled {
+        background: #e0e0e0;
+        cursor: not-allowed;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .form-group select,
+    .form-group input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .help-text {
+        color: #666;
+        font-size: 0.9em;
+        margin-top: 4px;
+    }
+
+    .privacy-opt {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        margin-top: 30px;
+    }
+
+    .privacy-note {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 8px;
+    }
+
+    /* Mission Statement */
+    .mission-statement {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .mission-statement h3 {
+        margin-bottom: 10px;
+        color: #1d2327;
+    }
+
+    /* Wizard Modal */
+    .wpspeedtestpro-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100000;
+    }
+
+    .wpspeedtestpro-modal-content {
+        background: white;
+        width: 90%;
+        max-width: 800px;
+        max-height: 90vh;
+        border-radius: 8px;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        overflow-y: auto;
+    }
+
+    .wizard-header {
+        padding: 20px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .wizard-header h2 {
+        margin: 0;
+    }
+
+    .close-wizard {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .wizard-body {
+        padding: 20px;
+    }
+
+    .wizard-footer {
+        padding: 20px;
+        border-top: 1px solid #ddd;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .wizard-footer button {
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .prev-step {
+        background: #f0f0f1;
+        border: 1px solid #ddd;
+        color: #1d2327;
+    }
+
+    .next-step,
+    .finish-setup {
+        background: #2271b1;
+        border: none;
+        color: white;
+    }
+
+    .next-step:hover,
+    .finish-setup:hover {
+        background: #135e96;
+    }
+
+    /* Completion Summary */
+    .completion-summary {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 4px;
+        margin-top: 20px;
+    }
+
+    .setup-summary {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0 0;
+    }
+
+    .setup-summary li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .setup-summary li:last-child {
+        border-bottom: none;
+    }
+
+    /* Skip Note */
+    .skip-note {
+        color: #666;
+        font-style: italic;
+        margin-top: 10px;
+    }
+
+    /* Test Failed Message */
+    .test-failed-message {
+        background: #fef7f7;
+        border-left: 4px solid #c00;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 2px;
+    }
+</style>
         `;
 
 
