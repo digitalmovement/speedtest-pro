@@ -8,7 +8,7 @@ jQuery(document).ready(function($) {
             <div id="wpspeedtestpro-setup-wizard" class="wpspeedtestpro-modal">
                 <div class="wpspeedtestpro-modal-content">
                     <div class="wizard-header">
-                        <h2>Welcome to WP Speed Test Pro</h2>
+                        <h2>Welcome to WP SpeedTest Pro Setup Wizard</h2>
                         <button class="close-wizard">&times;</button>
                     </div>
                     
@@ -45,7 +45,7 @@ jQuery(document).ready(function($) {
                         <!-- Step 1: Welcome -->
                         <div class="wizard-step" data-step="1">
                             <div class="welcome-content">
-                                <h1>Welcome to WP Speed Test Pro! 👋</h1>
+                                <h1>Welcome to WP SpeedTest Pro! 👋</h1>
                                 <p class="welcome-intro">Ready to discover your WordPress site's true performance?</p>
                                 
                                 <div class="feature-grid">
@@ -73,7 +73,7 @@ jQuery(document).ready(function($) {
 
                                 <div class="mission-statement">
                                     <h3>Our Mission</h3>
-                                    <p>WP Speed Test Pro helps WordPress users choose better hosting with clear, data-driven performance insights. We identify the best providers, call out the worst, and help users get more value from their hosting. Committed to the WordPress community, we offer this service free.</p>
+                                    <p>WP SpeedTest Pro helps WordPress users choose better hosting with clear, data-driven performance insights. We identify the best hosting providers, call out the worst, and help users get more value from their hosting. Committed to the WordPress community, we offer this plguin for free.</p>
                                 </div>
                             </div>
                         </div>
@@ -102,8 +102,8 @@ jQuery(document).ready(function($) {
                                         <input type="checkbox" id="allow-data-collection" name="allow-data-collection" checked>
                                         Help improve WP Speed Test Pro by allowing anonymous data collection
                                     </label>
-                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. You can stop sharing at any time in Settings</p>
-                                    <p class="privacy-note">For more information you can view our full <a target="_new" href="https://wpspeedtestpro.com/privacy">privacy policy</a></p>
+                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. You can stop sharing at any time in Settings.
+                                   For more information you can view our full <a target="_new" href="https://wpspeedtestpro.com/privacy">privacy policy</a></p>
                                 </div>
                             </div>
                         </div>
@@ -367,7 +367,7 @@ jQuery(document).ready(function($) {
             const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
             let completedTests = 0;
             let failedTests = [];
-
+        
             // If UptimeRobot key is provided, add UptimeRobot setup to tests
             if (hasUptimeRobotKey) {
                 const $uptimeRobotItem = $(`
@@ -379,22 +379,29 @@ jQuery(document).ready(function($) {
                 $('.test-status-container').prepend($uptimeRobotItem);
                 tests.unshift('uptimerobot');
             }
-
+        
             $('.progress-label').text('Starting tests...');
-
+        
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
                 $testItem.find('.test-status')
                     .removeClass('pending')
                     .addClass('running')
                     .text('Running...');
-
+        
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
                     } else {
+                        // Run the test and wait for initial response
                         await runTest(testType);
+                        
+                        // For tests that need status checking
+                        if (['ssl', 'pagespeed'].includes(testType)) {
+                            await checkTestStatus(testType);
+                        }
                     }
+                    
                     completedTests++;
                     $testItem.find('.test-status')
                         .removeClass('running')
@@ -406,13 +413,16 @@ jQuery(document).ready(function($) {
                         .removeClass('running')
                         .addClass('failed')
                         .text('Failed');
+                    console.error(`Test ${testType} failed:`, error);
                 }
-
+        
                 // Update overall progress
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
+                $('.progress-label').text(`${completedTests} of ${tests.length} tests completed`);
             }
-
+        
+            // Final status update
             if (failedTests.length > 0) {
                 const failedTestsNames = failedTests.map(t => {
                     const name = t.charAt(0).toUpperCase() + t.slice(1);
@@ -428,12 +438,48 @@ jQuery(document).ready(function($) {
             } else {
                 $('.progress-label').text('All tests completed successfully!');
             }
-
+        
             // Show next step button after tests are complete
             $('.next-step').prop('disabled', false).show();
             $('.start-tests').hide();
         }
         
+        // Function to check test status for SSL and PageSpeed tests
+        function checkTestStatus(testType) {
+            return new Promise((resolve, reject) => {
+                const checkStatus = () => {
+                    const action = testType === 'ssl' ? 'check_ssl_test_status' : 'pagespeed_check_test_status';
+                    
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: action,
+                            nonce: wpspeedtestpro_ajax.nonce,
+                            url: window.location.origin // Only needed for PageSpeed
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                if (response.data.status === 'complete' || response.data.status === 'completed') {
+                                    resolve(response);
+                                } else if (response.data.status === 'running' || response.data.status === 'in_progress') {
+                                    setTimeout(checkStatus, 5000); // Check again in 5 seconds
+                                } else {
+                                    reject(new Error(`Unexpected status: ${response.data.status}`));
+                                }
+                            } else {
+                                reject(new Error(response.data || 'Status check failed'));
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            reject(new Error(error));
+                        }
+                    });
+                };
+        
+                checkStatus();
+            });
+        }
         // Add function to setup UptimeRobot
         function setupUptimeRobot(apiKey) {
             return new Promise((resolve, reject) => {
@@ -462,13 +508,40 @@ jQuery(document).ready(function($) {
         
         function runTest(testType) {
             return new Promise((resolve, reject) => {
+                let ajaxData = {
+                    nonce: wpspeedtestpro_ajax.nonce
+                };
+        
+                // Configure test-specific parameters
+                switch(testType) {
+                    case 'performance':
+                        ajaxData.action = 'wpspeedtestpro_performance_run_test';
+                        break;
+                        
+                    case 'latency':
+                        ajaxData.action = 'wpspeedtestpro_run_once_test';
+                        break;
+                        
+                    case 'ssl':
+                        ajaxData.action = 'start_ssl_test';
+                        break;
+                        
+                    case 'pagespeed':
+                        ajaxData.action = 'pagespeed_run_test';
+                        ajaxData.url = window.location.origin; // Homepage URL
+                        ajaxData.device = 'both';
+                        ajaxData.frequency = 'once';
+                        break;
+                        
+                    default:
+                        reject(new Error('Unknown test type'));
+                        return;
+                }
+        
                 $.ajax({
                     url: ajaxurl,
                     type: 'POST',
-                    data: {
-                        action: `wpspeedtestpro_${testType}_run_test`,
-                        nonce: wpspeedtestpro_ajax.nonce
-                    },
+                    data: ajaxData,
                     success: function(response) {
                         if (response.success) {
                             resolve(response);
