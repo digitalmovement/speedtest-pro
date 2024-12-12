@@ -132,26 +132,45 @@ jQuery(document).ready(function($) {
                                     <div class="test-item" data-test="latency">
                                         <span class="test-name">Latency Test</span>
                                         <span class="test-status pending">Pending</span>
+
                                     </div>
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
                                     <div class="test-item" data-test="ssl">
                                         <span class="test-name">SSL Security Test</span>
                                         <span class="test-status pending">Pending</span>
+
+
                                     </div>
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
                                     <div class="test-item" data-test="performance">
                                         <span class="test-name">Performance Test</span>
                                         <span class="test-status pending">Pending</span>
+
+
                                     </div>
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
                                     <div class="test-item" data-test="pagespeed">
                                         <span class="test-name">PageSpeed Analysis</span>
                                         <span class="test-status pending">Pending</span>
+
+
                                     </div>
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
                                 </div>
 
                                 <div class="overall-progress">
                                     <div class="progress-bar">
                                         <div class="progress-fill"></div>
                                     </div>
-                                    <div class="progress-label">Preparing tests...</div>
+                                    <div class="progress-label">Click on the test button when you're ready...</div>
                                 </div>
                             </div>
                         </div>
@@ -432,17 +451,6 @@ jQuery(document).ready(function($) {
                     .removeClass('pending')
                     .addClass('running')
                     .text('Running...');
-                    
-                    const testItemTemplate = `
-                    <div class="test-item" data-test="${testType}">
-                        <div class="test-info">
-                            <span class="test-name">${testName}</span>
-                            <span class="test-status pending">Pending</span>
-                        </div>
-                        <div class="test-progress-bar" style="display: none;">
-                            <div class="progress-fill"></div>
-                        </div>
-                    </div>`;
 
 
                 try {
