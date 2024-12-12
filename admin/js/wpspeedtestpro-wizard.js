@@ -372,16 +372,7 @@ jQuery(document).ready(function($) {
             </style>
         `;
 
-        const testItemTemplate = `
-        <div class="test-item" data-test="${testType}">
-            <div class="test-info">
-                <span class="test-name">${testName}</span>
-                <span class="test-status pending">Pending</span>
-            </div>
-            <div class="test-progress-bar" style="display: none;">
-                <div class="progress-fill"></div>
-            </div>
-        </div>`;
+
 
         $('head').append(wizardStyles);
         $('body').append(wizardHtml);
@@ -441,7 +432,19 @@ jQuery(document).ready(function($) {
                     .removeClass('pending')
                     .addClass('running')
                     .text('Running...');
-        
+                    
+                    const testItemTemplate = `
+                    <div class="test-item" data-test="${testType}">
+                        <div class="test-info">
+                            <span class="test-name">${testName}</span>
+                            <span class="test-status pending">Pending</span>
+                        </div>
+                        <div class="test-progress-bar" style="display: none;">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>`;
+
+
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
