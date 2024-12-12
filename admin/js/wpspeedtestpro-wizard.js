@@ -124,45 +124,53 @@ jQuery(document).ready(function($) {
 
                         <!-- Step 3: Testing -->
                         <div class="wizard-step" data-step="4" style="display: none;">
-                            <div class="test-status-container">
-                                <div class="test-item" data-test="latency">
-                                    <div class="test-info">
+                            <div class="testing-container">
+                                <h3>Initial Performance Analysis</h3>
+                                <p>We'll run a comprehensive series of tests to analyze your site's performance. This might take a few minutes.</p>
+                                
+                                <div class="test-status-container">
+                                    <div class="test-item" data-test="latency">
                                         <span class="test-name">Latency Test</span>
                                         <span class="test-status pending">Pending</span>
+
                                     </div>
-                                    <div class="test-progress-bar" style="display: none;">
-                                        <div class="progress-fill"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="test-item" data-test="ssl">
-                                    <div class="test-info">
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                    <div class="test-item" data-test="ssl">
                                         <span class="test-name">SSL Security Test</span>
                                         <span class="test-status pending">Pending</span>
+
+
                                     </div>
-                                    <div class="test-progress-bar" style="display: none;">
-                                        <div class="progress-fill"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="test-item" data-test="performance">
-                                    <div class="test-info">
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                    <div class="test-item" data-test="performance">
                                         <span class="test-name">Performance Test</span>
                                         <span class="test-status pending">Pending</span>
+
+
                                     </div>
-                                    <div class="test-progress-bar" style="display: none;">
-                                        <div class="progress-fill"></div>
-                                    </div>
-                                </div>
-                                
-                                <div class="test-item" data-test="pagespeed">
-                                    <div class="test-info">
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                    <div class="test-item" data-test="pagespeed">
                                         <span class="test-name">PageSpeed Analysis</span>
                                         <span class="test-status pending">Pending</span>
+
+
                                     </div>
-                                    <div class="test-progress-bar" style="display: none;">
+                                                                            <div class="test-progress-bar" style="display: none;">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                </div>
+
+                                <div class="overall-progress">
+                                    <div class="progress-bar">
                                         <div class="progress-fill"></div>
                                     </div>
+                                    <div class="progress-label">Click on the test button when you're ready...</div>
                                 </div>
                             </div>
                         </div>
@@ -338,52 +346,47 @@ jQuery(document).ready(function($) {
                     background: #e0e0e0;
                     cursor: not-allowed;
                 }
-
-
-            .test-item {
-                margin-bottom: 15px;
-                padding: 10px;
-                border: 1px solid #e2e4e7;
-                border-radius: 4px;
-            }
-
-            .test-info {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-            }
-
-            .test-progress-bar {
-                height: 4px;
-                background: #e2e4e7;
-                border-radius: 2px;
-                overflow: hidden;
-                margin-top: 8px;
-            }
-
-            .test-progress-bar .progress-fill {
-                height: 100%;
-                background: #2271b1;
-                width: 0;
-                transition: width 0.3s linear;
-                animation: progress-animation 2s linear infinite;
-            }
-
-            @keyframes progress-animation {
-                0% {
-                    opacity: 1;
-                    width: 0%;
+                       .test-item {
+                    margin-bottom: 15px;
                 }
-                50% {
-                    opacity: 0.5;
-                    width: 100%;
+
+                .test-info {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-bottom: 5px;
                 }
-                100% {
-                    opacity: 1;
-                    width: 0%;
+
+                .test-progress-bar {
+                    height: 4px;
+                    background: #e2e4e7;
+                    border-radius: 2px;
+                    overflow: hidden;
+                    margin-top: 5px;
                 }
-            }
+
+                .test-progress-bar .progress-fill {
+                    height: 100%;
+                    background: #2271b1;
+                    width: 0;
+                    transition: width 0.3s linear;
+                    animation: progress-animation 2s linear infinite;
+                }
+
+                @keyframes progress-animation {
+                    0% {
+                        width: 0%;
+                        opacity: 1;
+                    }
+                    50% {
+                        width: 100%;
+                        opacity: 0.5;
+                    }
+                    100% {
+                        width: 0%;
+                        opacity: 1;
+                    }
+                }
+
                 
             </style>
         `;
@@ -574,55 +577,64 @@ jQuery(document).ready(function($) {
                 
                 // Show progress bar
                 $progressBar.show();
-        
+
+
                 let ajaxData = {
-                    action: getActionForTestType(testType),
                     nonce: wpspeedtestpro_ajax.nonce
                 };
         
-                // Add URL for PageSpeed test
-                if (testType === 'pagespeed') {
-                    ajaxData.url = window.location.origin;
-                    ajaxData.device = 'both';
-                    ajaxData.frequency = 'once';
+                // Configure test-specific parameters
+                switch(testType) {
+                    case 'performance':
+                        ajaxData.action = 'wpspeedtestpro_performance_run_test';
+             
+                        break;
+                        
+                    case 'latency':
+                        ajaxData.action = 'wpspeedtestpro_run_once_test';
+                        break;
+                        
+                    case 'ssl':
+                        ajaxData.action = 'start_ssl_test';
+                        break;
+                        
+                    case 'pagespeed':
+                        ajaxData.action = 'pagespeed_run_test';
+                        ajaxData.url = window.location.origin; // Homepage URL
+                        ajaxData.device = 'both';
+                        ajaxData.frequency = 'once';
+                        break;
+                        
+                    default:
+                        reject(new Error('Unknown test type'));
+                        return;
                 }
         
                 $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: ajaxData,
-                    success: function(response) {
-                        if (response.success) {
-                            if (['ssl', 'pagespeed'].includes(testType)) {
-                                // Keep progress bar for tests that need status checking
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: ajaxData,
+                        success: function(response) {
+                            if (response.success) {
+                                if (['ssl', 'pagespeed'].includes(testType)) {
+                                    // Keep progress bar for tests that need status checking
+                                } else {
+                                    // Hide progress bar for completed tests
+                                    $progressBar.hide();
+                                }
+                                resolve(response);
                             } else {
-                                // Hide progress bar for completed tests
                                 $progressBar.hide();
+                                reject(new Error(response.data || 'Test failed'));
                             }
-                            resolve(response);
-                        } else {
+                        },
+                        error: function(xhr, status, error) {
                             $progressBar.hide();
-                            reject(new Error(response.data || 'Test failed'));
+                            reject(new Error(error));
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        $progressBar.hide();
-                        reject(new Error(error));
-                    }
-                });
+                    });
             });
         }
-        
-        function getActionForTestType(testType) {
-            const actionMap = {
-                'performance': 'wpspeedtestpro_performance_run_test',
-                'latency': 'wpspeedtestpro_run_once_test',
-                'ssl': 'start_ssl_test',
-                'pagespeed': 'pagespeed_run_test'
-            };
-            return actionMap[testType] || '';
-        }
-
 
         function updateWizardStep() {
             // Hide all steps
