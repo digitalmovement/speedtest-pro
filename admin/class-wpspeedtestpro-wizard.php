@@ -128,13 +128,16 @@ class Wpspeedtestpro_Wizard {
             }
         }
     
+
+        $settings['allow_data_collection'] = false;
+        
         try {
             // Save settings with error checking
             $update_results = array(
                 update_option('wpspeedtestpro_selected_region', $settings['gcp_region']),
                 update_option('wpspeedtestpro_selected_provider', $settings['hosting_provider']),
                 update_option('wpspeedtestpro_selected_package', $settings['hosting_package']),
-                //update_option('wpspeedtestpro_allow_data_collection', $settings['allow_data_collection'])
+                update_option('wpspeedtestpro_allow_data_collection', $settings['allow_data_collection'])
             );
     
             // Only update UptimeRobot API key if provided
