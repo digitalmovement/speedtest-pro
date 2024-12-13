@@ -90,6 +90,7 @@
     margin: 1em 0;
 }
 
+/*
 .wpspeedtestpro-tab th,
 .wpspeedtestpro-tab td,
 .ssl-tab th,
@@ -101,12 +102,15 @@
     border: 1px solid #e5e5e5;
 }
 
+
 .wpspeedtestpro-tab th,
 .ssl-tab th,
 .ui-tabs-panel th {
     background-color: #f8f9fa;
     font-weight: bold;
 }
+
+*/
 
 /* Responsive adjustments */
 @media screen and (max-width: 782px) {

@@ -929,7 +929,7 @@ jQuery(document).ready(function($) {
                         // Add default option
                         $select.append('<option value="">Select a region</option>');
                         response.data.forEach(region => {
-                            $select.append(`<option value="${region.region}">${region.region_name}</option>`);
+                            $select.append(`<option value="${region.region_name}">${region.region_name}</option>`);
                         });
                     } else {
                         console.error('Failed to load GCP regions');

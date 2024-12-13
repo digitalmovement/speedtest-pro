@@ -49,7 +49,7 @@
                         ?>
                     </select>
                 </div>
-
+                <!--
                 <div class="pagespeed-form-column">
                     <label for="test-device">Device Type</label>
                     <select name="device" id="test-device">
@@ -58,7 +58,10 @@
                         <option value="mobile">Mobile Only</option>
                     </select>
                 </div>
+                -->
 
+                <input type="hidden" name="device" value="both" />
+                
                 <div class="pagespeed-form-column">
                     <label for="test-frequency">Test Frequency</label>
                     <select name="frequency" id="test-frequency">
