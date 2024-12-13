@@ -715,7 +715,7 @@ jQuery(document).ready(function($) {
                     url: ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'wpspeedtestpro_setup_uptimerobot',
+                        action: 'wpspeedtestpro_uptimerobot_setup_monitors',
                         api_key: apiKey,
                         nonce: wpspeedtestpro_ajax.nonce
                     },
