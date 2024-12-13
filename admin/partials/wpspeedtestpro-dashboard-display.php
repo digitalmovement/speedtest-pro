@@ -227,6 +227,14 @@
                 View Documentation
             </a>
         </div>
+        <div class="event-card bugreport">
+            <i class="fas fa-bug"></i>
+            <h3>Bug Report</h3>
+            <p>Found an issue? Report it directly to us so we can make things better</p>
+            <a href="https://wpspeedtestpro.com/bugreport" target="_blank" class="button button-secondary">
+                Bug Report
+            </a>
+        </div>
         <div class="event-card support">
             <i class="fas fa-life-ring"></i>
             <h3>Help & Support</h3>
