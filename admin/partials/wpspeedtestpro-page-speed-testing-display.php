@@ -60,8 +60,8 @@
                 </div>
                 -->
 
-                <input type="hidden" name="device" value="both" />
-                
+                <input id="test-device" type="hidden" name="device" value="both" />
+
                 <div class="pagespeed-form-column">
                     <label for="test-frequency">Test Frequency</label>
                     <select name="frequency" id="test-frequency">

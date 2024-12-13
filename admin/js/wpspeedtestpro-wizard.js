@@ -116,7 +116,7 @@ jQuery(document).ready(function($) {
                                 <input type="text" id="uptimerobot-key" name="uptimerobot-key">
                                 <p class="help-text">
                                     Don't have an API key? 
-                                    <a href="https://uptimerobot.com/signUp" target="_blank">Sign up for free</a>
+                                    <a href="https://uptimerobot.com/signUp" target="_blank">Sign up for free</a> - When creating an API key select "Main API key"
                                 </p>
                             </div>
                             <p class="skip-note">You can skip this step and set it up later.</p>
@@ -830,19 +830,23 @@ jQuery(document).ready(function($) {
                 const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
     
                 if (hasUptimeRobotKey) {
-                    const $uptimeRobotItem = $(`
-                        <div class="test-item" data-test="uptimerobot">
-                            <div class="test-info">
-                                <span class="test-name">UptimeRobot Setup</span>
-                                <span class="test-status pending">Pending</span>
+                    // Check if UptimeRobot test item already exists
+                    const existingUptimeRobot = $('.test-item[data-test="uptimerobot"]');
+                    if (existingUptimeRobot.length === 0) {
+                        const $uptimeRobotItem = $(`
+                            <div class="test-item" data-test="uptimerobot">
+                                <div class="test-info">
+                                    <span class="test-name">UptimeRobot Setup</span>
+                                    <span class="test-status pending">Pending</span>
+                                </div>
+                                <div class="test-progress-bar" style="display: none;">
+                                    <div class="progress-fill"></div>
+                                </div>
                             </div>
-                            <div class="test-progress-bar" style="display: none;">
-                                <div class="progress-fill"></div>
-                            </div>
-                        </div>
-                    `);
-                    $('.test-status-container').prepend($uptimeRobotItem);
-                    tests.unshift('uptimerobot');
+                        `);
+                        $('.test-status-container').prepend($uptimeRobotItem);
+                        tests.unshift('uptimerobot');
+                    }
                 }
 
             }
