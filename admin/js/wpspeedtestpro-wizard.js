@@ -605,9 +605,14 @@ jQuery(document).ready(function($) {
         });
 
         async function runAllTests() {
+            const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
             const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
             let completedTests = 0;
             let failedTests = [];
+
+            if (hasUptimeRobotKey) {
+                tests.unshift('uptimerobot');
+            }
 
             $('.progress-label').text('Starting tests...');
 
