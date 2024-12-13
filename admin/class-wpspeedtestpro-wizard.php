@@ -107,7 +107,7 @@ class Wpspeedtestpro_Wizard {
             'hosting_provider' => sanitize_text_field($_POST['provider']),
             'hosting_package' => sanitize_text_field($_POST['package']),
             'allow_data_collection' => isset($_POST['allow_data_collection']) ? 
-                (bool)$_POST['allow_data_collection'] : false,
+                (bool) $_POST['allow_data_collection'] : false,
             'uptimerobot_api_key' => sanitize_text_field($_POST['uptimerobot_key'])
         );
     
@@ -128,8 +128,6 @@ class Wpspeedtestpro_Wizard {
             }
         }
     
-
-        $settings['allow_data_collection'] = false;
         
         try {
             // Save settings with error checking
