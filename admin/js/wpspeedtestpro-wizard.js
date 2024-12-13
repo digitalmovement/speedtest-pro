@@ -838,6 +838,25 @@ jQuery(document).ready(function($) {
             // Hide next button during testing phase
             if (currentStep === 4) {
                 $('.next-step').hide();
+                const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
+                const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
+    
+                if (hasUptimeRobotKey) {
+                    const $uptimeRobotItem = $(`
+                        <div class="test-item" data-test="uptimerobot">
+                            <div class="test-info">
+                                <span class="test-name">UptimeRobot Setup</span>
+                                <span class="test-status pending">Pending</span>
+                            </div>
+                            <div class="test-progress-bar" style="display: none;">
+                                <div class="progress-fill"></div>
+                            </div>
+                        </div>
+                    `);
+                    $('.test-status-container').prepend($uptimeRobotItem);
+                    tests.unshift('uptimerobot');
+                }
+
             }
 
             // Update button text based on step
