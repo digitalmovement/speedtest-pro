@@ -231,7 +231,7 @@
             <i class="fas fa-bug"></i>
             <h3>Bug Report</h3>
             <p>Found an issue? Report it directly to us so we can make things better</p>
-            <a href="https://wpspeedtestpro.com/bugreport" target="_blank" class="button button-secondary">
+            <a onclick="wpSpeedTestProBugReport.openModal();" target="_blank" class="button button-secondary">
                 Bug Report
             </a>
         </div>

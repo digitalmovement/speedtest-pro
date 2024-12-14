@@ -42,7 +42,8 @@ class Wpspeedtestpro_Dashboard {
     private $core;
 
     private $uptime_monitoring;
-
+    private $bug_report_handler;
+    
     /**
      * Initialize the class and set its properties.
      *
@@ -56,6 +57,9 @@ class Wpspeedtestpro_Dashboard {
         $this->version = $version;
         $this->core = $core;
         $this->add_hooks();
+        $this->bug_report_handler   = new Wpspeedtestpro_Bug_Report_Handler($this->core->db);
+        $this->bug_report_handler->init();
+ 
     }
 
     private function add_hooks() {
@@ -85,6 +89,8 @@ class Wpspeedtestpro_Dashboard {
     public function enqueue_styles() {
         if ($this->is_this_the_right_plugin_page()) {
             wp_enqueue_style( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-dashboard.css', array(), $this->version, 'all' );
+            wp_enqueue_style( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-bug-report.css', array(), $this->version, 'all' );
+
         }
     }
     /**
@@ -95,6 +101,7 @@ class Wpspeedtestpro_Dashboard {
     public function enqueue_scripts() {
         if ($this->is_this_the_right_plugin_page()) {
             wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-dashboard.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script( $this->plugin_name . '-dashboard', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-bug-report.js', array( 'jquery' ), $this->version, false );
 
             wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_ajax', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -368,4 +375,143 @@ class Wpspeedtestpro_Dashboard {
         wp_send_json_success($data);
     }
 
+}
+
+
+class Wpspeedtestpro_Bug_Report_Handler {
+    private $db;
+    private $worker_url;
+    private $shared_secret;
+    private $site_key;
+
+    public function __construct($db) {
+        $this->db = $db;
+        $this->worker_url = 'https://analytics.wpspeedtestpro.com/bugreport';
+        $this->shared_secret =  'your-very-long-and-secure-secret-key';
+        $this->site_key = get_option('wpspeedtestpro_site_key');
+    }
+
+    public function init() {
+        add_action('wp_ajax_wpspeedtestpro_submit_bug_report', array($this, 'handle_bug_report'));
+    }
+
+    public function handle_bug_report() {
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+            return;
+        }
+
+        // Collect form data
+        $report_data = array(
+            'email' => sanitize_email($_POST['email']),
+            'message' => sanitize_textarea_field($_POST['message']),
+            'priority' => sanitize_text_field($_POST['priority']),
+            'severity' => sanitize_text_field($_POST['severity']),
+            'steps_to_reproduce' => sanitize_textarea_field($_POST['stepsToReproduce']),
+            'expected_behavior' => sanitize_textarea_field($_POST['expectedBehavior']),
+            'actual_behavior' => sanitize_textarea_field($_POST['actualBehavior']),
+            'frequency' => sanitize_text_field($_POST['frequency']),
+            'environment' => array(
+                'os' => sanitize_text_field($_POST['os']),
+                'browser' => sanitize_text_field($_POST['browser']),
+                'device_type' => sanitize_text_field($_POST['deviceType']),
+            ),
+            'site_info' => $this->get_site_info(),
+            'timestamp' => current_time('mysql'),
+        );
+
+        // Handle file uploads
+        $screenshots = array();
+        foreach ($_FILES as $key => $file) {
+            if (strpos($key, 'screenshot_') === 0) {
+                $upload = $this->handle_file_upload($file);
+                if ($upload['success']) {
+                    $screenshots[] = $upload['url'];
+                }
+            }
+        }
+        $report_data['screenshots'] = $screenshots;
+
+        // Generate signature for verification
+        $signature = hash_hmac('sha256', json_encode($report_data), $this->shared_secret);
+
+        // Prepare the payload
+        $payload = array(
+            'site_key' => $this->site_key,
+            'report_data' => $report_data,
+            'signature' => $signature
+        );
+
+        // Send to worker
+        $response = wp_remote_post($this->worker_url, array(
+            'headers' => array(
+                'Content-Type' => 'application/json',
+            ),
+            'body' => json_encode($payload),
+            'timeout' => 30
+        ));
+
+        if (is_wp_error($response)) {
+            wp_send_json_error('Failed to submit bug report: ' . $response->get_error_message());
+            return;
+        }
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+
+        if (!empty($body['success'])) {
+            wp_send_json_success('Bug report submitted successfully');
+        } else {
+            wp_send_json_error('Failed to submit bug report: ' . ($body['message'] ?? 'Unknown error'));
+        }
+    }
+
+    private function handle_file_upload($file) {
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+
+        $upload = wp_handle_upload($file, array(
+            'test_form' => false,
+            'mimes' => array(
+                'jpg|jpeg|jpe' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+            ),
+        ));
+
+        if (isset($upload['error'])) {
+            return array('success' => false, 'error' => $upload['error']);
+        }
+
+        return array('success' => true, 'url' => $upload['url']);
+    }
+
+    private function get_site_info() {
+        global $wp_version;
+        
+        return array(
+            'wp_version' => $wp_version,
+            'php_version' => phpversion(),
+            'active_plugins' => $this->get_active_plugins(),
+            'current_theme' => wp_get_theme()->get('Name'),
+            'site_url' => site_url(),
+            'plugin_version' => WPSPEEDTESTPRO_VERSION,
+        );
+    }
+
+    private function get_active_plugins() {
+        $active_plugins = get_option('active_plugins');
+        $plugin_info = array();
+        
+        foreach ($active_plugins as $plugin) {
+            $plugin_data = get_plugin_data(WP_PLUGIN_DIR . '/' . $plugin);
+            $plugin_info[] = array(
+                'name' => $plugin_data['Name'],
+                'version' => $plugin_data['Version']
+            );
+        }
+        
+        return $plugin_info;
+    }
 }
