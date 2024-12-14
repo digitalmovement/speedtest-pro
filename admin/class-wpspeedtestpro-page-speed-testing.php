@@ -16,6 +16,7 @@ class Wpspeedtestpro_PageSpeed {
         $this->pagespeed_scheduled_table = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
 
         $this->init();
+        $this->init_list_tables();
     }
 
      
@@ -1273,5 +1274,124 @@ public function ajax_check_test_status() {
             sleep(2);
         }
     }
+
+
+
+        /**
+         * Initialize list table functionality
+         */
+        private function init_list_tables() {
+            // Add columns to post types
+            add_filter('manage_posts_columns', array($this, 'add_pagespeed_column'));
+            add_filter('manage_pages_columns', array($this, 'add_pagespeed_column'));
+            
+            // Populate columns for post types
+            add_action('manage_posts_custom_column', array($this, 'populate_pagespeed_column'), 10, 2);
+            add_action('manage_pages_custom_column', array($this, 'populate_pagespeed_column'), 10, 2);
+            
+            // Add column styles
+            add_action('admin_head', array($this, 'add_column_styles'));
+        }
+
+        /**
+         * Add PageSpeed column to post/page list tables
+         */
+        public function add_pagespeed_column($columns) {
+            $columns['pagespeed_score'] = 'PageSpeed';
+            return $columns;
+        }
+
+        /**
+         * Add styles for the traffic light system
+         */
+        public function add_column_styles() {
+            ?>
+            <style>
+                .column-pagespeed_score {
+                    width: 120px;
+                }
+                .pagespeed-indicator {
+                    display: inline-block;
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 50%;
+                    margin-right: 5px;
+                    vertical-align: middle;
+                }
+                .pagespeed-score {
+                    display: inline-block;
+                    vertical-align: middle;
+                    font-weight: bold;
+                }
+                .pagespeed-indicator.no-test {
+                    background-color: #ccc;
+                }
+                .pagespeed-indicator.good {
+                    background-color: #0a0;
+                }
+                .pagespeed-indicator.average {
+                    background-color: #fa3;
+                }
+                .pagespeed-indicator.poor {
+                    background-color: #e33;
+                }
+                .pagespeed-device {
+                    display: block;
+                    margin-bottom: 4px;
+                }
+            </style>
+            <?php
+        }
+
+        /**
+         * Populate PageSpeed column with traffic light indicators
+         */
+        public function populate_pagespeed_column($column_name, $post_id) {
+            if ($column_name !== 'pagespeed_score') {
+                return;
+            }
+
+            $url = get_permalink($post_id);
+            $results = $this->get_latest_result($url, 'both');
+
+            if (empty($results['desktop']) && empty($results['mobile'])) {
+                echo $this->render_indicator('no-test', 'No test', true);
+                return;
+            }
+
+            // Display Desktop Score
+            if (!empty($results['desktop'])) {
+                $desktop_score = $results['desktop']->performance_score;
+                $desktop_class = $this->get_score_class($desktop_score);
+                echo '<div class="pagespeed-device">';
+                echo $this->render_indicator($desktop_class, $desktop_score, false, 'Desktop');
+                echo '</div>';
+            }
+
+            // Display Mobile Score
+            if (!empty($results['mobile'])) {
+                $mobile_score = $results['mobile']->performance_score;
+                $mobile_class = $this->get_score_class($mobile_score);
+                echo '<div class="pagespeed-device">';
+                echo $this->render_indicator($mobile_class, $mobile_score, false, 'Mobile');
+                echo '</div>';
+            }
+        }
+
+        /**
+         * Helper function to render traffic light indicator
+         */
+        private function render_indicator($class, $score, $is_no_test = false, $device = '') {
+            $device_label = $device ? "<strong>$device:</strong> " : '';
+            $score_text = $is_no_test ? '' : $score . '%';
+            
+            return sprintf(
+                '<span class="pagespeed-indicator %s"></span><span class="pagespeed-score">%s%s</span>',
+                esc_attr($class),
+                $device_label,
+                esc_html($score_text)
+            );
+        }
+
 
 } // end class
