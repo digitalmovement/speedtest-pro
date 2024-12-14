@@ -1292,7 +1292,7 @@ public function ajax_check_test_status() {
             
             // Add column styles
             add_action('admin_head', array($this, 'add_column_styles'));
-            $this->enqueue_list_scripts();
+            add_action('admin_enqueue_scripts', array($this, 'enqueue_list_scripts'));
 
         }
 
