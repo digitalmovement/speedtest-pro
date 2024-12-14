@@ -1354,7 +1354,7 @@ public function ajax_check_test_status() {
                     padding: 2px 8px;
                     font-size: 11px;
                     margin-top: 4px;
-                    display: block;
+                    display: block!important;
                 }
                 .pagespeed-test-status {
                     color: #666;
@@ -1445,7 +1445,7 @@ public function ajax_check_test_status() {
         
             wp_enqueue_script(
                 'wpspeedtestpro-list-testing',
-                plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-pages-speed-testing-list.js',
+                plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-page-speed-testing-list.js',
                 array('jquery'),
                 $this->version,
                 true
