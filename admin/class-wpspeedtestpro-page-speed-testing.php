@@ -17,6 +17,7 @@ class Wpspeedtestpro_PageSpeed {
 
         $this->init();
         $this->init_list_tables();
+
     }
 
      
@@ -1291,6 +1292,8 @@ public function ajax_check_test_status() {
             
             // Add column styles
             add_action('admin_head', array($this, 'add_column_styles'));
+            $this->enqueue_list_scripts();
+
         }
 
         /**
@@ -1304,57 +1307,72 @@ public function ajax_check_test_status() {
         /**
          * Add styles for the traffic light system
          */
-public function add_column_styles() {
-    ?>
-    <style>
-        .column-pagespeed_score {
-            width: 100px;
+        public function add_column_styles() {
+            ?>
+            <style>
+                .column-pagespeed_score {
+                    width: 140px;
+                }
+                .pagespeed-indicator {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                    margin-right: 5px;
+                    vertical-align: middle;
+                }
+                .pagespeed-score {
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .pagespeed-indicator.no-test {
+                    background-color: #ccc;
+                }
+                .pagespeed-indicator.good {
+                    background-color: #0a0;
+                }
+                .pagespeed-indicator.average {
+                    background-color: #fa3;
+                }
+                .pagespeed-indicator.poor {
+                    background-color: #e33;
+                }
+                .pagespeed-device {
+                    display: block;
+                    margin-bottom: 4px;
+                    white-space: nowrap;
+                }
+                .pagespeed-device i {
+                    width: 16px;
+                    margin-right: 4px;
+                    color: #666;
+                }
+                .pagespeed-score {
+                    font-weight: 500;
+                }
+                .quick-test-button {
+                    padding: 2px 8px;
+                    font-size: 11px;
+                    margin-top: 4px;
+                    display: inline-block;
+                }
+                .pagespeed-test-status {
+                    color: #666;
+                    font-style: italic;
+                    margin-top: 4px;
+                    display: none;
+                }
+                .pagespeed-test-status .spinner {
+                    float: none;
+                    margin: 0 4px 0 0;
+                }
+            </style>
+            <?php
         }
-        .pagespeed-indicator {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-        .pagespeed-score {
-            display: inline-block;
-            vertical-align: middle;
-        }
-        .pagespeed-indicator.no-test {
-            background-color: #ccc;
-        }
-        .pagespeed-indicator.good {
-            background-color: #0a0;
-        }
-        .pagespeed-indicator.average {
-            background-color: #fa3;
-        }
-        .pagespeed-indicator.poor {
-            background-color: #e33;
-        }
-        .pagespeed-device {
-            display: block;
-            margin-bottom: 4px;
-            white-space: nowrap;
-        }
-        .pagespeed-device i {
-            width: 16px;
-            margin-right: 4px;
-            color: #666;
-        }
-        .pagespeed-score {
-            font-weight: 500;
-        }
-    </style>
-    <?php
-}
-
+        
         /**
-         * Populate PageSpeed column with traffic light indicators
+         * Populate PageSpeed column with traffic light indicators and quick test button
          */
-
         public function populate_pagespeed_column($column_name, $post_id) {
             if ($column_name !== 'pagespeed_score') {
                 return;
@@ -1363,29 +1381,36 @@ public function add_column_styles() {
             $url = get_permalink($post_id);
             $results = $this->get_latest_result($url, 'both');
         
+            echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '">';
+            
             if (empty($results['desktop']) && empty($results['mobile'])) {
                 echo $this->render_indicator('no-test', 'No test', true);
-                return;
+            } else {
+                // Display Desktop Score
+                if (!empty($results['desktop'])) {
+                    $desktop_score = $results['desktop']->performance_score;
+                    $desktop_class = $this->get_score_class($desktop_score);
+                    echo '<div class="pagespeed-device">';
+                    echo $this->render_indicator($desktop_class, $desktop_score, false, 'desktop');
+                    echo '</div>';
+                }
+        
+                // Display Mobile Score
+                if (!empty($results['mobile'])) {
+                    $mobile_score = $results['mobile']->performance_score;
+                    $mobile_class = $this->get_score_class($mobile_score);
+                    echo '<div class="pagespeed-device">';
+                    echo $this->render_indicator($mobile_class, $mobile_score, false, 'mobile');
+                    echo '</div>';
+                }
             }
         
-            // Display Desktop Score
-            if (!empty($results['desktop'])) {
-                $desktop_score = $results['desktop']->performance_score;
-                $desktop_class = $this->get_score_class($desktop_score);
-                echo '<div class="pagespeed-device">';
-                echo $this->render_indicator($desktop_class, $desktop_score, false, 'desktop');
-                echo '</div>';
-            }
-        
-            // Display Mobile Score
-            if (!empty($results['mobile'])) {
-                $mobile_score = $results['mobile']->performance_score;
-                $mobile_class = $this->get_score_class($mobile_score);
-                echo '<div class="pagespeed-device">';
-                echo $this->render_indicator($mobile_class, $mobile_score, false, 'mobile');
-                echo '</div>';
-            }
+            // Add quick test button and status
+            echo '<button type="button" class="button button-small quick-test-button">Run Test</button>';
+            echo '<div class="pagespeed-test-status"></div>';
+            echo '</div>';
         }
+        
         
         /**
          * Helper function to render traffic light indicator
@@ -1409,4 +1434,22 @@ public function add_column_styles() {
             );
         }
 
+        public function enqueue_list_scripts($hook) {
+            if (!in_array($hook, ['edit.php', 'edit-pages.php'])) {
+                return;
+            }
+        
+            wp_enqueue_script(
+                'wpspeedtestpro-list-testing',
+                plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-list-testing.js',
+                array('jquery'),
+                $this->version,
+                true
+            );
+        
+            wp_localize_script('wpspeedtestpro-list-testing', 'wpspeedtestpro_list', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce')
+            ));
+        }
 } // end class
