@@ -1436,7 +1436,7 @@ public function ajax_check_test_status() {
         private function render_indicator($class, $score, $is_no_test = false, $device = '') {
             if ($is_no_test) {
                 return sprintf(
-                    '<span class="pagespeed-indicator %s"></span><span class="pagespeed-score no-test-text">%s</span>',
+                    '<span class="no-test pagespeed-indicator %s"></span><span class="pagespeed-score no-test-text">%s</span>',
                     esc_attr($class),
                     'No test'
                 );
