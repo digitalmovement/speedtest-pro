@@ -1,18 +1,26 @@
 jQuery(document).ready(function($) {
-    let activeTest = null; // Track currently running test
+    let activeTest = null;
 
     // Handle quick test button clicks
     $(document).on('click', '.quick-test-button', function(e) {
         e.preventDefault();
         
-        // If there's already a test running, prevent starting another
+        const $button = $(this);
+        const $container = $button.closest('.pagespeed-scores');
+        const postStatus = $container.data('status');
+
+        // Check if post is published
+        if (postStatus !== 'publish') {
+            alert('This content must be published before running a PageSpeed test.');
+            return;
+        }
+        
+        // Check for active test
         if (activeTest) {
             alert('A test is already running. Please wait for it to complete.');
             return;
         }
 
-        const $button = $(this);
-        const $container = $button.closest('.pagespeed-scores');
         const $status = $container.find('.pagespeed-test-status');
         const url = $container.data('url');
         
@@ -25,7 +33,7 @@ jQuery(document).ready(function($) {
         // Remove "No test" text if it exists
         $container.find('.no-test-text').remove();
 
-        $status.html('<span class="spinner is-active"></span>Initiating test...').show();
+        $status.html('<span class="spinner is-active"></span>Starting page testing...').show();
 
         // Start the test
         $.post(wpspeedtestpro_list.ajax_url, {
@@ -46,6 +54,7 @@ jQuery(document).ready(function($) {
             resetTestState();
         });
     });
+
 
     function checkTestStatus(url, $container) {
         const $button = $container.find('.quick-test-button');

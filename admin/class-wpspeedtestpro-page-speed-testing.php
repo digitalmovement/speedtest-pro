@@ -1370,6 +1370,14 @@ public function ajax_check_test_status() {
                 .pagespeed-scores {
                     white-space: nowrap;
                 }
+                .unpublished-notice {
+                color: #999;
+                font-style: italic;
+                font-size: 11px;
+                margin-left: 5px;
+                vertical-align: middle;
+            }
+            
             </style>
             <?php
         }
@@ -1380,14 +1388,15 @@ public function ajax_check_test_status() {
             if ($column_name !== 'pagespeed_score') {
                 return;
             }
-        
+    
+            $post_status = get_post_status($post_id);
             $url = get_permalink($post_id);
             $results = $this->get_latest_result($url, 'both');
-        
-            echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '">';
+    
+            echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '" data-status="' . esc_attr($post_status) . '">';
             
             if (empty($results['desktop']) && empty($results['mobile'])) {
-                echo $this->render_indicator('no-test', 'Not tested ', true);
+                echo $this->render_indicator('no-test', 'No test', true);
             } else {
                 // Display Desktop Score
                 if (!empty($results['desktop'])) {
@@ -1397,7 +1406,7 @@ public function ajax_check_test_status() {
                     echo $this->render_indicator($desktop_class, $desktop_score, false, 'desktop');
                     echo '</div>';
                 }
-        
+    
                 // Display Mobile Score
                 if (!empty($results['mobile'])) {
                     $mobile_score = $results['mobile']->performance_score;
@@ -1407,9 +1416,14 @@ public function ajax_check_test_status() {
                     echo '</div>';
                 }
             }
-        
-            // Add quick test button and status
-            echo '<button type="button" class="button button-small quick-test-button">Run Test</button>';
+
+        // Only show test button if post is published
+            if ($post_status === 'publish') {
+                echo '<button type="button" class="button button-small quick-test-button">Run Test</button>';
+            } else {
+                echo '<span class="unpublished-notice">Must be published to test</span>';
+            }
+            
             echo '<div class="pagespeed-test-status"></div>';
             echo '</div>';
         }
