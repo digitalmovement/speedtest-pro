@@ -1353,8 +1353,8 @@ public function ajax_check_test_status() {
                 .quick-test-button {
                     padding: 2px 8px;
                     font-size: 11px;
-                    vertical-align: middle;
-                    margin-left: 5px;
+                    margin-top: 4px;
+                    display: inline-block;
                 }
                 .pagespeed-test-status {
                     color: #666;
