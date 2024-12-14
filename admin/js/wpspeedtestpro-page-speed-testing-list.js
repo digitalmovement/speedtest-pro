@@ -32,6 +32,7 @@ jQuery(document).ready(function($) {
         
         // Remove "No test" text if it exists
         $container.find('.no-test-text').remove();
+        $container.find('.no-test-indicator').remove();
 
         $status.html('<span class="spinner is-active"></span>Starting page testing...').show();
 
