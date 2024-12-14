@@ -1359,7 +1359,7 @@ public function ajax_check_test_status() {
                 .pagespeed-test-status {
                     color: #666;
                     font-style: italic;
-                    display: inline-block;
+/*                    display: inline-block; */
                     margin-left: 5px;
                     vertical-align: middle;
                 }
@@ -1376,6 +1376,7 @@ public function ajax_check_test_status() {
                 font-size: 11px;
                 margin-left: 5px;
                 vertical-align: middle;
+                display: block;
             }
             
             </style>
