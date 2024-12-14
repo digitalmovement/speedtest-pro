@@ -1354,7 +1354,7 @@ public function ajax_check_test_status() {
                     padding: 2px 8px;
                     font-size: 11px;
                     margin-top: 4px;
-                    display: inline-block;
+                    display: block;
                 }
                 .pagespeed-test-status {
                     color: #666;
@@ -1387,7 +1387,7 @@ public function ajax_check_test_status() {
             echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '">';
             
             if (empty($results['desktop']) && empty($results['mobile'])) {
-                echo $this->render_indicator('no-test', 'No test', true);
+                echo $this->render_indicator('no-test', 'Not tested ', true);
             } else {
                 // Display Desktop Score
                 if (!empty($results['desktop'])) {
@@ -1445,7 +1445,7 @@ public function ajax_check_test_status() {
         
             wp_enqueue_script(
                 'wpspeedtestpro-list-testing',
-                plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-list-testing.js',
+                plugin_dir_url(__FILE__) . 'js/wpspeedtestpro-pages-speed-testing-list.js',
                 array('jquery'),
                 $this->version,
                 true
