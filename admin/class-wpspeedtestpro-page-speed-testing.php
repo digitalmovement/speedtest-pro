@@ -1338,8 +1338,8 @@ public function ajax_check_test_status() {
                     background-color: #e33;
                 }
                 .pagespeed-device {
-                    display: block;
-                    margin-bottom: 4px;
+                    display: inline-block;
+                    margin-right: 10px;
                     white-space: nowrap;
                 }
                 .pagespeed-device i {
@@ -1353,23 +1353,26 @@ public function ajax_check_test_status() {
                 .quick-test-button {
                     padding: 2px 8px;
                     font-size: 11px;
-                    margin-top: 4px;
-                    display: inline-block;
+                    vertical-align: middle;
+                    margin-left: 5px;
                 }
                 .pagespeed-test-status {
                     color: #666;
                     font-style: italic;
-                    margin-top: 4px;
-                    display: none;
+                    display: inline-block;
+                    margin-left: 5px;
+                    vertical-align: middle;
                 }
                 .pagespeed-test-status .spinner {
                     float: none;
                     margin: 0 4px 0 0;
                 }
+                .pagespeed-scores {
+                    white-space: nowrap;
+                }
             </style>
             <?php
         }
-        
         /**
          * Populate PageSpeed column with traffic light indicators and quick test button
          */
@@ -1418,12 +1421,12 @@ public function ajax_check_test_status() {
         private function render_indicator($class, $score, $is_no_test = false, $device = '') {
             if ($is_no_test) {
                 return sprintf(
-                    '<span class="pagespeed-indicator %s"></span><span class="pagespeed-score">%s</span>',
+                    '<span class="pagespeed-indicator %s"></span><span class="pagespeed-score no-test-text">%s</span>',
                     esc_attr($class),
                     'No test'
                 );
             }
-        
+    
             $icon_class = $device === 'desktop' ? 'fa-desktop' : 'fa-mobile-screen';
             
             return sprintf(
@@ -1433,6 +1436,7 @@ public function ajax_check_test_status() {
                 esc_html($score)
             );
         }
+    
 
         public function enqueue_list_scripts($hook) {
             if (!in_array($hook, ['edit.php', 'edit-pages.php'])) {

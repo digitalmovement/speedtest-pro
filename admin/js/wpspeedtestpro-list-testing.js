@@ -1,15 +1,30 @@
 jQuery(document).ready(function($) {
+    let activeTest = null; // Track currently running test
+
     // Handle quick test button clicks
     $(document).on('click', '.quick-test-button', function(e) {
         e.preventDefault();
         
+        // If there's already a test running, prevent starting another
+        if (activeTest) {
+            alert('A test is already running. Please wait for it to complete.');
+            return;
+        }
+
         const $button = $(this);
         const $container = $button.closest('.pagespeed-scores');
         const $status = $container.find('.pagespeed-test-status');
         const url = $container.data('url');
         
-        // Disable button and show status
-        $button.prop('disabled', true);
+        // Set this as the active test
+        activeTest = url;
+
+        // Disable all test buttons while a test is running
+        $('.quick-test-button').prop('disabled', true);
+        
+        // Remove "No test" text if it exists
+        $container.find('.no-test-text').remove();
+
         $status.html('<span class="spinner is-active"></span>Initiating test...').show();
 
         // Start the test
@@ -24,11 +39,11 @@ jQuery(document).ready(function($) {
                 checkTestStatus(url, $container);
             } else {
                 $status.html('Error: ' + (response.data || 'Failed to start test'));
-                $button.prop('disabled', false);
+                resetTestState();
             }
         }).fail(function() {
             $status.html('Failed to communicate with server');
-            $button.prop('disabled', false);
+            resetTestState();
         });
     });
 
@@ -43,7 +58,7 @@ jQuery(document).ready(function($) {
         }, function(response) {
             if (!response.success) {
                 $status.html('Error: ' + response.data);
-                $button.prop('disabled', false);
+                resetTestState();
                 return;
             }
 
@@ -53,13 +68,20 @@ jQuery(document).ready(function($) {
             } else if (response.data.status === 'complete') {
                 // Update the display with new results
                 updateResults($container, response.data.results);
-                $status.html('Test completed successfully').fadeOut(2000);
-                $button.prop('disabled', false);
+                $status.fadeOut(1000, function() {
+                    $(this).empty().show().css('display', 'inline-block');
+                });
+                resetTestState();
             }
         }).fail(function() {
             $status.html('Failed to check test status');
-            $button.prop('disabled', false);
+            resetTestState();
         });
+    }
+
+    function resetTestState() {
+        activeTest = null;
+        $('.quick-test-button').prop('disabled', false);
     }
 
     function updateResults($container, results) {
@@ -85,7 +107,8 @@ jQuery(document).ready(function($) {
                 </div>`;
         }
 
-        $container.find('.pagespeed-device').remove();
+        // Remove any existing scores or "No test" message
+        $container.find('.pagespeed-device, .no-test-text').remove();
         $container.prepend(html);
     }
 
