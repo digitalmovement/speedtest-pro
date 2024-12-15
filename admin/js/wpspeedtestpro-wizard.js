@@ -969,7 +969,7 @@ jQuery(document).ready(function($) {
                         $select.empty();
                         // Add default option
                         $select.append('<option value="">Select your hosting provider</option>');
-                        response.data.providers.forEach(provider => {
+                        response.data.forEach(provider => {
                             $select.append(`<option value="${provider.id}">${provider.name}</option>`);
                         });
                     }
