@@ -131,13 +131,12 @@ jQuery(document).ready(function($) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-
     function populateProviders() {
         var currentProvider = $providerSelect.val();
         $providerSelect.empty().append('<option value="">Select a provider</option>');
         hostingProviders.providers.forEach(function(provider) {
             $providerSelect.append($('<option>', {
-                value: provider.name,
+                value: provider.id,
                 text: provider.name
             }));
         });
@@ -147,16 +146,16 @@ jQuery(document).ready(function($) {
     }
 
     function updatePackages() {
-        var selectedProvider = $providerSelect.val();
+        var selectedProviderId = $providerSelect.val();
         var currentPackage = $packageSelect.val();
         $packageSelect.empty().append('<option value="">Select a package</option>');
 
-        if (selectedProvider) {
-            var provider = hostingProviders.providers.find(p => p.name === selectedProvider);
+        if (selectedProviderId) {
+            var provider = hostingProviders.providers.find(p => p.id == selectedProviderId);
             if (provider && provider.packages) {
                 provider.packages.forEach(function(package) {
                     $packageSelect.append($('<option>', {
-                        value: package.type,
+                        value: package.Package_ID,
                         text: package.type + ' - ' + package.description
                     }));
                 });
@@ -169,6 +168,7 @@ jQuery(document).ready(function($) {
         }
     }
 
+    
     $providerSelect.on('change', function() {
         updatePackages();
     });

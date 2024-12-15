@@ -274,16 +274,16 @@ class Wpspeedtestpro_Settings {
     }
 
     public function hosting_provider_dropdown_callback() {
-        $selected_provider = get_option('wpspeedtestpro_selected_provider');
+        $selected_provider_id = get_option('wpspeedtestpro_selected_provider');
         $providers = $this->core->api->get_hosting_providers();
-
+    
         if (!empty($providers)) {
             echo '<select id="wpspeedtestpro_selected_provider" name="wpspeedtestpro_selected_provider">';
             echo '<option value="">Select a provider</option>';
             foreach ($providers as $provider) {
-                $provider_name = esc_attr($provider['name']);
-                echo '<option value="' . $provider_name . '"' . selected($selected_provider, $provider_name, false) . '>';
-                echo esc_html($provider_name);
+                $provider_id = esc_attr($provider['id']);
+                echo '<option value="' . $provider_id . '"' . selected($selected_provider_id, $provider_id, false) . '>';
+                echo esc_html($provider['name']);
                 echo '</option>';
             }
             echo '</select>';
@@ -291,22 +291,22 @@ class Wpspeedtestpro_Settings {
             echo '<p class="wpspeedtestpro-error">No hosting providers available. Please check your internet connection or try again later.</p>';
         }
     }
-
+    
     public function hosting_package_dropdown_callback() {
-        $selected_provider = get_option('wpspeedtestpro_selected_provider');
-        $selected_package = get_option('wpspeedtestpro_selected_package');
+        $selected_provider_id = get_option('wpspeedtestpro_selected_provider');
+        $selected_package_id = get_option('wpspeedtestpro_selected_package');
         $providers = $this->core->api->get_hosting_providers();
     
         echo '<select id="wpspeedtestpro_selected_package" name="wpspeedtestpro_selected_package">';
         echo '<option value="">Select a package</option>';
     
-        if ($selected_provider && !empty($providers)) {
+        if ($selected_provider_id && !empty($providers)) {
             foreach ($providers as $provider) {
-                if ($provider['name'] === $selected_provider) {
+                if ($provider['id'] == $selected_provider_id) {
                     foreach ($provider['packages'] as $package) {
-                        $package_type = esc_attr($package['type']);
-                        echo '<option value="' . $package_type . '"' . selected($selected_package, $package_type, false) . '>';
-                        echo esc_html($package_type);
+                        $package_id = esc_attr($package['Package_ID']);
+                        echo '<option value="' . $package_id . '"' . selected($selected_package_id, $package_id, false) . '>';
+                        echo esc_html($package['type'] . ' - ' . $package['description']);
                         echo '</option>';
                     }
                     break;
@@ -315,7 +315,7 @@ class Wpspeedtestpro_Settings {
         }
         echo '</select>';
     
-        if (!$selected_provider) {
+        if (!$selected_provider_id) {
             echo '<p class="description">Please select a provider first.</p>';
         }
     }
