@@ -387,21 +387,21 @@ class Wpspeedtestpro_Settings {
 
     public function ajax_get_provider_packages() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
-
-        $provider_name = sanitize_text_field($_POST['provider']);
+    
+        $provider_id = absint($_POST['provider']); // Convert to integer and sanitize
         $providers = $this->core->api->get_hosting_providers();
-
+    
         $packages = array();
         foreach ($providers as $provider) {
-            if ($provider['name'] === $provider_name) {
+            if ($provider['id'] === $provider_id) {
                 $packages = $provider['packages'];
                 break;
             }
         }
-
+    
         wp_send_json_success($packages);
     }
-
+    
 
     public function ajax_get_hosting_providers() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
