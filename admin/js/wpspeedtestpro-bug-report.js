@@ -81,18 +81,6 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <div class="form-group">
-                                    <label>Screenshots</label>
-                                    <div class="file-upload">
-                                        <input type="file" id="bug-screenshots" name="screenshots[]" multiple accept="image/*">
-                                        <label for="bug-screenshots" class="upload-btn">
-                                            <i class="fas fa-upload"></i> Upload Files
-                                        </label>
-                                        <span class="selected-files">No files selected</span>
-                                    </div>
-                                </div>
-
                                 <div class="submit-error" style="display: none;"></div>
                             </form>
                         </div>
@@ -201,6 +189,7 @@
             const formData = new FormData($form[0]);
             formData.append('action', 'wpspeedtestpro_submit_bug_report');
             formData.append('nonce', wpspeedtestpro_ajax.nonce);
+            
 
             $submitBtn.prop('disabled', true);
             $spinner.show();
