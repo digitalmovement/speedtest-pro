@@ -170,7 +170,10 @@
 .action-buttons {
     display: flex;
     gap: 10px;
-    flex-wrap: wrap;
+ /*   flex-wrap: wrap; */
+    margin-top: auto; /* Push to bottom of card */
+    padding-top: 20px; /* Add some spacing from content */
+    border-top: 1px solid #e2e4e7;
 }
 
 .action-buttons button {

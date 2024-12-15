@@ -218,24 +218,7 @@
     </div>
 </div>
 </div>
-    <!-- Quick Actions Section -->
-    <div class="quick-actions-section">
-        <h2>Quick Actions</h2>
-        <div class="action-buttons">
-            <button id="test-latency" class="button button-primary">
-                <i class="fas fa-tachometer-alt"></i> Test Latency
-            </button>
-            <button id="test-ssl" class="button button-primary">
-                <i class="fas fa-shield-alt"></i> Test SSL
-            </button>
-            <button id="test-performance" class="button button-primary">
-                <i class="fas fa-server"></i> Test Performance
-            </button>
-            <button id="test-pagespeed" class="button button-primary">
-                <i class="fas fa-rocket"></i> Test Page Speed
-            </button>
-        </div>
-    </div>
+
     <!-- Advertising Section -->
     <div class="advertising-section">
         <div class="advert-cards">
