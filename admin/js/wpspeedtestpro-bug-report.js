@@ -120,7 +120,7 @@
 
             // Close modal
             $('.close-modal, .cancel-bug-report').on('click', function() {
-                self.closeModal();
+                self.closeBugModal();
             });
 
             // Submit form
@@ -131,7 +131,7 @@
             // Close on background click
             $('#wpspeedtestpro-bug-report').on('click', function(e) {
                 if ($(e.target).is('#wpspeedtestpro-bug-report')) {
-                    self.closeModal();
+                    self.closeBugModal();
                 }
             });
         }
@@ -205,7 +205,7 @@
                 success: function(response) {
                     if (response.success) {
                         alert('Bug report submitted successfully!');
-                        self.closeModal();
+                        self.closeBugModal();
                     } else {
                         $error.html(response.data || 'Failed to submit bug report').show();
                     }
@@ -221,11 +221,11 @@
             });
         }
 
-        openModal() {
+        openBugModal() {
             $('#wpspeedtestpro-bug-report').show();
         }
 
-        closeModal() {
+        closeBugModal() {
             const $modal = $('#wpspeedtestpro-bug-report');
             $modal.hide();
             $('#bug-report-form')[0].reset();
