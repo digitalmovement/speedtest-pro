@@ -395,6 +395,12 @@ class Wpspeedtestpro_Bug_Report_Handler {
         add_action('wp_ajax_wpspeedtestpro_submit_bug_report', array($this, 'handle_bug_report'));
     }
 
+
+    private function generate_signature($data) {
+        return hash_hmac('sha256', json_encode($data), $this->shared_secret);
+    }
+
+
     public function handle_bug_report() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 
@@ -434,14 +440,15 @@ class Wpspeedtestpro_Bug_Report_Handler {
         }
         $report_data['screenshots'] = $screenshots;
 
-        // Generate signature for verification
-        $signature = hash_hmac('sha256', json_encode($report_data), $this->shared_secret);
-
+       
         // Prepare the payload
         $payload = array(
             'site_key' => $this->site_key,
             'report_data' => $report_data,
         );
+
+         // Generate signature for verification
+        $signature = $this->generate_signature($payload);
 
         // Send to worker
         $response = wp_remote_post($this->worker_url, array(
