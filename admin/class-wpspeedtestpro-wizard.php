@@ -104,8 +104,8 @@ class Wpspeedtestpro_Wizard {
     
         $settings = array(
             'gcp_region' => sanitize_text_field($_POST['region']),
-            'hosting_provider' => sanitize_text_field($_POST['provider']),
-            'hosting_package' => sanitize_text_field($_POST['package']),
+            'provider_id' => absint($_POST['provider_id']),
+            'package_id' => sanitize_text_field($_POST['package_id']),
             'allow_data_collection' => isset($_POST['allow_data_collection']) ? 
                 (bool) $_POST['allow_data_collection'] : false,
             'uptimerobot_api_key' => sanitize_text_field($_POST['uptimerobot_key'])
@@ -114,8 +114,8 @@ class Wpspeedtestpro_Wizard {
         // Define default values for options
         $default_values = array(
             'wpspeedtestpro_selected_region' => '',
-            'wpspeedtestpro_selected_provider' => '',
-            'wpspeedtestpro_selected_package' => '',
+            'wpspeedtestpro_selected_provider_id' => 0,
+            'wpspeedtestpro_selected_package_id' => '',
             'wpspeedtestpro_allow_data_collection' => false,
             'wpspeedtestpro_uptimerobot_api_key' => '',
             'wpspeedtestpro_setup_completed' => true
@@ -128,19 +128,13 @@ class Wpspeedtestpro_Wizard {
             }
         }
     
-        if (isset($_POST['allow_data_collection'])) {
-            // Convert various truthy values to boolean
-            $value = strtolower($_POST['allow_data_collection']);
-            $allow_data_collection = in_array($value, ['true', '1', 'yes', 'on'], true);
-        }
-        
         try {
             // Save settings with error checking
             $update_results = array(
                 update_option('wpspeedtestpro_selected_region', $settings['gcp_region']),
-                update_option('wpspeedtestpro_selected_provider', $settings['hosting_provider']),
-                update_option('wpspeedtestpro_selected_package', $settings['hosting_package']),
-                update_option('wpspeedtestpro_allow_data_collection', $allow_data_collection)
+                update_option('wpspeedtestpro_selected_provider_id', $settings['provider_id']),
+                update_option('wpspeedtestpro_selected_package_id', $settings['package_id']),
+                update_option('wpspeedtestpro_allow_data_collection', $settings['allow_data_collection'])
             );
     
             // Only update UptimeRobot API key if provided
@@ -160,26 +154,27 @@ class Wpspeedtestpro_Wizard {
             wp_send_json_error('Error saving settings: ' . $e->getMessage());
         }
     }
+    
 
     public function get_wizard_data() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
-
+    
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');
             return;
         }
-
+    
         $data = array(
             'gcp_region' => get_option('wpspeedtestpro_selected_region'),
-            'hosting_provider' => get_option('wpspeedtestpro_selected_provider'),
-            'hosting_package' => get_option('wpspeedtestpro_selected_package'),
+            'provider_id' => get_option('wpspeedtestpro_selected_provider_id'),
+            'package_id' => get_option('wpspeedtestpro_selected_package_id'),
             'allow_data_collection' => get_option('wpspeedtestpro_allow_data_collection', true),
             'uptimerobot_api_key' => get_option('wpspeedtestpro_uptimerobot_api_key')
         );
-
+    
         wp_send_json_success($data);
     }
-
+    
     public function dismiss_wizard() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
 

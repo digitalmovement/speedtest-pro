@@ -901,8 +901,8 @@ jQuery(document).ready(function($) {
                     action: 'wpspeedtestpro_save_wizard_settings',
                     nonce: wpspeedtestpro_ajax.nonce,
                     region: $('#gcp-region').val(),
-                    provider: $('#hosting-provider').val(),
-                    package: $('#hosting-package').val(),
+                    provider_id: $('#hosting-provider').val(),
+                    package_id: $('#hosting-package').val(),
                     allow_data_collection: $('#allow-data-collection').is(':checked'),
                     uptimerobot_key: $('#uptimerobot-key').val()
                 }
@@ -969,13 +969,14 @@ jQuery(document).ready(function($) {
                         $select.empty();
                         // Add default option
                         $select.append('<option value="">Select your hosting provider</option>');
-                        response.data.forEach(provider => {
-                            $select.append(`<option value="${provider.name}">${provider.name}</option>`);
+                        response.data.providers.forEach(provider => {
+                            $select.append(`<option value="${provider.id}">${provider.name}</option>`);
                         });
                     }
                 }
             });
         }
+    
 
         function loadHostingPackages(providerId) {
             $.ajax({
@@ -990,13 +991,16 @@ jQuery(document).ready(function($) {
                     if (response.success) {
                         const $select = $('#hosting-package');
                         $select.empty();
+                        $select.append('<option value="">Select your package</option>');
                         response.data.forEach(package => {
-                            $select.append(`<option value="${package.type}">${package.type}</option>`);
+                            // Use Package_ID as value and show type + description as text
+                            $select.append(`<option value="${package.Package_ID}">${package.type} - ${package.description}</option>`);
                         });
                     }
                 }
             });
         }
+
 
         function updateCompletionSummary() {
             const $summary = $('.setup-summary');
