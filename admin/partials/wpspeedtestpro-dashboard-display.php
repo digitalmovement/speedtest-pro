@@ -44,6 +44,11 @@
                 <div class="mini-chart">
                     <canvas id="performance-trend-chart"></canvas>
                 </div>
+                <div class="action-buttons">
+                <button id="test-latency" class="button button-primary">
+                    <i class="fas fa-tachometer-alt"></i> Test Latency
+                </button>
+            </div>
             </div>
         </div>
 
@@ -105,6 +110,11 @@
                         <span class="label">Protocol Version:</span>
                         <span class="value" id="ssl-protocol">Loading...</span>
                     </div>
+                </div>
+                <div class="action-buttons">
+                    <button id="test-ssl" class="button button-primary">
+                    <   i class="fas fa-shield-alt"></i> Test SSL
+                    </button>
                 </div>
             </div>
         </div>
@@ -199,6 +209,11 @@
                 <span class="label">Last Tested:</span>
                 <span class="value" id="pagespeed-last-tested">Loading...</span>
             </div>
+        </div>
+        <div class="action-buttons">
+            <button id="test-pagespeed" class="button button-primary">
+                    <i class="fas fa-rocket"></i> Test Page Speed
+            </button>
         </div>
     </div>
 </div>
