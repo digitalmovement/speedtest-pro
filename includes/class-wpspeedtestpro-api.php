@@ -173,7 +173,7 @@ class Wpspeedtestpro_API {
             return $cached_data;
         }
     
-        $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingprovider.json');
+        $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingproviders.json');
         if (is_wp_error($response)) {
             error_log('WPSpeedTestPro: Error fetching hosting providers - ' . $response->get_error_message());
             return false;
