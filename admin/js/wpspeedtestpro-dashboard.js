@@ -862,6 +862,11 @@ jQuery(document).ready(function($) {
         });
 
         $('#test-pagespeed').on('click', function() {
+            var urlToTest = $('#tested-url').text();
+            if (urlToTest === 'No data') {
+                urlToTest = window.location.origin;
+            }
+
             $(this).prop('disabled', true);
             $.ajax({
                 url: wpspeedtestpro_ajax.ajax_url,
@@ -869,11 +874,12 @@ jQuery(document).ready(function($) {
                 data: {
                     action: 'pagespeed_run_test',
                     nonce: wpspeedtestpro_ajax.nonce,
-                    url: window.location.origin,
+                    url: urlToTest,
                     device: 'both',
                     frequency : 'once'
                 },
                 success: function() {
+                    
                     setTimeout(loadPageSpeedData, 30000);
                     $('#test-pagespeed').prop('disabled', false);
                 }
