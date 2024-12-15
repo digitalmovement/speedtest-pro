@@ -114,8 +114,8 @@ class Wpspeedtestpro_Wizard {
         // Define default values for options
         $default_values = array(
             'wpspeedtestpro_selected_region' => '',
-            'wpspeedtestpro_selected_provider_id' => 0,
-            'wpspeedtestpro_selected_package_id' => '',
+            'wpspeedtestpro_selected_provider' => 0,
+            'wpspeedtestpro_selected_package' => '',
             'wpspeedtestpro_allow_data_collection' => false,
             'wpspeedtestpro_uptimerobot_api_key' => '',
             'wpspeedtestpro_setup_completed' => true
@@ -132,8 +132,8 @@ class Wpspeedtestpro_Wizard {
             // Save settings with error checking
             $update_results = array(
                 update_option('wpspeedtestpro_selected_region', $settings['gcp_region']),
-                update_option('wpspeedtestpro_selected_provider_id', $settings['provider_id']),
-                update_option('wpspeedtestpro_selected_package_id', $settings['package_id']),
+                update_option('wpspeedtestpro_selected_provider', $settings['provider_id']),
+                update_option('wpspeedtestpro_selected_package', $settings['package_id']),
                 update_option('wpspeedtestpro_allow_data_collection', $settings['allow_data_collection'])
             );
     
