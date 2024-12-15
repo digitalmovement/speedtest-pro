@@ -226,7 +226,7 @@
                 <div class="advert-content">
                     <h3 class="advert-title"></h3>
                     <p class="advert-description"></p>
-                    <a href="#" class="advert-button button button-primary"></a>
+                    <a target="_blank" href="#" class="advert-button button button-primary"></a>
                 </div>
             </div>
             <div class="advert-card" id="advert-2">
@@ -236,7 +236,7 @@
                 <div class="advert-content">
                     <h3 class="advert-title"></h3>
                     <p class="advert-description"></p>
-                    <a href="#" class="advert-button button button-primary"></a>
+                    <a target="_blank" href="#" class="advert-button button button-primary"></a>
                 </div>
             </div>
         </div>

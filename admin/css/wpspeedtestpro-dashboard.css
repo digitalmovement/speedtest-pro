@@ -534,6 +534,7 @@ advertising-section {
     border-radius: 8px;
     overflow: hidden;
     transition: opacity 0.3s ease;
+    padding: 20px
 }
 
 .advert-image {
@@ -566,7 +567,7 @@ advertising-section {
 }
 
 .advert-button {
-    align-self: flex-start;
+    align-self: flex-end;
 }
 
 .action-buttons {
