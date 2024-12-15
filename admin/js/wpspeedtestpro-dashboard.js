@@ -862,7 +862,7 @@ jQuery(document).ready(function($) {
         });
 
         $('#test-pagespeed').on('click', function() {
-            var urlToTest = $('#tested-url').text();
+            var urlToTest = "https://" + $('#tested-url').text();
             if (urlToTest === 'No data') {
                 urlToTest = window.location.origin;
             }
