@@ -111,11 +111,11 @@
                         <span class="value" id="ssl-protocol">Loading...</span>
                     </div>
                 </div>
-                <div class="action-buttons">
+            </div>
+            <div class="action-buttons">
                     <button id="test-ssl" class="button button-primary">
-                        <i class="fas fa-shield-alt"></> Test SSL
+                       <i class="fas fa-shield-alt"></i> Test SSL
                     </button>
-                </div>
             </div>
         </div>
 
