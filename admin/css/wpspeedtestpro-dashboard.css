@@ -12,6 +12,10 @@
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    /* Add flexbox layout */
+    display: flex;
+    flex-direction: column;
+    min-height: 400px; /* Ensure consistent minimum height */
 }
 
 .dashboard-card h2 {
@@ -43,6 +47,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    flex: 1;
 }
 
 /* Generic Grid Layout for Card Sections */
