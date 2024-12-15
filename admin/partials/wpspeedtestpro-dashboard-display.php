@@ -77,9 +77,11 @@
                     <canvas id="latency-trend-chart"></canvas>
                 </div>
             </div>
-            <button id="test-latency" class="button button-primary">
-                <i class="fas fa-tachometer-alt"></i> Test Latency
-            </button>
+            <div class="action-buttons">
+                <button id="test-latency" class="button button-primary">
+                    <i class="fas fa-tachometer-alt"></i> Test Latency
+                </button>
+            </div>
         </div>
 
         <!-- SSL Card -->
