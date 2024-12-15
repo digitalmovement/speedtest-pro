@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
 
     function initSetupWizard() {
         const wizardHtml = `
-            <div id="wpspeedtestpro-setup-wizard" class="wpspeedtestpro-modal">
+            <div id="wpspeedtestpro-setup-wizard" class="wpspeedtestpro-wizard-modal">
                 <div class="wpspeedtestpro-modal-content">
                     <div class="wizard-header">
                         <h2>Welcome to WP SpeedTest Pro Setup Wizard</h2>
@@ -451,7 +451,7 @@ jQuery(document).ready(function($) {
     }
 
     /* Wizard Modal */
-    .wpspeedtestpro-modal {
+    .wpspeedtestpro-wizard-modal {
         position: fixed;
         top: 0;
         left: 0;
