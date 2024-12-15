@@ -223,18 +223,38 @@ class Wpspeedtestpro_API {
             return $cached_data;
         }
     
-        $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingprovider.json');
+        $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingproviders.json');
         if (is_wp_error($response)) {
             error_log('WPSpeedTestPro: Error fetching hosting providers JSON - ' . $response->get_error_message());
             return false;
         }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
     
-        $providers_json = wp_remote_retrieve_body($response);
+        if (!isset($data['providers']) || !is_array($data['providers'])) {
+            error_log('WPSpeedTestPro: Invalid data structure in hosting providers response');
+            return false;
+        }
     
-        set_transient($cache_key, $providers_json, WEEK_IN_SECONDS);
+        $unique_providers = [];
+        $seen_names = [];
+        foreach ($data['providers'] as $provider) {
+            if (!isset($seen_names[$provider['name']])) {
+                $unique_providers[] = $provider;
+                $seen_names[$provider['name']] = true;
+            }
+        }
+    
+        usort($unique_providers, function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
+    
+
+        set_transient($cache_key, $unique_providers, WEEK_IN_SECONDS);
     
         error_log('WPSpeedTestPro: get_hosting_providers_json() completed successfully');
-        return $providers_json;
+        return $unique_providers;
     }
 
     public function fetch_and_store_ssl_emails() {
