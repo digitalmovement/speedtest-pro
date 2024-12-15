@@ -216,7 +216,31 @@
             </button>
         </div>
     </div>
-
+    <!-- Advertising Section -->
+    <div class="advertising-section">
+        <div class="advert-cards">
+            <div class="advert-card" id="advert-1">
+                <div class="advert-image">
+                    <img src="" alt="Advertisement">
+                </div>
+                <div class="advert-content">
+                    <h3 class="advert-title"></h3>
+                    <p class="advert-description"></p>
+                    <a href="#" class="advert-button button button-primary"></a>
+                </div>
+            </div>
+            <div class="advert-card" id="advert-2">
+                <div class="advert-image">
+                    <img src="" alt="Advertisement">
+                </div>
+                <div class="advert-content">
+                    <h3 class="advert-title"></h3>
+                    <p class="advert-description"></p>
+                    <a href="#" class="advert-button button button-primary"></a>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Dashboard Events Section -->
     <div class="dashboard-events">
         <div class="event-card documentation">

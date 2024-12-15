@@ -923,6 +923,72 @@ jQuery(document).ready(function($) {
         return url.length > maxLength ? url.substring(0, maxLength) + '...' : url;
     }
     
+        // Advertisement Rotation System
+    function initAdvertisements() {
+        const advertData = wpspeedtestpro_advertisers.data;
+        if (!advertData || !advertData.banners || advertData.banners.length < 2) {
+            return;
+        }
+
+        const banners = advertData.banners;
+        let currentIndices = [0, 1];
+        const controls = advertData.controls;
+
+        function updateAdvert(cardIndex, bannerIndex) {
+            const card = $(`#advert-${cardIndex + 1}`);
+            const banner = banners[bannerIndex];
+
+            // Start fade out
+            card.css('opacity', 0);
+
+            // Update content after brief delay
+            setTimeout(() => {
+                card.find('img').attr('src', banner.imageUrl);
+                card.find('.advert-title').text(banner.title);
+                card.find('.advert-description').text(banner.description);
+                card.find('.advert-button')
+                    .text(banner.buttonText)
+                    .attr('href', banner.clickUrl);
+
+                // Fade back in
+                card.css('opacity', 1);
+            }, 300);
+        }
+
+        // Initialize adverts
+        updateAdvert(0, currentIndices[0]);
+        updateAdvert(1, currentIndices[1]);
+
+        // Set up rotation if autoplay is enabled
+        if (controls.autoplay) {
+            const interval = controls.interval || 5000;
+
+            setInterval(() => {
+                currentIndices = currentIndices.map(index => 
+                    (index + 2) % banners.length
+                );
+
+                updateAdvert(0, currentIndices[0]);
+                updateAdvert(1, currentIndices[1]);
+            }, interval);
+
+            // Handle pause on hover if enabled
+            if (controls.pauseOnHover) {
+                $('.advert-card').hover(
+                    function() {
+                        $(this).css('transition', 'none');
+                    },
+                    function() {
+                        $(this).css('transition', '');
+                    }
+                );
+            }
+        }
+    }
+
+
+
     // Initialize the dashboard
     initDashboard();
+    initAdvertisements();
 });

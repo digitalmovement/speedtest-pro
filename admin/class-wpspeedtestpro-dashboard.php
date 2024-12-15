@@ -69,6 +69,8 @@ class Wpspeedtestpro_Dashboard {
         add_action('wp_ajax_wpspeedtestpro_get_ssl_data', array($this, 'get_ssl_data'));
         add_action('wp_ajax_wpspeedtestpro_get_uptime_data', array($this, 'get_uptime_data'));
         add_action('wp_ajax_wpspeedtestpro_get_pagespeed_data', array($this, 'get_pagespeed_data'));
+        add_action('wp_ajax_wpspeedtestpro_get_advertisers', array($this, 'get_advertisers_ajax'));
+
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
     }
@@ -113,6 +115,10 @@ class Wpspeedtestpro_Dashboard {
                 'selected_region' => get_option('wpspeedtestpro_selected_region'),
                 'home_url' => home_url()
             ));    
+            wp_localize_script($this->plugin_name . '-dashboard', 'wpspeedtestpro_advertisers', array(
+                'data' => $this->get_cached_advertisers()
+            ));
+            
         }
   
     }
@@ -521,4 +527,37 @@ class Wpspeedtestpro_Bug_Report_Handler {
         
         return $plugin_info;
     }
+
+    private function get_cached_advertisers() {
+        $cached = get_transient('wpspeedtestpro_advertisers');
+        if ($cached !== false) {
+            return $cached;
+        }
+    
+        $response = wp_remote_get('https://assets.wpspeedtestpro.com/dashboard-advertisers.json');
+        if (is_wp_error($response)) {
+            return false;
+        }
+    
+        $data = json_decode(wp_remote_retrieve_body($response), true);
+        if (empty($data)) {
+            return false;
+        }
+    
+        // Filter for 300x250 banners only
+        $data['banners'] = array_filter($data['banners'], function($banner) {
+            return $banner['imageSize'] === '300x250';
+        });
+    
+        // Cache for 7 days
+        set_transient('wpspeedtestpro_advertisers', $data, 7 * DAY_IN_SECONDS);
+        return $data;
+    }
+    
+    public function get_advertisers_ajax() {
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
+        $data = $this->get_cached_advertisers();
+        wp_send_json_success($data);
+    }
+    
 }
