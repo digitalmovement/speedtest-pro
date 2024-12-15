@@ -441,13 +441,13 @@ class Wpspeedtestpro_Bug_Report_Handler {
         $payload = array(
             'site_key' => $this->site_key,
             'report_data' => $report_data,
-            'signature' => $signature
         );
 
         // Send to worker
         $response = wp_remote_post($this->worker_url, array(
             'headers' => array(
                 'Content-Type' => 'application/json',
+                'X-Signature' => $signature
             ),
             'body' => json_encode($payload),
             'timeout' => 30
