@@ -276,14 +276,13 @@ public function ajax_check_test_status() {
         }
 
         global $wpdb;
-        $table_name = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results';
         
         // Calculate the date threshold
         $threshold_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
         
         // Delete records older than the threshold
         $query = $wpdb->prepare(
-            "DELETE FROM {$table_name} WHERE test_time < %s",
+            "DELETE FROM {$this->pagespeed_table } WHERE test_date < %s",
             $threshold_date
         );
 
