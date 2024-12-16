@@ -54,6 +54,9 @@ jQuery(document).ready(function($) {
         }, function(response) {
             if (response.success) {
                 loadTestHistory();
+                toggleNotice($status, 'info');
+                $status.show().html('<p>' + response.data.message + '</p>');
+
             } else {
                 alert('Error deleting results: ' + response.data);
             }
