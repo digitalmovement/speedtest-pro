@@ -41,6 +41,9 @@ jQuery(document).ready(function($) {
 
     // Handle old results deletion
     $('#delete-old-results').on('click', function() {
+
+        const $status = $('#test-status');
+        
         if (!confirm('Are you sure you want to delete old results?')) {
             return;
         }
