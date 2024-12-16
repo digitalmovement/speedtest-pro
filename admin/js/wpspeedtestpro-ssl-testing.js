@@ -49,6 +49,7 @@ jQuery(document).ready(function($) {
                     if (response.data.status === 'in_progress') {
                         $('#ssl-status-message').html("Testing is still in progress..." + '<div class="test-progress"></div>');
                         toggleNotice($('#ssl-status-message'), 'info');
+                        $('#start-ssl-test').prop('disabled', true);
                         startStatusCheck();
                     } else if (response.data.status === 'completed') {
                         displayResults(response.data.data);
@@ -92,8 +93,10 @@ jQuery(document).ready(function($) {
                         displayResults(response.data.data);
                         testInProgress = false;
                         $('#start-ssl-test').prop('disabled', false);
+                        $('#ssl-status-message').html('SSL testing completed');
                     } else if (response.data.status === 'in_progress') {
                         $('#ssl-status-message').html( "Testing is still in progress" + '<div class="test-progress"></div>' );
+                        $('#start-ssl-test').prop('disabled', true);
                         toggleNotice($('#ssl-status-message'), 'info');
                     }
                 } else {

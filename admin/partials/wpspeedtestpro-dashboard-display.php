@@ -224,7 +224,9 @@
         <div class="advert-cards">
             <div class="advert-card" id="advert-1">
                 <div class="advert-image">
-                    <img src="" alt="Advertisement">
+                    <a target="_blank" href="#" class="advert-link">
+                        <img src="" alt="Advertisement">
+                    </a>
                 </div>
                 <div class="advert-content">
                     <h3 class="advert-title"></h3>

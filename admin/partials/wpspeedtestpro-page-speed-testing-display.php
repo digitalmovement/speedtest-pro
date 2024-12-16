@@ -195,6 +195,7 @@
         <div class="alignleft actions">
             <button type="button" id="delete-old-results" class="button">Delete Results Older Than</button>
             <select id="days-to-keep">
+                <option value="1">1 day</option>
                 <option value="30">30 days</option>
                 <option value="60">60 days</option>
                 <option value="90">90 days</option>

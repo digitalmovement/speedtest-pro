@@ -955,6 +955,7 @@ jQuery(document).ready(function($) {
                 card.find('.advert-button')
                     .text(banner.buttonText)
                     .attr('href', banner.clickUrl);
+                card.find('.advert-link').attr('href', banner.clickUrl);
 
                 // Fade back in
                 card.css('opacity', 1);
