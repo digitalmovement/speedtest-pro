@@ -139,7 +139,7 @@ class Wpspeedtestpro_PageSpeed {
         }
 
         // Store test IDs in transient for status checking
-        set_transient('pagespeed_test_' . md5($url), [
+        set_transient('wpspeedtestpro_pagespeed_test_' . md5($url), [
             'desktop_id' => $desktop_test['test_id'],
             'mobile_id' => $mobile_test['test_id'],
             'frequency' => $frequency,
@@ -157,7 +157,7 @@ class Wpspeedtestpro_PageSpeed {
             return;
         }
 
-        set_transient('pagespeed_test_' . md5($url), [
+        set_transient('wpspeedtestpro_pagespeed_test_' . md5($url), [
             'test_id' => $test['test_id'],
             'device' => $device,
             'frequency' => $frequency,
@@ -184,7 +184,7 @@ public function ajax_check_test_status() {
         return;
     }
 
-    $test_data = get_transient('pagespeed_test_' . md5($url));
+    $test_data = get_transient('wpspeedtestpro_pagespeed_test_' . md5($url));
     if (!$test_data) {
         wp_send_json_error('No test found for this URL');
         return;
@@ -192,7 +192,7 @@ public function ajax_check_test_status() {
 
     // Check if test has been running too long
     if (time() - $test_data['start_time'] > 120) { // 2 minutes timeout
-        delete_transient('pagespeed_test_' . md5($url));
+        delete_transient('wpspeedtestpro_pagespeed_test_' . md5($url));
         wp_send_json_error('Test timeout');
         return;
     }
@@ -218,7 +218,7 @@ public function ajax_check_test_status() {
                 $this->schedule_test($url, $test_data['frequency']);
             }
 
-            delete_transient('pagespeed_test_' . md5($url));
+            delete_transient('wpspeedtestpro_pagespeed_test_' . md5($url));
         } else {
             $all_complete = false;
         }
@@ -237,7 +237,7 @@ public function ajax_check_test_status() {
                 $this->schedule_test($url, $test_data['frequency']);
             }
 
-            delete_transient('pagespeed_test_' . md5($url));
+            delete_transient('wpspeedtestpro_pagespeed_test_' . md5($url));
         } else {
             $all_complete = false;
         }
