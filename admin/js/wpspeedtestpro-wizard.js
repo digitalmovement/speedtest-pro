@@ -606,16 +606,30 @@ jQuery(document).ready(function($) {
 
         async function runAllTests() {
             const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
-            const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
+            const tests = ['latency', 'performance', 'pagespeed'];
             let completedTests = 0;
             let failedTests = [];
-
+        
             if (hasUptimeRobotKey) {
                 tests.unshift('uptimerobot');
             }
-
+        
             $('.progress-label').text('Starting tests...');
-
+        
+            // Start SSL test separately and update UI
+            const $sslTestItem = $('.test-item[data-test="ssl"]');
+            const $sslStatus = $sslTestItem.find('.test-status');
+            $sslStatus.removeClass('pending').addClass('running').text('Started (continues in background)');
+            
+            // Start SSL test without waiting
+            runTest('ssl').then(() => {
+                $sslStatus.removeClass('running').addClass('completed').text('Started - Check dashboard for results');
+            }).catch((error) => {
+                $sslStatus.removeClass('running').addClass('failed').text('Failed to start test');
+                console.error('SSL test failed to start:', error);
+            });
+        
+            // Run other tests sequentially
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
                 const $status = $testItem.find('.test-status');
@@ -623,14 +637,14 @@ jQuery(document).ready(function($) {
                 
                 $status.removeClass('pending').addClass('running').text('Running...');
                 $progressBar.show();
-
+        
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
                     } else {
                         await runTest(testType);
                         
-                        if (['ssl', 'pagespeed'].includes(testType)) {
+                        if (testType === 'pagespeed') {
                             await checkTestStatus(testType);
                         }
                     }
@@ -644,7 +658,8 @@ jQuery(document).ready(function($) {
                     $progressBar.hide();
                     console.error(`Test ${testType} failed:`, error);
                 }
-
+        
+                // Calculate progress excluding SSL test from total
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
                 $('.progress-label').text(`${completedTests} of ${tests.length} tests completed`);
@@ -664,7 +679,12 @@ jQuery(document).ready(function($) {
                     </div>
                 `);
             } else {
-                $('.progress-label').text('All tests completed successfully!');
+                $('.progress-label').html(`
+                    All tests completed successfully!<br>
+                    <span style="font-size: 0.9em; color: #666;">
+                        Note: SSL test results will be available in the dashboard when completed (typically 4-5 minutes)
+                    </span>
+                `);
             }
         
             // Show next step button after tests are complete
