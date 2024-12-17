@@ -690,7 +690,7 @@ jQuery(document).ready(function($) {
             // Show next step button after tests are complete
             $('.next-step').prop('disabled', false).show();
             $('.start-tests').hide();
-        }
+        } 
         
         // Function to check test status for SSL and PageSpeed tests
         function checkTestStatus(testType) {
