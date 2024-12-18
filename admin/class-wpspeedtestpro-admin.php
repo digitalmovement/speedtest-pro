@@ -353,11 +353,10 @@ class Wpspeedtestpro_Sync_Handler {
 
 
     public function init() {
-        // Check if data collection is allowed
-  
+
         add_action('wpspeedtestpro_sync_data', array($this, 'sync_data'));
 
-                    // Schedule hourly sync if not already scheduled
+        // Schedule hourly sync if not already scheduled
         if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
             wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
         }
