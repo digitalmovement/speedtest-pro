@@ -54,14 +54,9 @@ class Wpspeedtestpro_Activator {
                 wp_schedule_event(time(), 'fifteen_minutes', 'wpspeedtestpro_check_scheduled_pagespeed_tests');
             }
 
-            if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
-                wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
-            } else {
-    
             // Schedule hourly sync if not already scheduled
-                if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
-                    wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
-                }
+            if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
+                wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
             }
             
 

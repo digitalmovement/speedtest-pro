@@ -110,7 +110,7 @@ class Wpspeedtestpro_Admin {
         $this->page_speed_testing   = new Wpspeedtestpro_PageSpeed( $this->plugin_name, $this->version, $this->core );
         $this->server_information   = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);  
         $this->sync_handler         = new Wpspeedtestpro_Sync_Handler($this->core->db);
-        $this->sync_handler->init();
+
     }
 
     /**
@@ -331,6 +331,8 @@ class Wpspeedtestpro_Sync_Handler {
            update_option('wpspeedtestpro_site_key', $this->site_key);
        }
 
+       $this->init();
+
     }
 
     private function generate_site_key() {
@@ -354,6 +356,12 @@ class Wpspeedtestpro_Sync_Handler {
         // Check if data collection is allowed
   
         add_action('wpspeedtestpro_sync_data', array($this, 'sync_data'));
+
+                    // Schedule hourly sync if not already scheduled
+        if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
+            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
+        }
+
     }
 
     private function get_environment_info() {
