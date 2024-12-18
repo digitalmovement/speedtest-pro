@@ -99,11 +99,7 @@ class Wpspeedtestpro_Admin {
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-page-speed-testing.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-wpspeedtestpro-settings.php';
 
-        $this->sync_handler         = new Wpspeedtestpro_Sync_Handler($this->core->db);
 
-        //        if (get_option('wpspeedtestpro_allow_data_collection')) {
-                    $this->sync_handler->init();
-        //        }
         $this->wizard               = new Wpspeedtestpro_Wizard($this->plugin_name, $this->version, $this->core);
         $this->dashboard            = new Wpspeedtestpro_Dashboard($this->plugin_name, $this->version, $this->core);
         $this->latency_testing      = new Wpspeedtestpro_Latency_Testing( $this->plugin_name, $this->version, $this->core );
@@ -113,6 +109,8 @@ class Wpspeedtestpro_Admin {
         $this->uptime_monitoring    = new Wpspeedtestpro_Uptime_Monitoring( $this->plugin_name, $this->version, $this->core );
         $this->page_speed_testing   = new Wpspeedtestpro_PageSpeed( $this->plugin_name, $this->version, $this->core );
         $this->server_information   = new Wpspeedtestpro_Server_Information($this->plugin_name, $this->version, $this->core);  
+        $this->sync_handler         = new Wpspeedtestpro_Sync_Handler($this->core->db);
+        $this->sync_handler->init();
     }
 
     /**
