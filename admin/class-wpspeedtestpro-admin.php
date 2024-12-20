@@ -427,9 +427,11 @@ class Wpspeedtestpro_Sync_Handler {
 
     public function sync_data() {
         // Check if data collection is still allowed
+        error_log('Syncing data');
         if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
             return;
         }
+        error_log('Syncing data Passed!');
 
         try {
             // Get all unsynced data
