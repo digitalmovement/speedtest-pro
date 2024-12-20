@@ -318,12 +318,14 @@ class Wpspeedtestpro_Sync_Handler {
     private $worker_url;
     private $shared_secret;
     private $site_key;
+    private $send_diagnostic_data;
 
     public function __construct($db) {
         $this->db = $db;
         $this->worker_url = 'https://analytics.wpspeedtestpro.com/upload';
         $this->shared_secret = 'your-very-long-and-secure-secret-key';
-        
+        $send_diagnostic_data = false;
+
        // Generate or get site key
        $this->site_key = get_option('wpspeedtestpro_site_key');
        if (empty($this->site_key)) {
@@ -430,6 +432,8 @@ class Wpspeedtestpro_Sync_Handler {
     public function ajax_sync_diagnostics() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
+        $this->send_diagnostic_data = true; // allow up to force data collection as the user requested it
+
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Unauthorized');
             return;
@@ -446,12 +450,13 @@ class Wpspeedtestpro_Sync_Handler {
     
 
     public function sync_data() {
+
         // Check if data collection is still allowed
-        error_log('Syncing data');
-        if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
-            return;
+        if (!$this->send_diagnostic_data) {
+            if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
+                return;
+            }
         }
-        error_log('Syncing data Passed!');
 
         try {
             // Get all unsynced data
