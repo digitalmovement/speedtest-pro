@@ -441,7 +441,7 @@ class Wpspeedtestpro_Sync_Handler {
         
         try {
             $this->sync_data();
-            wp_send_json_success();
+            wp_send_json_success(array('site_key' => get_option('wpspeedtestpro_site_key')));
         } catch (Exception $e) {
             wp_send_json_error($e->getMessage());
         }

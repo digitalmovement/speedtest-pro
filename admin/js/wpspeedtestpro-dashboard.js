@@ -904,7 +904,7 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Diagnostics data sent successfully!');
+                        alert('Diagnostics data sent successfully!\n\nGive this site key to your support representative: ' + response.data.site_key);
                     } else {
                         alert('Failed to send diagnostics data. Please try again or contact support.');
                     }

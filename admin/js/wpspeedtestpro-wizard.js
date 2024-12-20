@@ -802,7 +802,7 @@ jQuery(document).ready(function($) {
                             if (response.success) {
                                 if (['ssl', 'pagespeed'].includes(testType)) {
                                     // Keep progress bar for tests that need status checking
-                                    $progressBar.hide();
+                                
                                 } else {
                                     // Hide progress bar for completed tests
                                     $progressBar.hide();
