@@ -905,9 +905,10 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Diagnostics data sent successfully!\n\nGive the Site Key to your support representative located on the dashboard.');
                         $siteKey.html("Site key: <strong>" + response.data.site_key + "</strong>");
                         $siteKey.show();
+                        alert('Diagnostics data sent successfully!\n\nGive the Site Key to your support representative located on the dashboard.');
+
                     } else {
                         alert('Failed to send diagnostics data. Please try again or contact support.');
                     }
