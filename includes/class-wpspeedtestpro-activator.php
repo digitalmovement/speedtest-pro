@@ -68,5 +68,8 @@ class Wpspeedtestpro_Activator {
                 'notification_email' => get_option('admin_email'),
                 'minimum_score_alert' => 80
             ]);
+
+            add_option('wpspeedtestpro_allow_data_collection', true);
+
     }
 }
