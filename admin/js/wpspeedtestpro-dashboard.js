@@ -885,7 +885,41 @@ jQuery(document).ready(function($) {
                 }
             });
         });
+
+        $('.send-diagnostics').on('click', function() {
+            const $button = $(this);
+            const $spinner = $button.find('.spinner');
+            
+            // Disable button and show spinner
+            $button.prop('disabled', true).addClass('sending');
+            
+            // Make Ajax call to trigger sync_data
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'wpspeedtestpro_sync_diagnostics',
+                    nonce: wpspeedtestpro_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Diagnostics data sent successfully!');
+                    } else {
+                        alert('Failed to send diagnostics data. Please try again or contact support.');
+                    }
+                },
+                error: function() {
+                    alert('Failed to send diagnostics data. Please try again or contact support.');
+                },
+                complete: function() {
+                    // Re-enable button and hide spinner
+                    $button.prop('disabled', false).removeClass('sending');
+                }
+            });
+        });
+        
     }
+
 
     // Utility Functions
     function getPerformanceClass(percentage) {

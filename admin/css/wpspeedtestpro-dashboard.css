@@ -630,3 +630,35 @@ advertising-section {
     transition: opacity 0.3s ease;
 }
 
+.wizard-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.send-diagnostics {
+    background: #f0f0f1;
+    border: 1px solid #ddd;
+    color: #1d2327;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.send-diagnostics:hover {
+    background: #e0e0e0;
+}
+
+.send-diagnostics .spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+}
+
+.send-diagnostics.sending .spinner {
+    display: inline-block;
+}

@@ -355,6 +355,8 @@ class Wpspeedtestpro_Sync_Handler {
     public function init() {
 
         add_action('wpspeedtestpro_sync_data', array($this, 'sync_data'));
+        add_action('wp_ajax_wpspeedtestpro_sync_diagnostics', array($this, 'ajax_sync_diagnostics'));
+
 
         // Schedule hourly sync if not already scheduled
         if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
@@ -424,6 +426,24 @@ class Wpspeedtestpro_Sync_Handler {
     private function generate_signature($data) {
         return hash_hmac('sha256', json_encode($data), $this->shared_secret);
     }
+
+    public function ajax_sync_diagnostics() {
+        check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized');
+            return;
+        }
+        
+        try {
+            $this->sync_data();
+            wp_send_json_success();
+        } catch (Exception $e) {
+            wp_send_json_error($e->getMessage());
+        }
+    }
+
+    
 
     public function sync_data() {
         // Check if data collection is still allowed
