@@ -636,7 +636,7 @@ advertising-section {
     margin-top: 20px;
 }
 
-.send-diagnostics {
+.send-diagnostics-link {
     background: #f0f0f1;
     border: 1px solid #ddd;
     color: #1d2327;
@@ -646,19 +646,27 @@ advertising-section {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    text-decoration: none;
 }
 
-.send-diagnostics:hover {
+.send-diagnostics-link:hover {
     background: #e0e0e0;
+    color: #1d2327;
+    text-decoration: none;
 }
 
-.send-diagnostics .spinner {
+.send-diagnostics-link .spinner {
     display: none;
     width: 16px;
     height: 16px;
     margin-left: 5px;
 }
 
-.send-diagnostics.sending .spinner {
+.send-diagnostics-link.sending {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.send-diagnostics-link.sending .spinner {
     display: inline-block;
 }

@@ -886,13 +886,14 @@ jQuery(document).ready(function($) {
             });
         });
 
-        $('.send-diagnostics').on('click', function() {
-            const $button = $(this);
-            const $spinner = $button.find('.spinner');
+        $('.send-diagnostics-link').on('click', function(e) {
+            e.preventDefault(); // Prevent the default link behavior
             
-            // Disable button and show spinner
-            $button.prop('disabled', true).addClass('sending');
+            const $link = $(this);
+            const $spinner = $link.find('.spinner');
             
+            // Add sending class to show spinner and disable link
+            $link.addClass('sending');
             // Make Ajax call to trigger sync_data
             $.ajax({
                 url: ajaxurl,
@@ -912,12 +913,13 @@ jQuery(document).ready(function($) {
                     alert('Failed to send diagnostics data. Please try again or contact support.');
                 },
                 complete: function() {
-                    // Re-enable button and hide spinner
-                    $button.prop('disabled', false).removeClass('sending');
+                    // Remove sending class to hide spinner and re-enable link
+                    $link.removeClass('sending');
                 }
             });
         });
         
+
     }
 
 
