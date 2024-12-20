@@ -452,11 +452,10 @@ class Wpspeedtestpro_Sync_Handler {
     public function sync_data() {
 
         // Check if data collection is still allowed
-        if (!$this->send_diagnostic_data) {
-            if (!get_option('wpspeedtestpro_allow_data_collection', false)) {
-                return;
-            }
+        if (!$this->send_diagnostic_data && !get_option('wpspeedtestpro_allow_data_collection', false)) {
+            return;
         }
+
 
         try {
             // Get all unsynced data
