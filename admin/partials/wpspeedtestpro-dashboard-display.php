@@ -274,7 +274,7 @@
             <a href="" target="_blank" class="button button-secondary send-diagnostics-link">
                 Send Diagnostics <span class="spinner"></span>
             </a>
-            <br /> <span id="site-key" style="display:none"></span>
+            <br /> <br /><span id="site-key" style="display:none"></span>
         </div>
     </div>
 </div>
