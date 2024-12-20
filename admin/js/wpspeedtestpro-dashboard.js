@@ -891,6 +891,7 @@ jQuery(document).ready(function($) {
             
             const $link = $(this);
             const $spinner = $link.find('.spinner');
+            const $siteId = $('#site-id');
             
             // Add sending class to show spinner and disable link
             $link.addClass('sending');
@@ -904,7 +905,8 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Diagnostics data sent successfully!\n\nGive this site key to your support representative: ' + response.data.site_key);
+                        alert('Diagnostics data sent successfully!\n\nGive the Site ID to your support representative');
+                        $siteId.html("Site ID: <strong>" + response.data.site_key + "</strong>");
                     } else {
                         alert('Failed to send diagnostics data. Please try again or contact support.');
                     }
