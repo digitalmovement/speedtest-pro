@@ -271,12 +271,9 @@
             <a href="https://wpspeedtestpro.com/support" target="_blank" class="button button-secondary">
                 Get Support
             </a>
-                <div class="wizard-actions">
-                    <button class="send-diagnostics">
-                         Send Diagnostics
-                    <span class="spinner"></span>
-                    </button>
-                </div>
+            <a href="" target="_blank" class="button button-secondary send-diagnostics">
+                Send Diagnostics <span class="spinner"></span>
+            </a>
         </div>
     </div>
 </div>
