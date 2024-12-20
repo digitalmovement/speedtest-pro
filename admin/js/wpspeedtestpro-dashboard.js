@@ -905,8 +905,9 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        alert('Diagnostics data sent successfully!\n\nGive the Site ID to your support representative');
+                        alert('Diagnostics data sent successfully!\n\nGive the Site ID to your support representative located on the dashboard.');
                         $siteId.html("Site ID: <strong>" + response.data.site_key + "</strong>");
+                        $siteId.show();
                     } else {
                         alert('Failed to send diagnostics data. Please try again or contact support.');
                     }
