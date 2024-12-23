@@ -619,13 +619,17 @@ jQuery(document).ready(function($) {
             // Start SSL test separately and update UI
             const $sslTestItem = $('.test-item[data-test="ssl"]');
             const $sslStatus = $sslTestItem.find('.test-status');
+            const $sslProgressBar = $sslTestItem.find('.test-progress-bar');
+
             $sslStatus.removeClass('pending').addClass('running').text('Started (continues in background)');
             
             // Start SSL test without waiting
             runTest('ssl').then(() => {
                 $sslStatus.removeClass('running').addClass('completed').text('Started - Check dashboard for results');
+                $sslProgressBar.hide(); // Hide progress bar after test starts
             }).catch((error) => {
                 $sslStatus.removeClass('running').addClass('failed').text('Failed to start test');
+                $sslProgressBar.hide(); // Hide progress bar on failure
                 console.error('SSL test failed to start:', error);
             });
         
