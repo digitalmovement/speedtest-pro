@@ -151,6 +151,9 @@ class Wpspeedtestpro_Settings {
         ));
         register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_uptimerobot_api_key' );
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_pagespeed_api_key');
+        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_user_country');
+
+ 
 
         // Add settings section
         add_settings_section(
@@ -160,6 +163,16 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro-settings'
         );
 
+            // Add the field to the settings page
+        add_settings_field(
+            'wpspeedtestpro_user_country',
+            'User Base Country',    
+            array($this, 'render_country_field'),
+            'wpspeedtestpro-settings',
+            'wpspeedtestpro_section',
+            array('before' => 'wpspeedtestpro_selected_region') // Add before GCP region
+        );
+    
         // Add settings fields
         add_settings_field(
             'wpspeedtestpro_selected_region',
@@ -216,38 +229,97 @@ class Wpspeedtestpro_Settings {
             'pagespeed_settings_section'
         );
 
-
-
+    
 
     }
 
     public function sanitize_settings($input) {
         $sanitized_input = array();
         
+        $errors = array();
+
+        // Sanitize User Country
+        if (isset($input['wpspeedtestpro_user_country'])) {
+            $country = sanitize_text_field($input['wpspeedtestpro_user_country']);
+            // Verify it's a valid country code
+            if (array_key_exists($country, $this->get_countries_list())) {
+                $sanitized_input['wpspeedtestpro_user_country'] = $country;
+            } else {
+                $errors[] = 'Invalid country selected.';
+            }
+        }
+        
+        // Sanitize GCP Region
         if (isset($input['wpspeedtestpro_selected_region'])) {
-            $sanitized_input['wpspeedtestpro_selected_region'] = sanitize_text_field($input['wpspeedtestpro_selected_region']);
+            $region = sanitize_text_field($input['wpspeedtestpro_selected_region']);
+            // Verify it's a valid GCP region
+            $valid_regions = $this->core->api->get_gcp_endpoints();
+            $valid_region_names = array_column($valid_regions, 'region_name');
+            if (in_array($region, $valid_region_names)) {
+                $sanitized_input['wpspeedtestpro_selected_region'] = $region;
+            } else {
+                $errors[] = 'Invalid GCP region selected.';
+            }
         }
         
+        // Sanitize Provider ID
         if (isset($input['wpspeedtestpro_selected_provider'])) {
-            $sanitized_input['wpspeedtestpro_selected_provider'] = sanitize_text_field($input['wpspeedtestpro_selected_provider']);
+            $provider_id = absint($input['wpspeedtestpro_selected_provider']);
+            // Verify it's a valid provider
+            $providers = $this->core->api->get_hosting_providers();
+            $valid_provider_ids = array_column($providers, 'id');
+            if (in_array($provider_id, $valid_provider_ids)) {
+                $sanitized_input['wpspeedtestpro_selected_provider'] = $provider_id;
+            } else {
+                $errors[] = 'Invalid hosting provider selected.';
+            }
         }
         
+        // Sanitize Package ID
         if (isset($input['wpspeedtestpro_selected_package'])) {
-            $sanitized_input['wpspeedtestpro_selected_package'] = sanitize_text_field($input['wpspeedtestpro_selected_package']);
+            $package_id = sanitize_text_field($input['wpspeedtestpro_selected_package']);
+            // Package validation would go here - needs to match the selected provider's packages
+            $sanitized_input['wpspeedtestpro_selected_package'] = $package_id;
         }
         
+        // Sanitize Data Collection Flag
         if (isset($input['wpspeedtestpro_allow_data_collection'])) {
-            $sanitized_input['wpspeedtestpro_allow_data_collection'] = (bool) $input['wpspeedtestpro_allow_data_collection'];
+            $sanitized_input['wpspeedtestpro_allow_data_collection'] = 
+                (bool) $input['wpspeedtestpro_allow_data_collection'];
         }
         
-        if (isset($input['wpspeedtestpro_pagespeed_api_key'])) {
-            $sanitized_input['wpspeedtestpro_pagespeed_api_key'] = sanitize_text_field($input['wpspeedtestpro_pagespeed_api_key']);
-        }
-
+        // Sanitize UptimeRobot API Key
         if (isset($input['wpspeedtestpro_uptimerobot_api_key'])) {
-            $sanitized_input['wpspeedtestpro_uptimerobot_api_key'] = sanitize_text_field($input['wpspeedtestpro_uptimerobot_api_key']);
+            $api_key = sanitize_text_field($input['wpspeedtestpro_uptimerobot_api_key']);
+            if (empty($api_key) || $this->validate_uptimerobot_api_key($api_key)) {
+                $sanitized_input['wpspeedtestpro_uptimerobot_api_key'] = $api_key;
+            } else {
+                $errors[] = 'Invalid UptimeRobot API key format.';
+            }
         }
-
+    
+        // Sanitize PageSpeed API Key
+        if (isset($input['wpspeedtestpro_pagespeed_api_key'])) {
+            $api_key = sanitize_text_field($input['wpspeedtestpro_pagespeed_api_key']);
+            if (empty($api_key) || $this->validate_pagespeed_api_key($api_key)) {
+                $sanitized_input['wpspeedtestpro_pagespeed_api_key'] = $api_key;
+            } else {
+                $errors[] = 'Invalid PageSpeed API key format.';
+            }
+        }
+    
+        // If there are any errors, add them as error messages
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                add_settings_error(
+                    'wpspeedtestpro_messages',
+                    'wpspeedtestpro_error',
+                    $error,
+                    'error'
+                );
+            }
+        }
+    
         return $sanitized_input;
     }
 
@@ -434,5 +506,86 @@ class Wpspeedtestpro_Settings {
         </p>
         <?php
     }
+
+        // Add this method to render the country dropdown
+    public function render_country_field() {
+        $selected_country = get_option('wpspeedtestpro_user_country');
+        ?>
+        <select id="wpspeedtestpro_user_country" name="wpspeedtestpro_user_country">
+            <option value="">Select a country</option>
+            <?php
+            // Add a complete list of countries
+            $countries = array(
+                'AF' => 'Afghanistan',
+                'AL' => 'Albania',
+                'DZ' => 'Algeria',
+                // ... Add all countries ...
+                'US' => 'United States',
+                'GB' => 'United Kingdom',
+                // ... Continue with all countries ...
+                'ZW' => 'Zimbabwe'
+            );
+
+            foreach ($countries as $code => $name) {
+                printf(
+                    '<option value="%s" %s>%s</option>',
+                    esc_attr($code),
+                    selected($selected_country, $code, false),
+                    esc_html($name)
+                );
+            }
+            ?>
+        </select>
+        <p class="description">Select the primary country where most of your users are located.</p>
+        <?php
+    }
+
+    private function validate_uptimerobot_api_key($api_key) {
+        // UptimeRobot API keys are typically 32 characters
+        return (bool) preg_match('/^[a-zA-Z0-9]{32}$/', $api_key);
+    }
+    
+    /**
+     * Validate PageSpeed API key format
+     * 
+     * @param string $api_key The API key to validate
+     * @return bool Whether the API key format is valid
+     */
+    private function validate_pagespeed_api_key($api_key) {
+        // Google API keys are typically 39 characters
+        return (bool) preg_match('/^AIza[0-9A-Za-z-_]{35}$/', $api_key);
+    }
+    
+    /**
+     * Get list of countries
+     * 
+     * @return array Array of country codes and names
+     */
+    private function get_countries_list() {
+        return array(
+            'AF' => 'Afghanistan',
+            'AL' => 'Albania',
+            // ... Add all countries from the previous code
+            'ZW' => 'Zimbabwe'
+        );
+    }
+    
+    /**
+     * Save individual setting
+     * 
+     * @param string $option_name The option name
+     * @param mixed $value The option value
+     * @return bool Whether the option was saved successfully
+     */
+    private function save_setting($option_name, $value) {
+        if (get_option($option_name) !== false) {
+            return update_option($option_name, $value);
+        } else {
+            return add_option($option_name, $value);
+        }
+    }
+
+    
+    
 }
 
