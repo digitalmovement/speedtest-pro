@@ -106,7 +106,8 @@ class Wpspeedtestpro_Settings {
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
                 'selected_region' => get_option('wp_hosting_benchmarking_selected_region'),
-                'hosting_providers' => $this->core->api->get_hosting_providers_json()
+                'hosting_providers' => $this->core->api->get_hosting_providers_json(),
+                'saved_country' => get_option('wpspeedtestpro_user_country') // Add this line
             ));
         }
     }
