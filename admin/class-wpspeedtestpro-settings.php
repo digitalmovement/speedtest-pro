@@ -335,7 +335,8 @@ class Wpspeedtestpro_Settings {
             echo '<select name="wpspeedtestpro_selected_region">';
             foreach ($gcp_endpoints as $endpoint) {
                 $region_name = esc_attr($endpoint['region_name']);
-                echo '<option value="' . $region_name . '"' . selected($selected_region, $region_name, false) . '>';
+                $region = esc_attr($endpoint['region']);
+                echo '<option value="' . $region . '"' . selected($selected_region, $region, false) . '>';
                 echo esc_html($region_name);
                 echo '</option>';
             }
