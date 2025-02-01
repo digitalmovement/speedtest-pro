@@ -16,7 +16,7 @@
  * Plugin Name:       WP Speedtest Pro
  * Plugin URI:        https://wpspeedtestpro.com
  * Description:       An advanced plugin to test your WordPress Performance, including comprehensive server performance benchmarks.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Author:            WP Speedtest Pro Team
  * Author URI:        https://wpspeedtestpro.com/
  * License:           GPL-2.0+
