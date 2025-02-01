@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
     var $providerSelect = $('#wpspeedtestpro_selected_provider');
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var hostingProviders = JSON.parse(wpspeedtestpro_ajax.hosting_providers);
-    var $userCountry = $('#user-country');
+    var $userCountry = $('#wpspeedtestpro_user_country');
 
     const countryToRegionMapping = {
         // North America
