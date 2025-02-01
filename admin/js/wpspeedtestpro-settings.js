@@ -3,6 +3,8 @@ jQuery(document).ready(function($) {
     var $packageSelect = $('#wpspeedtestpro_selected_package');
     var hostingProviders = JSON.parse(wpspeedtestpro_ajax.hosting_providers);
     var $userCountry = $('#wpspeedtestpro_user_country');
+    const $gcpRegionSelect = $('#gcp-wpspeedtestpro_selected_region');
+
 
     const countryToRegionMapping = {
         // North America
@@ -430,11 +432,17 @@ jQuery(document).ready(function($) {
     // Add this function to automatically update the GCP region when country changes
     function updateGCPRegionBasedOnCountry(countryCode) {
         const gcpRegion = getGCPRegionForCountry(countryCode);
-        const $gcpRegionSelect = $('#gcp-region');
+        console.log('Country Code:', countryCode);
+        console.log('Selected GCP Region:', gcpRegion);
         
-        // Update the GCP region dropdown
-        if ($gcpRegionSelect.find(`option[value="${gcpRegion}"]`).length) {
-            $gcpRegionSelect.val(gcpRegion).trigger('change');
+        if ($gcpRegionSelect.length) {
+            if ($gcpRegionSelect.find(`option[value="${gcpRegion}"]`).length) {
+                $gcpRegionSelect.val(gcpRegion).trigger('change');
+            } else {
+                console.warn('GCP region ' + gcpRegion + ' not found in options');
+            }
+        } else {
+            console.warn('GCP region select element not found');
         }
     }
 
@@ -442,12 +450,14 @@ jQuery(document).ready(function($) {
         updatePackages();
     });
     
-    $userCountry.on('change', function() {
+    $(document).on('change', '#wpspeedtestpro_user_country', function() {
         const selectedCountry = $(this).val();
+        console.log('Country changed to:', selectedCountry);
         if (selectedCountry) {
             updateGCPRegionBasedOnCountry(selectedCountry);
         }
     });
+
 
 
     // Initial population of providers and packages
