@@ -686,14 +686,14 @@ jQuery(document).ready(function($) {
         // Create table rows with flags and bubbles
         Object.keys(regionData).forEach(function(region) {
             var row = $('<tr>');
-            
+            var thisRegionName = regionData[region].region_name
             if (region === selectedRegion) {
                 row.addClass('highlight-row');
             }
     
             // Create region cell with flag
             var regionCell = $('<td>');
-            if (countryMap[region_name]) {
+            if (countryMap[thisRegionName]) {
                 var flagSpan = $('<span>')
                     .addClass('flag-icon')
                     .css({
@@ -708,7 +708,7 @@ jQuery(document).ready(function($) {
                     });
                 regionCell.append(flagSpan);
             }
-            regionCell.append(region_name);
+            regionCell.append(thisRegionName);
             
             // Create latency cell with bubble
             var latencyCell = $('<td>');
