@@ -199,13 +199,6 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
 
-        add_settings_field(
-            'wpspeedtestpro_allow_data_collection',
-            'Allow anonymous data collection',
-            array($this, 'render_data_collection_field'),
-            'wpspeedtestpro-settings',
-            'wpspeedtestpro_section'
-        );
 
         add_settings_field(
             'wpspeedtestpro_uptimerobot_api_key',
@@ -226,6 +219,14 @@ class Wpspeedtestpro_Settings {
             'pagespeed_api_key',
             'PageSpeed Insights API Key',
             array($this, 'render_pagespeed_api_key_field'),
+            'wpspeedtestpro-settings',
+            'wpspeedtestpro_section'
+        );
+
+        add_settings_field(
+            'wpspeedtestpro_allow_data_collection',
+            'Allow anonymous data collection',
+            array($this, 'render_data_collection_field'),
             'wpspeedtestpro-settings',
             'wpspeedtestpro_section'
         );
