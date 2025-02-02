@@ -51,7 +51,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     private function is_this_the_right_plugin_page() {
         if ( function_exists( 'get_current_screen' ) ) {
             $screen = get_current_screen();
-            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-uptime-monitoring';    
+            return $screen && $screen->id === 'wp-speedtest-pro_page_wpspeedtestpro-uptime-monitoring';    
         }
     }
 

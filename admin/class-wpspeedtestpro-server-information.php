@@ -27,7 +27,7 @@ class Wpspeedtestpro_Server_Information {
     private function is_this_the_right_plugin_page() {
         if (function_exists('get_current_screen')) {
             $screen = get_current_screen();
-            return $screen && $screen->id === 'wp-speed-test-pro_page_wpspeedtestpro-server-information';    
+            return $screen && $screen->id === 'wp-speedtest-pro_page_wpspeedtestpro-server-information';    
         }
     }
 
