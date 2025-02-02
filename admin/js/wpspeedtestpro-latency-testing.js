@@ -698,7 +698,7 @@ jQuery(document).ready(function($) {
                 var flagSpan = $('<span>')
                     .addClass('flag-icon')
                     .css({
-                        'background-image': `url('https://flagcdn.com/w20/${countryMap[region_name]}.png')`,
+                        'background-image': `url('https://flagcdn.com/w20/${countryMap[thisRegionName]}.png')`,
                         'display': 'inline-block',
                         'width': '20px',
                         'height': '20px',
