@@ -215,19 +215,19 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
 
-        add_settings_section(
+/*        add_settings_section(
             'pagespeed_settings_section',
             'PageSpeed Insights Settings',
             null,
             'wpspeedtestpro-settings'
         );
-
+*/
         add_settings_field(
             'pagespeed_api_key',
             'PageSpeed Insights API Key',
-            [self::class, 'render_api_key_field'],
+            array($this, 'render_pagespeed_api_key_field'),
             'wpspeedtestpro-settings',
-            'pagespeed_settings_section'
+            'wpspeedtestpro_section'
         );
 
     
@@ -494,7 +494,7 @@ class Wpspeedtestpro_Settings {
         echo '<p class="description">Enter your UptimeRobot API key. You can find your API key in your <a href="https://dashboard.uptimerobot.com/integrations?rid=97f3dfd4e3a8a6" target="_blank">Uptime account settings</a>. <br /> Please create a <b>Main API key</b></p>';
     }
 
-    public static function render_api_key_field() {
+    public static function render_pagespeed_api_key_field() {
         $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
         ?>
         <input type="text" 
