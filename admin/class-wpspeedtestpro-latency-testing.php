@@ -319,7 +319,7 @@ class Wpspeedtestpro_Latency_Testing {
         foreach ($endpoints as $endpoint) {
             $latency = $this->core->api->ping_endpoint($endpoint['url']);
             if ($latency !== false) {
-                $this->core->db->insert_result($endpoint['region_name'], $latency);
+                $this->core->db->insert_result($endpoint['region'],$endpoint['region_name'], $latency);
             }
         }
     }

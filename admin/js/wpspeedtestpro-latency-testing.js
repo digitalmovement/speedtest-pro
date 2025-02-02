@@ -646,7 +646,9 @@ jQuery(document).ready(function($) {
         results.forEach(function(result) {
             if (!result || typeof result !== 'object') return;
             
-            var region = result.region_name;
+            var region = result.region;
+            var region_name = result.region_name;
+
             if (!region) return;
     
             if (!('latency' in result) || !('fastest_latency' in result) || !('slowest_latency' in result)) return;
@@ -691,11 +693,11 @@ jQuery(document).ready(function($) {
     
             // Create region cell with flag
             var regionCell = $('<td>');
-            if (countryMap[region]) {
+            if (countryMap[region_name]) {
                 var flagSpan = $('<span>')
                     .addClass('flag-icon')
                     .css({
-                        'background-image': `url('https://flagcdn.com/w20/${countryMap[region]}.png')`,
+                        'background-image': `url('https://flagcdn.com/w20/${countryMap[region_name]}.png')`,
                         'display': 'inline-block',
                         'width': '20px',
                         'height': '20px',
@@ -706,7 +708,7 @@ jQuery(document).ready(function($) {
                     });
                 regionCell.append(flagSpan);
             }
-            regionCell.append(region);
+            regionCell.append(region_name);
             
             // Create latency cell with bubble
             var latencyCell = $('<td>');

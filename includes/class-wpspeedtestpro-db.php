@@ -22,11 +22,13 @@ class Wpspeedtestpro_DB {
         $sql = "CREATE TABLE {$this->hosting_benchmarking_table} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             test_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+            region varchar(20) NOT NULL,
             region_name varchar(255) NOT NULL,
             latency float NOT NULL,
             latency_difference float DEFAULT NULL,
             synced tinyint(1) DEFAULT 0,
             PRIMARY KEY  (id),
+            KEY region (region),
             KEY region_name (region_name),
             KEY test_time (test_time),
             KEY synced (synced)
@@ -71,7 +73,7 @@ class Wpspeedtestpro_DB {
         dbDelta($sql);
     }
 
-    public function insert_result($region_name, $latency) {
+    public function insert_result($region, $region_name, $latency) {
         global $wpdb;
 
         // Fetch the latest result for the same region
@@ -88,6 +90,7 @@ class Wpspeedtestpro_DB {
             $this->hosting_benchmarking_table,
             array(
                 'test_time' => current_time('mysql'),
+                'region' => $region,
                 'region_name' => $region_name,
                 'latency' => $latency,
                 'latency_difference' => $latency_difference
