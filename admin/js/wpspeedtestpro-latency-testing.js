@@ -661,6 +661,7 @@ jQuery(document).ready(function($) {
     
             if (!regionData[region]) {
                 regionData[region] = {
+                    region_name: region_name,
                     currentLatency: latency,
                     fastestLatency: fastestLatency,
                     slowestLatency: slowestLatency,
