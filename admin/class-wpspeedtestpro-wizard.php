@@ -104,6 +104,7 @@ class Wpspeedtestpro_Wizard {
     
         $settings = array(
             'gcp_region' => sanitize_text_field($_POST['region']),
+            'user_country' => sanitize_text_field($_POST['user_country']),
             'provider_id' => absint($_POST['provider_id']),
             'package_id' => sanitize_text_field($_POST['package_id']),
             'allow_data_collection' => isset($_POST['allow_data_collection']) ? 
@@ -114,6 +115,7 @@ class Wpspeedtestpro_Wizard {
         // Define default values for options
         $default_values = array(
             'wpspeedtestpro_selected_region' => '',
+            'wpspeedtestpro_user_country' => '',
             'wpspeedtestpro_selected_provider' => 0,
             'wpspeedtestpro_selected_package' => '',
             'wpspeedtestpro_allow_data_collection' => false,
@@ -139,6 +141,7 @@ class Wpspeedtestpro_Wizard {
             // Save settings with error checking
             $update_results = array(
                 update_option('wpspeedtestpro_selected_region', $settings['gcp_region']),
+                update_option('wpspeedtestpro_user_country', $settings['user_country']),
                 update_option('wpspeedtestpro_selected_provider', $settings['provider_id']),
                 update_option('wpspeedtestpro_selected_package', $settings['package_id']),
                 update_option('wpspeedtestpro_allow_data_collection',$allow_data_collection)
