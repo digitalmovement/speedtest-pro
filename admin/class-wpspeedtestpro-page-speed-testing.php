@@ -521,7 +521,7 @@ public function ajax_check_test_status() {
         }
 
         $status_code = wp_remote_retrieve_response_code($response);
-        if ($status_code !== 200) {
+        if (($status_code !== 200) && ($status_code !== 400)) {
             error_log('PageSpeed API HTTP Error: ' . $status_code);
             return [
                 'success' => false,
