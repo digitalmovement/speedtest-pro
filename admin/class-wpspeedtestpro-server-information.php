@@ -100,15 +100,15 @@ class Wpspeedtestpro_Server_Information {
         $client_version = mysqli_get_client_info() ? mysqli_get_client_info() : 'N/A';
 
         $info['database'] = array(
-            'extension' => $extension,
-            'server_version' => $server_version,
-            'client_version' => $client_version,
-            'database_user' => $wpdb->dbuser,
-            'database_host' => $wpdb->dbhost,
-            'database_name' => $wpdb->dbname,
-            'table_prefix' => $wpdb->prefix,
-            'database_charset' => $wpdb->charset,
-            'database_collate' => $wpdb->collate
+            'extension' => esc_html($extension),
+            'server_version' => esc_html($server_version),
+            'client_version' => esc_html($client_version),
+            'database_user' => esc_html($wpdb->dbuser),
+            'database_host' => esc_html($wpdb->dbhost),
+            'database_name' => esc_html($wpdb->dbname),
+            'table_prefix' => esc_html($wpdb->prefix),
+            'database_charset' => esc_html($wpdb->charset),
+            'database_collate' => esc_html($wpdb->collate)
         );
 
         // WordPress Information
@@ -118,10 +118,14 @@ class Wpspeedtestpro_Server_Information {
         $inactive_plugins = array();
 
         foreach ($plugins as $plugin_path => $plugin) {
+            // Sanitize plugin name and author
+            $plugin_name = sanitize_text_field($plugin['Name']);
+            $plugin_author = sanitize_text_field($plugin['Author']);
+
             if (is_plugin_active($plugin_path)) {
-                $active_plugins[$plugin['Name']] = $plugin['Author'];
+                $active_plugins[esc_html($plugin_name)] = esc_html($plugin_author);
             } else {
-                $inactive_plugins[$plugin['Name']] = $plugin['Author'];
+                $inactive_plugins[esc_html($plugin_name)] = esc_html($plugin_author);
             }
         }
 
