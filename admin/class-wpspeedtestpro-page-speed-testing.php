@@ -598,12 +598,9 @@ public function ajax_check_test_status() {
                     array_map('sanitize_text_field', $item) : 
                     sanitize_text_field($item);
             }, $full_report);
-            
-            // When outputting:
-            echo esc_html(wp_json_encode($sanitized_report));
         }
 
-        
+
         // Helper function to clean text
         function clean_text($text) {
             // Remove markdown bold syntax
