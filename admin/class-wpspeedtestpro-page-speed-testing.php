@@ -134,7 +134,7 @@ class Wpspeedtestpro_PageSpeed {
         $mobile_test = $this->initiate_pagespeed_test($url, 'mobile');
 
         if (!$desktop_test['success'] || !$mobile_test['success']) {
-            wp_send_json_error('Failed to initiate tests');
+            wp_send_json_error('Failed to initiate tests' . ($desktop_test['error'] ?? ''));
             return;
         }
 
