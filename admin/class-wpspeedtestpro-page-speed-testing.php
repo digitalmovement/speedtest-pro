@@ -118,7 +118,7 @@ class Wpspeedtestpro_PageSpeed {
         return;
     }
 
-    $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
+    $url = isset($_POST['url']) ? esc_url_raw(sanitize_url($_POST['url'])) : '';
     $device = isset($_POST['device']) ? sanitize_text_field($_POST['device']) : 'desktop';
     $frequency = isset($_POST['frequency']) ? sanitize_text_field($_POST['frequency']) : 'once';
 
@@ -127,6 +127,12 @@ class Wpspeedtestpro_PageSpeed {
         return;
     }
 
+    if (!wp_http_validate_url($url)) {
+        wp_send_json_error('Invalid URL format');
+        return;
+    }
+
+
     // Start tests based on device selection
     if ($device === 'both') {
         // Initiate both tests
@@ -134,7 +140,7 @@ class Wpspeedtestpro_PageSpeed {
         $mobile_test = $this->initiate_pagespeed_test($url, 'mobile');
 
         if (!$desktop_test['success'] || !$mobile_test['success']) {
-            wp_send_json_error('Failed to initiate tests' . ($desktop_test['error'] ?? ''));
+            wp_send_json_error('Failed to initiate tests - ' . ($desktop_test['error'] ?? ''));
             return;
         }
 
@@ -586,6 +592,18 @@ public function ajax_check_test_status() {
         // Get the full report data
         $full_report = json_decode($result->full_report, true);
     
+        if ($full_report) {
+            $sanitized_report = array_map(function($item) {
+                return is_array($item) ? 
+                    array_map('sanitize_text_field', $item) : 
+                    sanitize_text_field($item);
+            }, $full_report);
+            
+            // When outputting:
+            echo esc_html(wp_json_encode($sanitized_report));
+        }
+
+        
         // Helper function to clean text
         function clean_text($text) {
             // Remove markdown bold syntax
