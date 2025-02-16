@@ -267,7 +267,7 @@ class Wpspeedtestpro_SSL_Testing {
         $add_row = function($label, $value) use (&$output) {
             $output .= '<tr>';
             $output .= '<th scope="row">' . esc_html($label) . '</th>';
-            $output .= '<td>' . $value . '</td>';
+            $output .= '<td>' . esc_html($value) . '</td>';
             $output .= '</tr>';
         };
     
