@@ -213,37 +213,37 @@ class Wpspeedtestpro_SSL_Testing {
         $output .= '<div class="ssl-tab-content">';
         // Root Stores and Certificate Details
         $output .= '<div id="tab-root-stores" class="ssl-tab active">';
-        $output .= $this->format_root_stores_and_cert_details($result);
+        $output .= esc_html($this->format_root_stores_and_cert_details($result));
         $output .= '</div>';
 
         // Certificate Information
         $output .= '<div id="tab-cert" class="ssl-tab">';
-        $output .= $this->format_certificate_info($result['certs'][0]);
+        $output .= esc_html($this->format_certificate_info($result['certs'][0]));
         $output .= '</div>';
 
         // Protocols
         $output .= '<div id="tab-protocols" class="ssl-tab">';
-        $output .= $this->format_protocols($result['endpoints'][0]['details']['protocols']);
+        $output .= esc_html($this->format_protocols($result['endpoints'][0]['details']['protocols']));
         $output .= '</div>';
 
         // Cipher Suites
         $output .= '<div id="tab-ciphers" class="ssl-tab">';
-        $output .= $this->format_cipher_suites($result['endpoints'][0]['details']['suites']);
+        $output .= esc_html($this->format_cipher_suites($result['endpoints'][0]['details']['suites']));
         $output .= '</div>';
 
         // Handshake Simulation
         $output .= '<div id="tab-handshake" class="ssl-tab">';
-        $output .= $this->format_ssl_simulations($result['endpoints'][0]['details']['sims']);
+        $output .= esc_html($this->format_ssl_simulations($result['endpoints'][0]['details']['sims']));
         $output .= '</div>';
 
         // HTTP Request Information
         $output .= '<div id="tab-http" class="ssl-tab">';
-        $output .= $this->format_http_request_info($result['endpoints'][0]['details']['httpTransactions']);
+        $output .= esc_html($this->format_http_request_info($result['endpoints'][0]['details']['httpTransactions']));
         $output .= '</div>';
 
         // Vulnerabilities
         $output .= '<div id="tab-vulnerabilities" class="ssl-tab">';
-        $output .= $this->format_vulnerabilities($result['endpoints'][0]['details']);
+        $output .= esc_html($this->format_vulnerabilities($result['endpoints'][0]['details']));
         $output .= '</div>';
 
         // Raw Data
@@ -267,7 +267,7 @@ class Wpspeedtestpro_SSL_Testing {
         $add_row = function($label, $value) use (&$output) {
             $output .= '<tr>';
             $output .= '<th scope="row">' . esc_html($label) . '</th>';
-            $output .= '<td>' . $value . '</td>';
+            $output .= '<td>' . esc_html($value) . '</td>';
             $output .= '</tr>';
         };
     
@@ -277,15 +277,15 @@ class Wpspeedtestpro_SSL_Testing {
         $add_row('Common names', esc_html(implode(', ', $cert['commonNames'])));
         $add_row('Alternative names', esc_html(implode(', ', $cert['altNames'])));
         $add_row('Serial Number', esc_html($cert['serialNumber']));
-        $add_row('Valid from', date('D, d M Y H:i:s T', $cert['notBefore'] / 1000));
-        $add_row('Valid until', date('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')');
+        $add_row('Valid from', esc_html(date('D, d M Y H:i:s T', $cert['notBefore'] / 1000)));
+        $add_row('Valid until', esc_html(date('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')'));
         $add_row('Key', esc_html($cert['keyAlg']) . ' ' . $cert['keySize'] . ' bits (e ' . $cert['keyStrength'] . ')');
-        $add_row('Weak key (Debian)', $cert['weakDebianKey'] ? 'Yes' : 'No');
+        $add_row('Weak key (Debian)', esc_html($cert['weakDebianKey'] ? 'Yes' : 'No'));
         $add_row('Issuer', esc_html($cert['issuerSubject']));
         $add_row('Signature algorithm', esc_html($cert['sigAlg']));
-        $add_row('Extended Validation', $cert['validationType'] === 'EV' ? 'Yes' : 'No');
-        $add_row('Certificate Transparency', $cert['sct'] ? 'Yes' : 'No');
-        $add_row('OCSP Must Staple', $cert['mustStaple'] ? 'Yes' : 'No');
+        $add_row('Extended Validation', esc_html($cert['validationType'] === 'EV' ? 'Yes' : 'No'));
+        $add_row('Certificate Transparency', esc_html($cert['sct'] ? 'Yes' : 'No'));
+        $add_row('OCSP Must Staple', esc_html($cert['mustStaple'] ? 'Yes' : 'No'));
     
         // Revocation information
         $revocation_info = 'Not available';
@@ -351,7 +351,7 @@ class Wpspeedtestpro_SSL_Testing {
             $vulnerable = $details[$key];
             $icon = $vulnerable ? '<i class="fas fa-exclamation-triangle" style="color: red;"></i>' : '<i class="fas fa-shield-alt" style="color: green;"></i>';
             $status = $vulnerable ? 'Vulnerable' : 'Not Vulnerable';
-            $output .= '<li>' . $icon . ' ' . esc_html($name) . ': ' . $status . '</li>';
+            $output .= '<li>' . $icon . ' ' . esc_html($name) . ': ' . esc_html($status) . '</li>';
         }
         $output .= '</ul>';
         return $output;
