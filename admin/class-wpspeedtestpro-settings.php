@@ -489,13 +489,13 @@ class Wpspeedtestpro_Settings {
 
     
     public function uptimerobot_api_key_callback() {
-        $api_key = get_option('wpspeedtestpro_uptimerobot_api_key');
+        $api_key = sanitize_text_field(get_option('wpspeedtestpro_uptimerobot_api_key', ''));
         echo '<input type="text" id="wpspeedtestpro_uptimerobot_api_key" name="wpspeedtestpro_uptimerobot_api_key" value="' . esc_attr($api_key) . '" class="regular-text">';
         echo '<p class="description">Enter your UptimeRobot API key. You can find your API key in your <a href="https://dashboard.uptimerobot.com/integrations?rid=97f3dfd4e3a8a6" target="_blank">Uptime account settings</a>. <br /> Please create a <b>Main API key</b></p>';
     }
 
     public static function render_pagespeed_api_key_field() {
-        $api_key = get_option('wpspeedtestpro_pagespeed_api_key', '');
+        $api_key = sanitize_text_field(get_option('wpspeedtestpro_pagespeed_api_key', ''));
         ?>
         <input type="text" 
                name="wpspeedtestpro_pagespeed_api_key" 
