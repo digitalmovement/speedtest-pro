@@ -168,11 +168,12 @@ class Wpspeedtestpro_Server_Performance {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         if (!current_user_can('manage_options')) {
             wp_send_json_error('Insufficient permissions');
+            return; // Early return to prevent further execution
         }
 
         $next_test_time = wp_next_scheduled('wpspeedtestpro_continuous_test');
         if ($next_test_time) {
-            wp_send_json_success(date('Y-m-d H:i:s', $next_test_time));
+            wp_send_json_success(wp_date('Y-m-d H:i:s', $next_test_time));
         } else {
             wp_send_json_error('No scheduled test found');
         }
@@ -374,8 +375,8 @@ class Wpspeedtestpro_Server_Performance {
         $time_start = microtime(true);
         global $wpdb;
         
-        $query = "SELECT BENCHMARK(1000000, AES_ENCRYPT('WPSpeedTestPro',UNHEX(SHA2('benchmark',512))))";
-        $wpdb->query($query);
+        $query = "SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))";
+        $wpdb->query($wpdb->prepare($query, 1000000, 'WPSpeedTestPro', 'benchmark', 512));
         
         return $this->timer_delta($time_start);
     }

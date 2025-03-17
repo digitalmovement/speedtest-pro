@@ -589,20 +589,19 @@ public function ajax_check_test_status() {
             return;
         }
     
-        // Get the full report data
+        // Get the full report data - safely decode JSON with strict type checking
         $full_report = json_decode($result->full_report, true);
-    
-        if ($full_report) {
-            $sanitized_report = array_map(function($item) {
-                return is_array($item) ? 
-                    array_map('sanitize_text_field', $item) : 
-                    sanitize_text_field($item);
-            }, $full_report);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error('Invalid report format');
+            return;
         }
 
-
-        // Helper function to clean text
-        function clean_text($text) {
+        // Define clean_text function inside a closure to avoid global namespace pollution
+        $clean_text = function($text) {
+            if (!is_string($text)) {
+                return '';
+            }
+            
             // Remove markdown bold syntax
             $text = preg_replace('/\*\*(.*?)\*\*/', '$1', $text);
             
@@ -622,66 +621,68 @@ public function ajax_check_test_status() {
             $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             
             // Strip any remaining HTML tags
-            $text = strip_tags($text);
+            $text = wp_strip_all_tags($text);
             
             // Remove extra whitespace
             $text = preg_replace('/\s+/', ' ', $text);
             
-            // Trim
-            $text = trim($text);
+            // Trim and sanitize
+            return sanitize_text_field(trim($text));
+        };
+    
+        // Clean up audits with proper sanitization
+        $audits = isset($full_report['lighthouseResult']['audits']) && is_array($full_report['lighthouseResult']['audits']) 
+            ? $full_report['lighthouseResult']['audits'] 
+            : [];
             
-            return $text;
+        $sanitized_audits = [];
+        foreach ($audits as $key => $audit) {
+            if (!is_array($audit)) {
+                continue;
+            }
+            
+            $sanitized_audits[$key] = [
+                'title' => isset($audit['title']) ? $clean_text($audit['title']) : '',
+                'description' => isset($audit['description']) ? $clean_text($audit['description']) : '',
+                'displayValue' => isset($audit['displayValue']) ? $clean_text($audit['displayValue']) : '',
+                'score' => isset($audit['score']) && is_numeric($audit['score']) ? floatval($audit['score']) : 0
+            ];
         }
     
-        // Clean up audits
-        $audits = $full_report['lighthouseResult']['audits'] ?? [];
-        foreach ($audits as $key => &$audit) {
-            if (isset($audit['title'])) {
-                $audit['title'] = clean_text($audit['title']);
-            }
-            if (isset($audit['description'])) {
-                $audit['description'] = clean_text($audit['description']);
-            }
-            if (isset($audit['displayValue'])) {
-                $audit['displayValue'] = clean_text($audit['displayValue']);
-            }
-        }
-        unset($audit); // Break the reference
-    
-        // Format the response with detailed metrics
+        // Format the response with detailed metrics - all values properly sanitized
         $response = [
             'basic_info' => [
                 'url' => esc_url($result->url),
-                'device' => ucfirst($result->device),
+                'device' => ucfirst(sanitize_text_field($result->device)),
                 'test_date' => wp_date('F j, Y g:i a', strtotime($result->test_date))
             ],
             'scores' => [
                 'performance' => [
-                    'score' => $result->performance_score,
-                    'class' => $this->get_score_class($result->performance_score)
+                    'score' => intval($result->performance_score),
+                    'class' => sanitize_html_class($this->get_score_class($result->performance_score))
                 ],
                 'accessibility' => [
-                    'score' => $result->accessibility_score,
-                    'class' => $this->get_score_class($result->accessibility_score)
+                    'score' => intval($result->accessibility_score),
+                    'class' => sanitize_html_class($this->get_score_class($result->accessibility_score))
                 ],
                 'best_practices' => [
-                    'score' => $result->best_practices_score,
-                    'class' => $this->get_score_class($result->best_practices_score)
+                    'score' => intval($result->best_practices_score),
+                    'class' => sanitize_html_class($this->get_score_class($result->best_practices_score))
                 ],
                 'seo' => [
-                    'score' => $result->seo_score,
-                    'class' => $this->get_score_class($result->seo_score)
+                    'score' => intval($result->seo_score),
+                    'class' => sanitize_html_class($this->get_score_class($result->seo_score))
                 ]
             ],
             'metrics' => [
-                'First Contentful Paint' => $this->format_timing($result->fcp),
-                'Largest Contentful Paint' => $this->format_timing($result->lcp),
-                'Cumulative Layout Shift' => number_format($result->cls, 3),
-                'Total Blocking Time' => $this->format_timing($result->tbt),
-                'Speed Index' => $this->format_timing($result->si),
-                'Time to Interactive' => $this->format_timing($result->tti)
+                'First Contentful Paint' => $this->format_timing(floatval($result->fcp)),
+                'Largest Contentful Paint' => $this->format_timing(floatval($result->lcp)),
+                'Cumulative Layout Shift' => number_format(floatval($result->cls), 3),
+                'Total Blocking Time' => $this->format_timing(floatval($result->tbt)),
+                'Speed Index' => $this->format_timing(floatval($result->si)),
+                'Time to Interactive' => $this->format_timing(floatval($result->tti))
             ],
-            'audits' => $audits
+            'audits' => $sanitized_audits
         ];
     
         wp_send_json_success($response);
@@ -739,14 +740,35 @@ public function ajax_check_test_status() {
     private function save_results($url, $device, $results, $full_data) {
         global $wpdb;
 
+        // Sanitize inputs before saving to database
+        $sanitized_url = esc_url_raw($url);
+        $sanitized_device = sanitize_text_field($device);
+        
+        // Ensure results is an array with expected structure
+        $sanitized_results = [];
+        if (is_array($results)) {
+            // Sanitize numeric values
+            foreach (['performance_score', 'accessibility_score', 'best_practices_score', 'seo_score'] as $score) {
+                $sanitized_results[$score] = isset($results[$score]) ? intval($results[$score]) : 0;
+            }
+            
+            // Sanitize float values
+            foreach (['fcp', 'lcp', 'tbt', 'si', 'tti'] as $metric) {
+                $sanitized_results[$metric] = isset($results[$metric]) ? floatval($results[$metric]) : 0;
+            }
+            
+            // Special handling for CLS which should be a small decimal
+            $sanitized_results['cls'] = isset($results['cls']) ? floatval($results['cls']) : 0;
+        }
+
         $data = array_merge(
             array(
-                'url' => $url,
-                'device' => $device,
+                'url' => $sanitized_url,
+                'device' => $sanitized_device,
                 'test_date' => current_time('mysql'),
                 'full_report' => json_encode($full_data)
             ),
-            $results
+            $sanitized_results
         );
 
         return $wpdb->insert($this->pagespeed_table, $data);

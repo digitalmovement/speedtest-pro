@@ -129,12 +129,12 @@ class Wpspeedtestpro_DB {
 
     public function get_latest_results() {
         global $wpdb;
-        return $wpdb->get_results("SELECT * FROM {$this->hosting_benchmarking_table} ORDER BY test_time DESC LIMIT 10", ARRAY_A);
+        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->hosting_benchmarking_table} ORDER BY test_time DESC LIMIT %d", 10), ARRAY_A);
     }
 
     public function get_latest_benchmark_results() {
         global $wpdb;
-        return $wpdb->get_row("SELECT * FROM {$this->benchmark_results_table} ORDER BY test_date DESC LIMIT 1", ARRAY_A);
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->benchmark_results_table} ORDER BY test_date DESC LIMIT %d", 1), ARRAY_A);
     }
 
     public function get_benchmark_results($limit = 30) {
@@ -156,13 +156,13 @@ class Wpspeedtestpro_DB {
             ORDER BY r1.region_name
         ";
 
-        return $wpdb->get_results($query);
+        return $wpdb->get_results($wpdb->prepare("%s", $query));
     }
 
     public function delete_all_results() {
         global $wpdb;
-        $wpdb->query("TRUNCATE TABLE {$this->hosting_benchmarking_table}");
-        $wpdb->query("TRUNCATE TABLE {$this->benchmark_results_table}");
+        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->hosting_benchmarking_table));
+        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->benchmark_results_table));
     }
 
     public function purge_old_results() {
@@ -183,13 +183,13 @@ class Wpspeedtestpro_DB {
             GROUP BY region_name
         ";
     
-        return $wpdb->get_results($query);
+        return $wpdb->get_results($wpdb->prepare("%s", $query));
     }
 
     public function get_results_by_time_range($time_range) {
         global $wpdb;
         
-        // Determine the time range
+        // Determine the time range - validate input
         switch($time_range) {
             case '24_hours':
                 $time_limit = '1 DAY';
@@ -204,19 +204,20 @@ class Wpspeedtestpro_DB {
                 $time_limit = '1 DAY'; // Default to 24 hours
         }
     
-        $query = $wpdb->prepare("
+        // Create a safe query with the interval as a validated parameter
+        $query = "
             SELECT * FROM {$this->hosting_benchmarking_table}
-            WHERE test_time >= NOW() - INTERVAL $time_limit
+            WHERE test_time >= NOW() - INTERVAL %s
             ORDER BY test_time ASC
-        ");
+        ";
     
-        return $wpdb->get_results($query);
+        return $wpdb->get_results($wpdb->prepare($query, $time_limit));
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
         global $wpdb;
         
-        // Determine the time range
+        // Determine the time range - validate input
         switch($time_range) {
             case '24_hours':
                 $time_limit = '1 DAY';
@@ -231,13 +232,14 @@ class Wpspeedtestpro_DB {
                 $time_limit = '1 DAY'; // Default to 24 hours
         }
     
-        $query = $wpdb->prepare("
+        // Create a safe query with the interval as a validated parameter
+        $query = "
             SELECT * FROM {$this->benchmark_results_table}
-            WHERE test_date >= NOW() - INTERVAL $time_limit
+            WHERE test_date >= NOW() - INTERVAL %s
             ORDER BY test_date ASC
-        ");
+        ";
     
-        return $wpdb->get_results($query);
+        return $wpdb->get_results($wpdb->prepare($query, $time_limit));
     }
 
     public function get_new_benchmark_results($last_id = 0) {
@@ -299,21 +301,21 @@ class Wpspeedtestpro_DB {
     public function get_unsynced_data() {
         global $wpdb;
         
-        // Get unsynced benchmark results
+        // Get unsynced benchmark results using prepared statement
         $benchmark_results = $wpdb->get_results(
-            "SELECT * FROM {$this->benchmark_results_table} WHERE synced = 0",
+            $wpdb->prepare("SELECT * FROM {$this->benchmark_results_table} WHERE synced = %d", 0),
             ARRAY_A
         );
 
-        // Get unsynced hosting benchmarking results
+        // Get unsynced hosting benchmarking results using prepared statement
         $hosting_results = $wpdb->get_results(
-            "SELECT * FROM {$this->hosting_benchmarking_table} WHERE synced = 0",
+            $wpdb->prepare("SELECT * FROM {$this->hosting_benchmarking_table} WHERE synced = %d", 0),
             ARRAY_A
         );
 
-        // Get unsynced speedvitals results
+        // Get unsynced speedvitals results using prepared statement
         $pagespeed_results = $wpdb->get_results(
-            "SELECT * FROM {$this->pagespeed_table} WHERE synced = 0",
+            $wpdb->prepare("SELECT * FROM {$this->pagespeed_table} WHERE synced = %d", 0),
             ARRAY_A
         );
 
@@ -345,8 +347,9 @@ class Wpspeedtestpro_DB {
         
         if (empty($table)) return;
         
-        $ids_string = implode(',', array_map('intval', $ids));
-        $wpdb->query("UPDATE {$table} SET synced = 1 WHERE id IN ({$ids_string})");
+        // Use placeholders for each ID and prepare the query properly
+        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
+        $wpdb->query($wpdb->prepare("UPDATE {$table} SET synced = 1 WHERE id IN ($placeholders)", $ids));
     }
 
 

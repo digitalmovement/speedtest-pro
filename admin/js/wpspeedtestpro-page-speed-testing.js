@@ -6,21 +6,19 @@ jQuery(document).ready(function($) {
         const $form = $(this);
         const $submit = $form.find('button[type="submit"]');
         const $status = $('#test-status');
-
-
         
         // Disable submit button and show status
         $submit.prop('disabled', true);
         toggleNotice($status, 'info');
         $status.show().html('<p>Initiating test...</p><div class="test-progress"></div>');
     
-        // Collect form data
+        // Collect form data - use escapeHtml for user inputs
         const data = {
             action: 'pagespeed_run_test',
-            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
-            url: $('#test-url').val(),
-            device: $('#test-device').val(),
-            frequency: $('#test-frequency').val()
+            nonce: wpspeedtestpro_ajax.nonce, // Use the value from wp_localize_script instead of directly accessing DOM
+            url: escapeHtml($('#test-url').val()),
+            device: escapeHtml($('#test-device').val()),
+            frequency: escapeHtml($('#test-frequency').val())
         };
     
         // Start the test
@@ -29,7 +27,7 @@ jQuery(document).ready(function($) {
                 checkTestStatus(data.url);
             } else {
                 toggleNotice($status, 'error');
-                $status.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
+                $status.html('<p class="error">Error: ' + escapeHtml(response.data || 'Failed to start test') + '</p>');
                 $submit.prop('disabled', false);
             }
         }).fail(function() {
@@ -41,27 +39,25 @@ jQuery(document).ready(function($) {
 
     // Handle old results deletion
     $('#delete-old-results').on('click', function() {
-
         const $status = $('#test-status');
         
         if (!confirm('Are you sure you want to delete old results?')) {
             return;
         }
 
-        const days = $('#days-to-keep').val();
+        const days = parseInt($('#days-to-keep').val(), 10);
         
         $.post(ajaxurl, {
             action: 'pagespeed_delete_old_results',
-            nonce: $('#wpspeedtestpro_ajax_nonce').val(),
+            nonce: wpspeedtestpro_ajax.nonce,
             days: days
         }, function(response) {
             if (response.success) {
                 loadTestHistory();
                 toggleNotice($status, 'info');
-                $status.show().html('<p>' + response.data.message + '</p>');
-
+                $status.show().html('<p>' + escapeHtml(response.data.message) + '</p>');
             } else {
-                alert('Error deleting results: ' + response.data);
+                alert('Error deleting results: ' + escapeHtml(response.data));
             }
         });
     });
@@ -104,8 +100,8 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'pagespeed_get_test_details',
-                nonce: $('#wpspeedtestpro_ajax_nonce').val(),
-                test_id: testId
+                nonce: wpspeedtestpro_ajax.nonce,
+                test_id: parseInt(testId, 10) // Ensure testId is a number
             },
             success: function(response) {
                 if (!response.success) {
@@ -117,29 +113,29 @@ jQuery(document).ready(function($) {
                 let html = `
                     <div class="test-details-grid">
                         <div class="basic-info">
-                            <div class="score-circle ${getScoreClass(data.scores.performance.score)}">
+                            <div class="score-circle ${getScoreClass(parseInt(data.scores.performance.score, 10))}">
                                 <span class="score-label">Performance</span>
-                                <span class="score-value">${data.scores.performance.score}</span>
+                                <span class="score-value">${escapeHtml(data.scores.performance.score)}</span>
                             </div>
                             <div>
                                 <div class="scores-grid">
                                     <div class="score-item">
                                         <span class="score-label">Accessibility</span>
-                                        <span class="score ${data.scores.accessibility.class}">${data.scores.accessibility.score}%</span>
+                                        <span class="score ${escapeHtml(data.scores.accessibility.class)}">${escapeHtml(data.scores.accessibility.score)}%</span>
                                     </div>
                                     <div class="score-item">
                                         <span class="score-label">Best Practices</span>
-                                        <span class="score ${data.scores.best_practices.class}">${data.scores.best_practices.score}%</span>
+                                        <span class="score ${escapeHtml(data.scores.best_practices.class)}">${escapeHtml(data.scores.best_practices.score)}%</span>
                                     </div>
                                     <div class="score-item">
                                         <span class="score-label">SEO</span>
-                                        <span class="score ${data.scores.seo.class}">${data.scores.seo.score}%</span>
+                                        <span class="score ${escapeHtml(data.scores.seo.class)}">${escapeHtml(data.scores.seo.score)}%</span>
                                     </div>
                                 </div>
                                 <div class="meta-info">
                                     <p><strong>URL:</strong> ${escapeHtml(data.basic_info.url)}</p>
-                                    <p><strong>Device:</strong> ${data.basic_info.device}</p>
-                                    <p><strong>Test Date:</strong> ${data.basic_info.test_date}</p>
+                                    <p><strong>Device:</strong> ${escapeHtml(data.basic_info.device)}</p>
+                                    <p><strong>Test Date:</strong> ${escapeHtml(data.basic_info.test_date)}</p>
                                 </div>
                             </div>
                         </div>
@@ -157,10 +153,10 @@ jQuery(document).ready(function($) {
                                 ${Object.entries(data.audits)
                                     .filter(([_, audit]) => audit.score !== null)
                                     .map(([key, audit]) => `
-                                        <div class="audit-item ${getScoreClass(audit.score * 100)}">
+                                        <div class="audit-item ${getScoreClass(Math.round(audit.score * 100))}">
                                             <div class="audit-content">
-                                                <div class="audit-title">${audit.title}</div>
-                                                <div class="audit-description">${audit.description}</div>
+                                                <div class="audit-title">${escapeHtml(audit.title)}</div>
+                                                <div class="audit-description">${escapeHtml(audit.description)}</div>
                                             </div>
                                             <div class="audit-score">${Math.round(audit.score * 100)}%</div>
                                         </div>
