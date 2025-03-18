@@ -189,30 +189,27 @@ class Wpspeedtestpro_DB {
     public function get_results_by_time_range($time_range) {
         global $wpdb;
         
-        // Determine the time range - validate input
-        switch($time_range) {
-            case '24_hours':
-                $time_limit = '1';
-                break;
-            case '7_days':
-                $time_limit = '7';
-                break;
-            case '90_days':
-                $time_limit = '90';
-                break;
-            default:
-                $time_limit = '1'; // Default to 24 hours
-        }
-    
-        $interval_unit = "DAY";
-        // Create a safe query with the interval as a validated parameter
+        // Validate time range using a whitelist approach
+        $valid_intervals = [
+            '24_hours' => 1,
+            '7_days' => 7,
+            '90_days' => 90,
+        ];
+        
+        // Default to 24 hours if not a valid selection
+        $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
+        
+        // Create a safe query using wpdb's built-in methods
+        $table_name = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results'; // Use prefix properly
+        
+        // Use CAST to ensure numeric value without quotes
         $query = "
-            SELECT * FROM {$this->hosting_benchmarking_table}
-            WHERE test_time >= NOW() - INTERVAL %d %s
+            SELECT * FROM $table_name
+            WHERE test_time >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY)
             ORDER BY test_time ASC
         ";
-    
-        return $wpdb->get_results($wpdb->prepare($query, $time_limit, $interval_unit));
+        
+        return $wpdb->get_results($wpdb->prepare($query, $interval_number));
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
@@ -221,27 +218,25 @@ class Wpspeedtestpro_DB {
         // Determine the time range - validate input
         switch($time_range) {
             case '24_hours':
-                $time_limit = '1';
+                $interval = "1 DAY";
                 break;
             case '7_days':
-                $time_limit = '7';
+                $interval = "7 DAY";
                 break;
             case '90_days':
-                $time_limit = '90';
+                $interval = "90 DAY";
                 break;
             default:
-                $time_limit = '1'; // Default to 24 hours
+                $interval = "1 DAY"; // Default to 24 hours
         }
-    
-        $interval_unit = "DAY";
-        // Create a safe query with the interval as a validated parameter
+
         $query = "
             SELECT * FROM {$this->benchmark_results_table}
-            WHERE test_date >= NOW() - INTERVAL %d %s
+            WHERE test_time >= NOW() - INTERVAL $interval
             ORDER BY test_date ASC
         ";
     
-        return $wpdb->get_results($wpdb->prepare($query, $time_limit,$interval_unit));
+        return $wpdb->get_results($query);
     }
 
     public function get_new_benchmark_results($last_id = 0) {
