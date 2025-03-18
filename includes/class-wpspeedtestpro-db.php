@@ -216,27 +216,21 @@ class Wpspeedtestpro_DB {
         global $wpdb;
         
         // Determine the time range - validate input
-        switch($time_range) {
-            case '24_hours':
-                $interval = "1 DAY";
-                break;
-            case '7_days':
-                $interval = "7 DAY";
-                break;
-            case '90_days':
-                $interval = "90 DAY";
-                break;
-            default:
-                $interval = "1 DAY"; // Default to 24 hours
-        }
+        $valid_intervals = [
+            '24_hours' => 1,
+            '7_days' => 7,
+            '90_days' => 90,
+        ];
 
+        $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
+   
         $query = "
             SELECT * FROM {$this->benchmark_results_table}
-            WHERE test_time >= NOW() - INTERVAL $interval
-            ORDER BY test_date ASC
-        ";
+            WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY)
+            ORDER BY test_time ASC
+             ";
     
-        return $wpdb->get_results($query);
+        return $wpdb->get_results($wpdb->prepare($query, $interval_number));
     }
 
     public function get_new_benchmark_results($last_id = 0) {
