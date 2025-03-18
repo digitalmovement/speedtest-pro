@@ -192,26 +192,27 @@ class Wpspeedtestpro_DB {
         // Determine the time range - validate input
         switch($time_range) {
             case '24_hours':
-                $time_limit = '1 DAY';
+                $time_limit = '1';
                 break;
             case '7_days':
-                $time_limit = '7 DAY';
+                $time_limit = '7';
                 break;
             case '90_days':
-                $time_limit = '90 DAY';
+                $time_limit = '90';
                 break;
             default:
-                $time_limit = '1 DAY'; // Default to 24 hours
+                $time_limit = '1'; // Default to 24 hours
         }
     
+        $interval_unit = "DAY";
         // Create a safe query with the interval as a validated parameter
         $query = "
             SELECT * FROM {$this->hosting_benchmarking_table}
-            WHERE test_date >= NOW() - INTERVAL %s
-            ORDER BY test_date ASC
+            WHERE test_time >= NOW() - INTERVAL %s %s
+            ORDER BY test_time ASC
         ";
     
-        return $wpdb->get_results($wpdb->prepare($query, $time_limit));
+        return $wpdb->get_results($wpdb->prepare($query, $time_limit, $interval_unit));
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
@@ -220,26 +221,27 @@ class Wpspeedtestpro_DB {
         // Determine the time range - validate input
         switch($time_range) {
             case '24_hours':
-                $time_limit = '1 DAY';
+                $time_limit = '1';
                 break;
             case '7_days':
-                $time_limit = '7 DAY';
+                $time_limit = '7';
                 break;
             case '90_days':
-                $time_limit = '90 DAY';
+                $time_limit = '90';
                 break;
             default:
-                $time_limit = '1 DAY'; // Default to 24 hours
+                $time_limit = '1'; // Default to 24 hours
         }
     
+        $interval_unit = "DAY";
         // Create a safe query with the interval as a validated parameter
         $query = "
             SELECT * FROM {$this->benchmark_results_table}
-            WHERE test_date >= NOW() - INTERVAL %s
+            WHERE test_date >= NOW() - INTERVAL %s %s
             ORDER BY test_date ASC
         ";
     
-        return $wpdb->get_results($wpdb->prepare($query, $time_limit));
+        return $wpdb->get_results($wpdb->prepare($query, $time_limit,$interval_unit));
     }
 
     public function get_new_benchmark_results($last_id = 0) {
