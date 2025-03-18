@@ -176,14 +176,14 @@ class Wpspeedtestpro_DB {
         global $wpdb;
     
         $query = "
-            SELECT region_name, 
-                   MIN(latency) AS fastest_latency, 
+            SELECT region_name,
+                   MIN(latency) AS fastest_latency,
                    MAX(latency) AS slowest_latency
             FROM {$this->hosting_benchmarking_table}
             GROUP BY region_name
         ";
     
-        return $wpdb->get_results($wpdb->prepare("%s", $query));
+        return $wpdb->get_results($query);
     }
 
     public function get_results_by_time_range($time_range) {
@@ -204,7 +204,7 @@ class Wpspeedtestpro_DB {
         
         // Use CAST to ensure numeric value without quotes
         $query = "
-            SELECT * FROM $table_name
+            SELECT * FROM {$this->hosting_benchmarking_table}
             WHERE test_time >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY)
             ORDER BY test_time ASC
         ";
