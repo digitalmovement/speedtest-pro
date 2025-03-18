@@ -207,15 +207,11 @@ class Wpspeedtestpro_DB {
         // Create a safe query with the interval as a validated parameter
         $query = "
             SELECT * FROM {$this->hosting_benchmarking_table}
-            WHERE test_time >= NOW() - INTERVAL %s
-            ORDER BY test_time ASC
+            WHERE test_date >= NOW() - INTERVAL %s
+            ORDER BY test_date ASC
         ";
     
-        $results = $wpdb->get_results($wpdb->prepare($query, $time_limit));
-
-        if ($wpdb->last_error) { error_log($wpdb->last_error); }
-
-        return $results; 
+        return $wpdb->get_results($wpdb->prepare($query, $time_limit));
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
