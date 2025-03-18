@@ -211,7 +211,11 @@ class Wpspeedtestpro_DB {
             ORDER BY test_time ASC
         ";
     
-        return $wpdb->get_results($wpdb->prepare($query, $time_limit));
+        $results = $wpdb->get_results($wpdb->prepare($query, $time_limit));
+
+        if ($wpdb->last_error) { error_log($wpdb->last_error); }
+
+        return $results; 
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
