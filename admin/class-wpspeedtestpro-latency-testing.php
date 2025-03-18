@@ -280,6 +280,9 @@ class Wpspeedtestpro_Latency_Testing {
         $results = $this->core->db->get_results_by_time_range($time_range);
         $fastest_and_slowest = $this->core->db->get_fastest_and_slowest_results();
 
+        print_r($results);
+        print_r("next----");
+        print_r($fastest_and_slowest);
         // Merge the data
         foreach ($results as &$result) {
             foreach ($fastest_and_slowest as $fas_slow) {
