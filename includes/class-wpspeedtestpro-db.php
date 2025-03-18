@@ -208,7 +208,7 @@ class Wpspeedtestpro_DB {
         // Create a safe query with the interval as a validated parameter
         $query = "
             SELECT * FROM {$this->hosting_benchmarking_table}
-            WHERE test_time >= NOW() - INTERVAL %s %s
+            WHERE test_time >= NOW() - INTERVAL %d %s
             ORDER BY test_time ASC
         ";
     
@@ -237,7 +237,7 @@ class Wpspeedtestpro_DB {
         // Create a safe query with the interval as a validated parameter
         $query = "
             SELECT * FROM {$this->benchmark_results_table}
-            WHERE test_date >= NOW() - INTERVAL %s %s
+            WHERE test_date >= NOW() - INTERVAL %d %s
             ORDER BY test_date ASC
         ";
     
