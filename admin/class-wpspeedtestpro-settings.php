@@ -815,8 +815,10 @@ class Wpspeedtestpro_Settings {
     }
 
     public function handle_settings_saved() {
-    // Check if settings were just saved
-        if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') {
+        if (
+            isset($_GET['settings-updated']) && 
+            sanitize_text_field($_GET['settings-updated']) === 'true'
+        ) {
             add_settings_error(
                 'wpspeedtestpro_messages',
                 'settings_updated',
@@ -825,6 +827,5 @@ class Wpspeedtestpro_Settings {
             );
         }
     }
-
 }
 

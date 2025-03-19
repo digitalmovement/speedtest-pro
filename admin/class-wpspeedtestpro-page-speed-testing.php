@@ -140,7 +140,17 @@ class Wpspeedtestpro_PageSpeed {
         $mobile_test = $this->initiate_pagespeed_test($url, 'mobile');
 
         if (!$desktop_test['success'] || !$mobile_test['success']) {
-            wp_send_json_error('Failed to initiate tests - ' . ($desktop_test['error'] ?? ''));
+            $error_message = sprintf(
+                __('Failed to initiate tests - %s', 'wpspeedtestpro'),
+                isset($desktop_test['error']) ? sanitize_text_field($desktop_test['error']) : ''
+            );
+            
+            // Check if the error message contains 429 (Too Many Requests)
+            if (isset($desktop_test['error']) && strpos($desktop_test['error'], '429') !== false) {
+                $error_message .= ' - ' . __('Your website has been restricted by Google, please enter a API code in the setting page.', 'wpspeedtestpro');
+            }
+            
+            wp_send_json_error($error_message);
             return;
         }
 
