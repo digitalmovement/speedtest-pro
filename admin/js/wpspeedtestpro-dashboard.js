@@ -196,7 +196,7 @@ jQuery(document).ready(function($) {
 
     function createLatencyTrendChart(data) {
         const selectedRegion = wpspeedtestpro_ajax.selected_region;
-        const regionData = data.filter(item => item.region_name === selectedRegion);
+        const regionData = data.filter(item => item.region === selectedRegion);
 
         const ctx = document.getElementById('latency-trend-chart').getContext('2d');
         
