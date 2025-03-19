@@ -230,7 +230,14 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_section'
         );
 
-    
+        // After settings are saved
+        add_settings_error(
+            'wpspeedtestpro_messages',
+            'settings_updated',
+            __('Settings saved.', 'wpspeedtestpro'),
+            'updated'
+        );
+            
 
     }
 
