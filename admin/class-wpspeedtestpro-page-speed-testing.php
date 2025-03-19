@@ -147,7 +147,7 @@ class Wpspeedtestpro_PageSpeed {
             
             // Check if the error message contains 429 (Too Many Requests)
             if (isset($desktop_test['error']) && strpos($desktop_test['error'], '429') !== false) {
-                $error_message .= ' - ' . __('Your website has been restricted by Google, please enter a API code in the setting page.', 'wpspeedtestpro');
+                $error_message .= ' - ' . __('Your website has been restricted by Google, please enter a PageSpeed Insight API key in the setting page.', 'wpspeedtestpro');
             }
             
             wp_send_json_error($error_message);
