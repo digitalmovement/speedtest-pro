@@ -60,6 +60,8 @@ class Wpspeedtestpro_Settings {
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_init', array($this, 'handle_settings_saved'));
+
     }
 
     private function add_hooks() {
@@ -229,16 +231,7 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro-settings',
             'wpspeedtestpro_section'
         );
-
-        // After settings are saved
-        add_settings_error(
-            'wpspeedtestpro_messages',
-            'settings_updated',
-            __('Settings saved.', 'wpspeedtestpro'),
-            'updated'
-        );
-            
-
+        
     }
 
     public function sanitize_settings($input) {
@@ -821,7 +814,17 @@ class Wpspeedtestpro_Settings {
         }
     }
 
-    
+    public function handle_settings_saved() {
+    // Check if settings were just saved
+        if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') {
+            add_settings_error(
+                'wpspeedtestpro_messages',
+                'settings_updated',
+                __('Settings saved.', 'wpspeedtestpro'),
+                'updated'
+            );
+        }
+    }
 
 }
 
