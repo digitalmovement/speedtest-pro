@@ -116,19 +116,6 @@ class Wpspeedtestpro_Server_Performance {
     }
 
     public function display_server_performance() {
-/*        $continuous_test_status = get_option('wpspeedtestpro_continuous_test_status', 'stopped');
-        $continuous_test_start_time = get_option('wpspeedtestpro_continuous_test_start_time', 0);
-        $current_time = current_time('timestamp');
-        $time_remaining = max(0, 86400 - ($current_time - $continuous_test_start_time));
-
-        $data = array(
-            'continuousTestStatus' => $continuous_test_status,
-            'timeRemaining' => $time_remaining,
-        );
-
-        wp_localize_script('wpspeedtestpro-server-performance1', 'wpspeedtestpro_continuous_data', $data);
-*/
-
         include_once( 'partials/wpspeedtestpro-server-performance-display.php' );
     }
 
@@ -196,16 +183,11 @@ class Wpspeedtestpro_Server_Performance {
         if (($current_time - $start_time) >= 86400) { // 24 hours
             update_option('wpspeedtestpro_continuous_test_status', 'stopped');
             wp_clear_scheduled_hook('wpspeedtestpro_continuous_test');
-            error_log('Continuous test completed after 24 hours.');
+  
             return;
         }
 
         $result = $this->run_performance_tests();
-        if ($result !== true) { 
-            $this->log_message('Continuous test error: ' . $result);
-        } else {
-            $this->log_message('Continuous test executed successfully.');
-        }
     }
 
 
@@ -639,14 +621,6 @@ class Wpspeedtestpro_Server_Performance {
             return array();
         }
     }
-
-    private function log_message($message) {
-        $log_file = WP_CONTENT_DIR . '/wpspeedtestpro-performance.log';
-        $timestamp = current_time('Y-m-d H:i:s');
-        $log_message = "[{$timestamp}] {$message}\n";
-        error_log($log_message, 3, $log_file);
-    }
-
 
 }
 

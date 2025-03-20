@@ -514,7 +514,7 @@ public function ajax_check_test_status() {
         }
 
         $request_url = add_query_arg($params, $api_url);
-        error_log('PageSpeed API Request URL: ' . $request_url);
+
 
         // Increase timeout and configure request arguments
         $args = array(
@@ -1261,8 +1261,6 @@ public function ajax_check_test_status() {
             )
         );
 
-        error_log('Speed Scheduled tests found: ' . count($scheduled_tests));
-
         if (empty($scheduled_tests)) {
             return;
         }
@@ -1302,12 +1300,6 @@ public function ajax_check_test_status() {
                     array('%d')
                 );
 
-                // Log the successful test
-                error_log(sprintf(
-                    'PageSpeed scheduled test completed for URL: %s, Schedule ID: %d',
-                    $test->url,
-                    $test->id
-                ));
             } else {
                 // Log the error
                 error_log(sprintf(
