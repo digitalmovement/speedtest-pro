@@ -145,7 +145,8 @@ class Wpspeedtestpro_Admin {
     public function enqueue_scripts() {
 
         $screen = get_current_screen();
-        if ($screen && $screen->id === 'toplevel_page_' . $this->plugin_name) {
+        if ($screen && strpos($screen->id, 'toplevel_page_' . $this->plugin_name) === 0) {
+        
 
             wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-admin.js', array( 'jquery' ), $this->version, false );
             wp_enqueue_script( 'chart-js',   plugin_dir_url( __FILE__ ) . 'js/chart.js', array(), '3.7.0', true );
