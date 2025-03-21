@@ -122,7 +122,7 @@ class Wpspeedtestpro_Admin {
    
                // Add dashboard-specific styles only on dashboard page
                $screen = get_current_screen();
-               if ($screen && $screen->id === 'toplevel_page_' . $this->plugin_name) {
+               if ($screen && strpos($screen->id, 'toplevel_page_' . $this->plugin_name) === 0) {
                 wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
                 wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css');
 
