@@ -143,28 +143,32 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function enqueue_scripts() {
-        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-admin.js', array( 'jquery' ), $this->version, false );
-        wp_enqueue_script( 'chart-js',   plugin_dir_url( __FILE__ ) . 'js/chart.js', array(), '3.7.0', true );
-        wp_enqueue_script('chart-date-js',   plugin_dir_url( __FILE__ ) . 'js/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
 
-        wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-tabs');
+        $screen = get_current_screen();
+        if ($screen && $screen->id === 'toplevel_page_' . $this->plugin_name) {
+
+            wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-admin.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script( 'chart-js',   plugin_dir_url( __FILE__ ) . 'js/chart.js', array(), '3.7.0', true );
+            wp_enqueue_script('chart-date-js',   plugin_dir_url( __FILE__ ) . 'js/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
+
+            wp_enqueue_script('jquery-ui-core');
+            wp_enqueue_script('jquery-ui-tabs');
+            
+            // Enqueue jQuery UI CSS
+            wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css');
+
+                wp_localize_script(
+                    $this->plugin_name . '-dashboard',
+                    'wpspeedtestpro_dashboard',
+                    array(
+                        'ajax_url' => admin_url('admin-ajax.php'),
+                        'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                        'selected_region' => get_option('wpspeedtestpro_selected_region'),
+                        'home_url' => home_url()
+                    )
+                );
         
-        // Enqueue jQuery UI CSS
-        wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css');
-
-               wp_localize_script(
-                $this->plugin_name . '-dashboard',
-                'wpspeedtestpro_dashboard',
-                array(
-                    'ajax_url' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
-                    'selected_region' => get_option('wpspeedtestpro_selected_region'),
-                    'home_url' => home_url()
-                )
-            );
-     
-
+        }
 
     }
 
