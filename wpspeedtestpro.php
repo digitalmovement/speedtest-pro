@@ -18,11 +18,14 @@
  * Description:       An advanced plugin to test your WordPress Performance, including comprehensive server performance benchmarks.
  * Version:           1.1.1
  * Author:            WP Speedtest Pro Team
- * Author URI:        https://wpspeedtestpro.com/
+ * Author URI:        https://wpspeedtestpro.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       wpspeedtestpro
  * Domain Path:       /languages
+ *
+ * This plugin uses Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
+ * Font Awesome License: https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
 
 // If this file is called directly, abort.
