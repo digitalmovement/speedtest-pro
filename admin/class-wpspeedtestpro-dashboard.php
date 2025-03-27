@@ -425,7 +425,7 @@ class Wpspeedtestpro_Bug_Report_Handler {
     public function __construct($db) {
         $this->db = $db;
         $this->worker_url = 'https://analytics.wpspeedtestpro.com/bugreport';
-        $this->shared_secret =  'your-very-long-and-secure-secret-key';
+        $this->shared_secret =  'C_xhEWoZKeRzFLcNptpSmPncIA';
         $this->site_key = get_option('wpspeedtestpro_site_key');
     }
 

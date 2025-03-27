@@ -40,7 +40,7 @@
 <script type="text/template" id="wizard-step-1">
     <div class="mission-statement">
         <h3>Our Mission</h3>
-        <p>WP Speed Test Pro helps WordPress users choose better hosting with clear, data-driven performance insights. We identify the best providers, call out the worst, and help users get more value from their hosting. Committed to the WordPress community, we offer this service free.</p>
+        <p>WP Speedtest Pro helps WordPress users choose better hosting with clear, data-driven performance insights. We identify the best providers, call out the worst, and help users get more value from their hosting. Committed to the WordPress community, we offer this service free.</p>
     </div>
     <div class="initial-setup">
         <h3>Let's get started with the basic setup</h3>
@@ -58,10 +58,10 @@
         </div>
         <div class="form-group privacy-opt">
             <label>
-                <input type="checkbox" id="allow-data-collection" name="allow-data-collection" checked>
+                <input type="checkbox" id="allow-data-collection" name="allow-data-collection">
                 Help improve WP Speed Test Pro by allowing anonymous data collection
             </label>
-            <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community.</p>
+            <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. <a href="https://wpspeedtestpro.com/privacy-policy/" target="_blank">Read our privacy policy</a>.</p>
         </div>
     </div>
 </script>
