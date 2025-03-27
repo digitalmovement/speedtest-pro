@@ -46,6 +46,11 @@ class Wpspeedtestpro_Activator {
         // API calls
         $api->fetch_and_store_ssl_emails();
 
+        // Set data collection to FALSE by default (opt-in)
+        if (get_option('wpspeedtestpro_allow_data_collection') === false) {
+            add_option('wpspeedtestpro_allow_data_collection', false);
+        }
+
         // Any other activation tasks can be added here
 
               // Schedule cron job for running scheduled tests

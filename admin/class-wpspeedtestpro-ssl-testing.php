@@ -182,7 +182,7 @@ class Wpspeedtestpro_SSL_Testing {
     }
 
     private function cache_ssl_results($result) {
-        set_transient($this->ssl_cached_results, $result, HOUR_IN_SECONDS);
+        set_transient($this->ssl_cached_results, $result, HOUR_IN_SECONDS * 72);
     }
 
     public function get_cached_results() {

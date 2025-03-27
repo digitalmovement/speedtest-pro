@@ -119,12 +119,14 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
-        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-
+   
                // Add dashboard-specific styles only on dashboard page
                $screen = get_current_screen();
-               if ($screen && $screen->id === 'toplevel_page_' . $this->plugin_name) {
+               if ($screen && strpos($screen->id, $this->plugin_name) !== 0) {
+                wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
+                wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css');
+
+
                    wp_enqueue_style(
                        $this->plugin_name . '-dashboard',
                        plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-dashboard.css',
@@ -141,28 +143,33 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function enqueue_scripts() {
-        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-admin.js', array( 'jquery' ), $this->version, false );
-        wp_enqueue_script( 'chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true );
-        wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
 
-        wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-tabs');
+        $screen = get_current_screen();
+        if ($screen && strpos($screen->id, $this->plugin_name) !== 0) {
         
-        // Enqueue jQuery UI CSS
-        wp_enqueue_style('jquery-ui-css', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
 
-               wp_localize_script(
-                $this->plugin_name . '-dashboard',
-                'wpspeedtestpro_dashboard',
-                array(
-                    'ajax_url' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
-                    'selected_region' => get_option('wpspeedtestpro_selected_region'),
-                    'home_url' => home_url()
-                )
-            );
-     
+            wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-admin.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script( 'chart-js',   plugin_dir_url( __FILE__ ) . 'js/chart.js', array(), '3.7.0', true );
+            wp_enqueue_script('chart-date-js',   plugin_dir_url( __FILE__ ) . 'js/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
 
+            wp_enqueue_script('jquery-ui-core');
+            wp_enqueue_script('jquery-ui-tabs');
+            
+            // Enqueue jQuery UI CSS
+            wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css');
+
+                wp_localize_script(
+                    $this->plugin_name . '-dashboard',
+                    'wpspeedtestpro_dashboard',
+                    array(
+                        'ajax_url' => admin_url('admin-ajax.php'),
+                        'nonce' => wp_create_nonce('wpspeedtestpro_ajax_nonce'),
+                        'selected_region' => get_option('wpspeedtestpro_selected_region'),
+                        'home_url' => home_url()
+                    )
+                );
+        
+        }
 
     }
 
@@ -242,20 +249,6 @@ class Wpspeedtestpro_Admin {
         add_action('wp_ajax_wpspeedtestpro_get_ssl_data', array($this, 'get_ssl_data'));
         add_action('wp_ajax_wpspeedtestpro_get_uptime_data', array($this, 'get_uptime_data'));
         add_action('wp_ajax_wpspeedtestpro_get_pagespeed_data', array($this, 'get_pagespeed_data'));
-    }
-
-
-
-    public function change_plugin_icon() {
-        echo '<style>
-            #adminmenu #toplevel_page_wpspeedtestpro  div.wp-menu-image {
-                background-image: url(' . plugins_url('/admin/assets/icon.svg', __FILE__) . ');
-                background-size: contain;
-            }
-            #adminmenu #toplevel_page_wpspeedtestpro-slug img {
-                display: none;
-            }
-        </style>';
     }
 
     /**

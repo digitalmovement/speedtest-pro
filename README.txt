@@ -3,7 +3,7 @@ Contributors: wpspeedtestproteam
 Donate link: https://wpspeedtestpro.com/
 Tags: performance, speed test, benchmark, server performance
 Requires at least: 5.0
-Tested up to: 5.9
+Tested up to: 6.4
 Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -30,6 +30,10 @@ Whether you're a site owner looking to improve your website's speed or a develop
 1. Upload the `wpspeedtestpro` folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 3. Navigate to the 'WP Speedtest Pro' menu in your WordPress admin panel to start using the plugin
+4. You will need to obtain the following API keys:
+   * UptimeRobot API Key - Get it from [UptimeRobot.com](https://uptimerobot.com/)
+   * Google API Key - Get it from [Google Cloud Console](https://console.cloud.google.com/)
+5. Enter your API keys in the plugin settings page.
 
 == Frequently Asked Questions ==
 
@@ -63,3 +67,25 @@ The tests are designed to be non-intrusive, but they do use some server resource
 
 = 1.1.0 =
 This update introduces powerful server performance benchmarking features. Upgrade to gain valuable insights into your server's capabilities and track performance over time.
+
+== Credits ==
+
+This plugin uses the following third-party resources:
+
+* Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
+  License: https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
+
+
+
+== External Services ==
+
+This plugin connects to the following external services:
+
+* UptimeRobot API - Used for monitoring website uptime. [Privacy Policy](https://uptimerobot.com/privacy/)
+* Cloudflare - Used for performance testing from multiple global locations. [Privacy Policy](https://www.cloudflare.com/privacypolicy/)
+* Google Cloud Platform - Used for data processing and storage. [Privacy Policy](https://cloud.google.com/terms/cloud-privacy-notice)
+* GCPPing - Used for performance testing from multiple global locations. [Privacy Policy](https://www.gcpping.com/privacy/)
+* SSL Labs - Used for SSL testing. [Privacy Policy](https://www.ssllabs.com/privacy/)
+
+
+Data sent to these services may include your website URL, performance metrics, and basic WordPress configuration information. No personal user data is collected or transmitted unless explicitly provided.

@@ -13,11 +13,11 @@ jQuery(document).ready(function($) {
         const $banner = $(this).closest('#performance-info-banner');
         
         $.ajax({
-            url: wpspeedtestpro_performance.ajaxurl,
+            url: wpspeedtestpro_ajax.ajax_url,
             type: 'POST',
             data: {
                 action: 'wpspeedtestpro_dismiss_performance_info',
-                nonce: wpspeedtestpro_performance.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -79,18 +79,26 @@ jQuery(document).ready(function($) {
 
     function updateNextTestTime() {
         $.ajax({
-            url: wpspeedtestpro_performance.ajaxurl,
+            url: wpspeedtestpro_ajax.ajax_url,
             method: 'POST',
             data: {
                 action: 'wpspeedtestpro_performance_get_next_test_time',
-                _ajax_nonce: wpspeedtestpro_performance.nonce
+                nonce: wpspeedtestpro_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
-                    $('#next-test-time').text(response.data);
+                    $('#next-test-time').text(escapeHtml(response.data));
                 }
             }
         });
+    }
+    
+    // Helper function to safely escape HTML
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     }
 
     function updateTimeRemaining() {
