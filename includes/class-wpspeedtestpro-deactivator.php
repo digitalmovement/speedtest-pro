@@ -120,7 +120,7 @@ class Wpspeedtestpro_Deactivator {
         } catch (Exception $e) {
             // Rollback on error
             $wpdb->query('ROLLBACK');
-            throw new Exception('Failed to delete plugin data: ' . esc_html($e->getMessage());
+            throw new Exception('Failed to delete plugin data: ' . esc_html($e->getMessage()));
         }
     }
 
