@@ -99,7 +99,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_setup_monitors() {
-        $this_site_url = parse_url(get_site_url(), PHP_URL_HOST);
+        $this_site_url = wp_parse_url(get_site_url(), PHP_URL_HOST);
 
         $ping_filename = $this->uptimerobot_create_ping_file();
         if (!$ping_filename) {
@@ -141,7 +141,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $string = '';
         for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[rand(0, strlen($characters) - 1)];
+            $string .= $characters[wp_rand(0, strlen($characters) - 1)];
         }
         return $string;
     }

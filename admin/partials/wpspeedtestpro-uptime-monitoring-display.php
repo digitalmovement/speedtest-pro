@@ -62,7 +62,7 @@
             <div class="notice notice-warning">
                 <p><?php esc_attr_e('Uptime monitors are not set up. Click the button below to set them up.', 'wpspeedtestpro'); ?></p>
             </div>
-            <button id="setup-monitors" class="button button-primary"><?php _e('Setup Monitors', 'wpspeedtestpro'); ?></button>
+            <button id="setup-monitors" class="button button-primary"><?php esc_attr_e('Setup Monitors', 'wpspeedtestpro'); ?></button>
         <?php else: ?>
             <div id="uptime-monitors-data">
                 <div class="spinner is-active" style="float: none;"></div>

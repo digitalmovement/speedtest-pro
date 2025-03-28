@@ -84,7 +84,7 @@ class Wpspeedtestpro_API {
 
     public function test_ssl_certificate($domain, $email, $getStatus="on") {
         $api_url = 'https://api.ssllabs.com/api/v4/analyze';
-        $host = parse_url($domain, PHP_URL_HOST);
+        $host = wp_parse_url($domain, PHP_URL_HOST);
         
         $args = array(
             'timeout' => 30,

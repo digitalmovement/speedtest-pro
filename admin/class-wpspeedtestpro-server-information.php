@@ -97,7 +97,10 @@ class Wpspeedtestpro_Server_Information {
         }
 
         $server_version = $wpdb->get_var('SELECT VERSION()');
-        $client_version = mysqli_get_client_info() ? mysqli_get_client_info() : 'N/A';
+        $client_version = $wpdb->db_version() ? $wpdb->db_version() : 'N/A';
+        
+
+
 
         $info['database'] = array(
             'extension' => esc_html($extension),

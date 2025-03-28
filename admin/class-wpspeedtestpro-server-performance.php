@@ -197,7 +197,7 @@ class Wpspeedtestpro_Server_Performance {
             wp_send_json_error('Insufficient permissions');
         }
 
-        $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : 'stopped';
+        $status = sanitize_text_field(wp_unslash($_POST['status']));
         update_option('wpspeedtestpro_performance_test_status', $status);
         wp_send_json_success();
     }
@@ -242,7 +242,7 @@ class Wpspeedtestpro_Server_Performance {
         try {
             update_option('wpspeedtestpro_performance_test_status', 'running');
             
-            $current_date = date('Y-m-d H:i:s');
+            $current_date = gmdate('Y-m-d H:i:s');
 
             // Run existing performance tests
             $results = array(
@@ -319,7 +319,7 @@ class Wpspeedtestpro_Server_Performance {
             addslashes($string);
             chunk_split($string);
             metaphone($string);
-            strip_tags($string);
+            wp_strip_all_tags($string);
             md5($string);
             sha1($string);
             strtoupper($string);
@@ -358,7 +358,7 @@ class Wpspeedtestpro_Server_Performance {
         global $wpdb;
         
         $query = "SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))";
-        $wpdb->query($wpdb->prepare($query, 1000000, 'WPSpeedTestPro', 'benchmark', 512));
+        $result = $wpdb->query($wpdb->prepare($query, 1000000, 'WPSpeedTestPro', 'benchmark', 512));
         
         return $this->timer_delta($time_start);
     }
@@ -373,7 +373,11 @@ class Wpspeedtestpro_Server_Performance {
 
         for ($x = 0; $x < $count; $x++) {
             $wpdb->insert($table, array('option_name' => $optionname . $x, 'option_value' => $dummytext));
-            $wpdb->get_var("SELECT option_value FROM $table WHERE option_name='$optionname$x'");
+            $result = $wpdb->get_var($wpdb->prepare(
+                "SELECT option_value FROM %s WHERE option_name = %s",
+                $table,
+                $optionname . $x
+            ));
             $wpdb->update($table, array('option_value' => 'updated_' . $dummytext), array('option_name' => $optionname . $x));
             $wpdb->delete($table, array('option_name' => $optionname . $x));
         }
@@ -390,7 +394,7 @@ class Wpspeedtestpro_Server_Performance {
     private function get_test_results() {
         return get_option('wpspeedtestpro_performance_test_results', array(
             'latest_results' => array(
-                'test_date' => date('Y-m-d H:i:s'), 
+                'test_date' => gmdate('Y-m-d H:i:s'), 
                 'math' => 0,
                 'string' => 0,
                 'loops' => 0,
@@ -411,7 +415,7 @@ class Wpspeedtestpro_Server_Performance {
                     'location' => ''
                 )
             ),
-            'test_date' => date('Y-m-d H:i:s'),
+            'test_date' => gmdate('Y-m-d H:i:s'),
             'math' => array(),
             'string' => array(),
             'loops' => array(),
@@ -617,7 +621,9 @@ class Wpspeedtestpro_Server_Performance {
                 }
             }, $results);
         } catch (Exception $e) {
-            error_log('Error getting historical results: ' . $e->getMessage());
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('WP Speedtest Pro Server Performance Error: ' . esc_html($e->getMessage()));
+            }
             return array();
         }
     }

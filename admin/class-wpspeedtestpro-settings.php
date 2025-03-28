@@ -143,19 +143,71 @@ class Wpspeedtestpro_Settings {
             )
         );
 
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_region');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_provider');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_package');
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_selected_region',
+            array(
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default' => ''
+            )
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_selected_provider',
+            array(
+                'type' => 'integer',
+                'sanitize_callback' => 'absint',
+                'default' => 0
+            )
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_selected_package',
+            array(
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default' => ''
+            )
+        );
+        
         register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_allow_data_collection', array(
             'type' => 'boolean',
             'default' => true,
             'sanitize_callback' => 'boolval'
         ));
-        register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_uptimerobot_api_key' );
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_pagespeed_api_key');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_user_country');
-
- 
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_uptimerobot_api_key',
+            array(
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default' => ''
+            )
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_pagespeed_api_key',
+            array(
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default' => ''
+            )
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_user_country',
+            array(
+                'type' => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+                'default' => ''
+            )
+        );
 
         // Add settings section
         add_settings_section(

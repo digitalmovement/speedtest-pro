@@ -161,13 +161,14 @@ class Wpspeedtestpro_DB {
 
     public function delete_all_results() {
         global $wpdb;
-        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->hosting_benchmarking_table));
-        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->benchmark_results_table));
+        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %s", $this->hosting_benchmarking_table));
+        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %s", $this->benchmark_results_table));
+        
     }
 
     public function purge_old_results() {
         global $wpdb;
-        $one_week_ago = date('Y-m-d H:i:s', strtotime('-1 week'));
+        $one_week_ago = gmdate('Y-m-d H:i:s', strtotime('-1 week'));
         $wpdb->query($wpdb->prepare("DELETE FROM {$this->hosting_benchmarking_table} WHERE test_time < %s", $one_week_ago));
         $wpdb->query($wpdb->prepare("DELETE FROM {$this->benchmark_results_table} WHERE test_date < %s", $one_week_ago));
     }
@@ -183,7 +184,9 @@ class Wpspeedtestpro_DB {
             GROUP BY region_name
         ";
     
-        return $wpdb->get_results($query);
+        $safe_query = $wpdb->prepare($query); // Add appropriate parameters
+        $results = $wpdb->get_results($safe_query);
+        return $results;
     }
 
     public function get_results_by_time_range($time_range) {
@@ -209,7 +212,10 @@ class Wpspeedtestpro_DB {
             ORDER BY test_time ASC
         ";
         
-        return $wpdb->get_results($wpdb->prepare($query, $interval_number));
+        $safe_query = $wpdb->prepare($query, $interval_number); // Add appropriate parameters
+        $results = $wpdb->get_results($safe_query);
+
+        return $results;
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
@@ -229,8 +235,10 @@ class Wpspeedtestpro_DB {
             WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY)
             ORDER BY test_time ASC
              ";
-    
-        return $wpdb->get_results($wpdb->prepare($query, $interval_number));
+        $safe_query = $wpdb->prepare($query, $parameters); // Add appropriate parameters
+        $results = $wpdb->get_results($safe_query);
+
+        return $results;
     }
 
     public function get_new_benchmark_results($last_id = 0) {

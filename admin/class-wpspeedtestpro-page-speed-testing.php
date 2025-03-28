@@ -295,7 +295,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Calculate the date threshold
-        $threshold_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $threshold_date = gmdate('Y-m-d H:i:s', strtotime("-{$days} days"));
         
         // Delete records older than the threshold
         $query = $wpdb->prepare(
@@ -303,7 +303,7 @@ public function ajax_check_test_status() {
             $threshold_date
         );
 
-        $result = $wpdb->query($query);
+        $results = $wpdb->get_results($query);
 
         if ($result === false) {
             wp_send_json_error('Failed to delete old results');
@@ -665,7 +665,7 @@ public function ajax_check_test_status() {
             'basic_info' => [
                 'url' => esc_url($result->url),
                 'device' => ucfirst(sanitize_text_field($result->device)),
-                'test_date' => wp_date('F j, Y g:i a', strtotime($result->test_date))
+                'test_date' => gmdate('F j, Y g:i a', strtotime($result->test_date))
             ],
             'scores' => [
                 'performance' => [
@@ -843,9 +843,9 @@ public function ajax_check_test_status() {
         
         switch ($frequency) {
             case 'daily':
-                return date('Y-m-d H:i:s', strtotime('+1 day', strtotime($now)));
+                return gmdate('Y-m-d H:i:s', strtotime('+1 day', strtotime($now)));
             case 'weekly':
-                return date('Y-m-d H:i:s', strtotime('+1 week', strtotime($now)));
+                return gmdate('Y-m-d H:i:s', strtotime('+1 week', strtotime($now)));
             default:
                 return null;
         }
@@ -1017,8 +1017,8 @@ public function ajax_check_test_status() {
                 'id' => $test->id,
                 'url' => $test->url,
                 'frequency' => $test->frequency,
-                'last_run' => $test->last_run ? wp_date('F j, Y g:i a', strtotime($test->last_run)) : 'Never',
-                'next_run' => $test->next_run ? wp_date('F j, Y g:i a', strtotime($test->next_run)) : 'Not scheduled',
+                'last_run' => $test->last_run ? gmdate('F j, Y g:i a', strtotime($test->last_run)) : 'Never',
+                'next_run' => $test->next_run ? gmdate('F j, Y g:i a', strtotime($test->next_run)) : 'Not scheduled',
                 'status' => $this->get_schedule_status($test)
             );
         }, $results);
@@ -1119,7 +1119,7 @@ public function ajax_check_test_status() {
                 'id' => $test->id,
                 'url' => $test->url,
                 'device' => ucfirst($test->device),
-                'test_date' => wp_date('F j, Y g:i a', strtotime($test->test_date)),
+                'test_date' => gmdate('F j, Y g:i a', strtotime($test->test_date)),
                 'performance' => $performance,
                 'accessibility' => $accessibility,
                 'best_practices' => $best_practices,
@@ -1228,7 +1228,7 @@ public function ajax_check_test_status() {
             $where[] = $wpdb->prepare("url = %s", $url);
         }
     
-        $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $date_limit = gmdate('Y-m-d H:i:s', strtotime("-{$days} days"));
         $where[] = $wpdb->prepare("test_date >= %s", $date_limit);
     
         $where_clause = "WHERE " . implode(" AND ", $where);

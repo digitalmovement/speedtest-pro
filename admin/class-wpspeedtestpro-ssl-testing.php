@@ -277,8 +277,8 @@ class Wpspeedtestpro_SSL_Testing {
         $add_row('Common names', esc_html(implode(', ', $cert['commonNames'])));
         $add_row('Alternative names', esc_html(implode(', ', $cert['altNames'])));
         $add_row('Serial Number', esc_html($cert['serialNumber']));
-        $add_row('Valid from', date('D, d M Y H:i:s T', $cert['notBefore'] / 1000));
-        $add_row('Valid until', date('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')');
+        $add_row('Valid from', gmdate('D, d M Y H:i:s T', $cert['notBefore'] / 1000));
+        $add_row('Valid until', gmdate('D, d M Y H:i:s T', $cert['notAfter'] / 1000) . ' (expires in ' . $this->format_expiry_time($cert['notAfter']) . ')');
         $add_row('Key', esc_html($cert['keyAlg']) . ' ' . $cert['keySize'] . ' bits (e ' . $cert['keyStrength'] . ')');
         $add_row('Weak key (Debian)', $cert['weakDebianKey'] ? 'Yes' : 'No');
         $add_row('Issuer', esc_html($cert['issuerSubject']));

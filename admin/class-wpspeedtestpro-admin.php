@@ -332,7 +332,7 @@ class Wpspeedtestpro_Sync_Handler {
 
     private function generate_site_key() {
         $unique_parts = array(
-            parse_url(site_url(), PHP_URL_HOST), // Domain name
+            wp_parse_url(site_url(), PHP_URL_HOST), // Domain name
             defined('ABSPATH') ? ABSPATH : '', // WordPress installation path
             defined('DB_NAME') ? DB_NAME : '', // Database name
             php_uname(), // System information

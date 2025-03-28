@@ -3,12 +3,12 @@ Contributors: wpspeedtestproteam
 Donate link: https://wpspeedtestpro.com/
 Tags: performance, speed test, benchmark, server performance
 Requires at least: 5.0
-Tested up to: 6.4
-Stable tag: 1.1.0
+Tested up to: 6.7
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WP Speedtest Pro is an advanced plugin to test and analyze your WordPress site's performance, including comprehensive server performance benchmarks.
+WP Speedtest Pro analyzes your WordPress site's performance with comprehensive server benchmarks and speed testing tools.
 
 == Description ==
 
