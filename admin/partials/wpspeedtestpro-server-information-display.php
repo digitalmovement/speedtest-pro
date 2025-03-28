@@ -140,12 +140,7 @@
                 <?php
         
                 $php_info = new Wpspeedtestpro_Php_Info();
-                echo $php_info->get_php_info();
-                
-                // Convert phpinfo HTML to be WordPress-friendly
-                //$phpinfo = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $phpinfo);
-                //$phpinfo = str_replace('<table>', '<table class="wp-list-table widefat fixed striped">', $phpinfo);
-                //echo $phpinfo;
+                echo esc_html($php_info->get_php_info());
                 ?>
             </div>
         </div>

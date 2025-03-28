@@ -336,7 +336,7 @@ class Wpspeedtestpro_Settings {
             foreach ($gcp_endpoints as $endpoint) {
                 $region_name = esc_attr($endpoint['region_name']);
                 $region = esc_attr($endpoint['region']);
-                echo '<option value="' . $region . '"' . selected($selected_region, $region, false) . '>';
+                echo '<option value="' . esc_attr($region) . '"' . selected($selected_region, $region, false) . '>';
                 echo esc_html($region_name);
                 echo '</option>';
             }
@@ -356,7 +356,7 @@ class Wpspeedtestpro_Settings {
             echo '<option value="">Select a provider</option>';
             foreach ($providers as $provider) {
                 $provider_id = esc_attr($provider['id']);
-                echo '<option value="' . $provider_id . '"' . selected($selected_provider_id, $provider_id, false) . '>';
+                echo '<option value="' . esc_attr($provider_id) . '"' . selected($selected_provider_id, $provider_id, false) . '>';
                 echo esc_html($provider['name']);
                 echo '</option>';
             }
@@ -379,7 +379,7 @@ class Wpspeedtestpro_Settings {
                 if ($provider['id'] == $selected_provider_id) {
                     foreach ($provider['packages'] as $package) {
                         $package_id = esc_attr($package['Package_ID']);
-                        echo '<option value="' . $package_id . '"' . selected($selected_package_id, $package_id, false) . '>';
+                        echo '<option value="' . esc_attr($package_id) . '"' . selected($selected_package_id, $package_id, false) . '>';
                         echo esc_html($package['type'] . ' - ' . $package['description']);
                         echo '</option>';
                     }

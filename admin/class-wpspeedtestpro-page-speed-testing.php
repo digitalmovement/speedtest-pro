@@ -141,6 +141,7 @@ class Wpspeedtestpro_PageSpeed {
 
         if (!$desktop_test['success'] || !$mobile_test['success']) {
             $error_message = sprintf(
+                /* translators: 1: Desktop test error message  */
                 __('Failed to initiate tests - %s', 'wpspeedtestpro'),
                 isset($desktop_test['error']) ? sanitize_text_field($desktop_test['error']) : ''
             );
@@ -918,26 +919,26 @@ public function ajax_check_test_status() {
                     <div class="scores-grid">
                         <div class="score-item">
                             <span class="score-label">Performance</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->performance_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->performance_score) ? $results['desktop']->performance_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->performance_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->performance_score) ? esc_html($results['desktop']->performance_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Accessibility</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->accessibility_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->accessibility_score) ? $results['desktop']->accessibility_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->accessibility_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->accessibility_score) ? esc_html($results['desktop']->accessibility_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Best Practices</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->best_practices_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->best_practices_score) ? $results['desktop']->best_practices_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->best_practices_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->best_practices_score) ? esc_html($results['desktop']->best_practices_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">SEO</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->seo_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->seo_score) ? $results['desktop']->seo_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->seo_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->seo_score) ? esc_html($results['desktop']->seo_score . '%') : '--'; ?>
                             </div>
                         </div>
                     </div>
@@ -949,26 +950,26 @@ public function ajax_check_test_status() {
                     <div class="scores-grid">
                         <div class="score-item">
                             <span class="score-label">Performance</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->performance_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->performance_score) ? $results['mobile']->performance_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->performance_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->performance_score) ? esc_html($results['mobile']->performance_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Accessibility</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->accessibility_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->accessibility_score) ? $results['mobile']->accessibility_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->accessibility_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->accessibility_score) ? esc_html($results['mobile']->accessibility_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Best Practices</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->best_practices_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->best_practices_score) ? $results['mobile']->best_practices_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->best_practices_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->best_practices_score) ? esc_html($results['mobile']->best_practices_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">SEO</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->seo_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->seo_score) ? $results['mobile']->seo_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->seo_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->seo_score) ? esc_html($results['mobile']->seo_score . '%') : '--'; ?>
                             </div>
                         </div>
                     </div>
@@ -979,12 +980,12 @@ public function ajax_check_test_status() {
                 <div class="notice notice-warning inline">
                     <p>Please publish this post before running PageSpeed tests.</p>
                 </div>
-            <?php endif; ?>
+            <?php endif; ?> 
     
             <button type="button" class="button run-pagespeed-test" 
                     data-url="<?php echo esc_attr($url); ?>"
                     data-post-status="<?php echo esc_attr($post_status); ?>"
-                    <?php echo $post_status !== 'publish' ? 'disabled' : ''; ?>>
+                    <?php echo esc_attr($post_status !== 'publish' ? 'disabled' : '')  ; ?>>
                 Run PageSpeed Test
             </button>
         </div>
@@ -1435,15 +1436,15 @@ public function ajax_check_test_status() {
             echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '" data-status="' . esc_attr($post_status) . '">';
             
             if (empty($results['desktop']) && empty($results['mobile'])) {
-                echo $this->render_indicator('no-test', 'No test', true);
+                echo esc_html($this->render_indicator('no-test', 'No test', true));
             } else {
                 // Display Desktop Score
                 if (!empty($results['desktop'])) {
                     $desktop_score = $results['desktop']->performance_score;
                     $desktop_class = $this->get_score_class($desktop_score);
                     echo '<div class="pagespeed-device">';
-                    echo $this->render_indicator($desktop_class, $desktop_score, false, 'desktop');
-                    echo '</div>';
+                    echo esc_html($this->render_indicator($desktop_class, $desktop_score, false, 'desktop'));
+                    echo '</div>';  
                 }
     
                 // Display Mobile Score
@@ -1451,7 +1452,7 @@ public function ajax_check_test_status() {
                     $mobile_score = $results['mobile']->performance_score;
                     $mobile_class = $this->get_score_class($mobile_score);
                     echo '<div class="pagespeed-device">';
-                    echo $this->render_indicator($mobile_class, $mobile_score, false, 'mobile');
+                    echo esc_html($this->render_indicator($mobile_class, $mobile_score, false, 'mobile'));
                     echo '</div>';
                 }
             }
