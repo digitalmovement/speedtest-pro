@@ -185,7 +185,7 @@ class Wpspeedtestpro_DB {
         ";
     
        // Add appropriate parameters
-        $results = $wpdb->get_results($wpdb->prepare($query));
+        $results = $wpdb->get_results($wpdb->prepare("%s", $query));
         return $results;
     }
 
