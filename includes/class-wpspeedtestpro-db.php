@@ -184,8 +184,8 @@ class Wpspeedtestpro_DB {
             GROUP BY region_name
         ";
     
-        $safe_query = $wpdb->prepare($query); // Add appropriate parameters
-        $results = $wpdb->get_results($safe_query);
+       // Add appropriate parameters
+        $results = $wpdb->get_results($wpdb->prepare($query));
         return $results;
     }
 
