@@ -78,7 +78,8 @@ class Wpspeedtestpro_DB {
 
         // Fetch the latest result for the same region
         $latest_result = $wpdb->get_row($wpdb->prepare(
-            "SELECT latency FROM {$this->hosting_benchmarking_table} WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
+            "SELECT latency FROM %s WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
+            $this->hosting_benchmarking_table,
             $region_name
         ));
 
@@ -129,17 +130,17 @@ class Wpspeedtestpro_DB {
 
     public function get_latest_results() {
         global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->hosting_benchmarking_table} ORDER BY test_time DESC LIMIT %d", 10), ARRAY_A);
+        return $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_time DESC LIMIT %d", $this->hosting_benchmarking_table, 10), ARRAY_A);
     }
 
     public function get_latest_benchmark_results() {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->benchmark_results_table} ORDER BY test_date DESC LIMIT %d", 1), ARRAY_A);
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, 1), ARRAY_A);
     }
 
     public function get_benchmark_results($limit = 30) {
         global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->benchmark_results_table} ORDER BY test_date DESC LIMIT %d", $limit), ARRAY_A);
+        return $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A);
     }
 
     public function get_latest_results_by_region() {
@@ -169,8 +170,8 @@ class Wpspeedtestpro_DB {
     public function purge_old_results() {
         global $wpdb;
         $one_week_ago = gmdate('Y-m-d H:i:s', strtotime('-1 week'));
-        $wpdb->query($wpdb->prepare("DELETE FROM {$this->hosting_benchmarking_table} WHERE test_time < %s", $one_week_ago));
-        $wpdb->query($wpdb->prepare("DELETE FROM {$this->benchmark_results_table} WHERE test_date < %s", $one_week_ago));
+        $wpdb->query($wpdb->prepare("DELETE FROM %s WHERE test_time < %s", $this->hosting_benchmarking_table, $one_week_ago));
+        $wpdb->query($wpdb->prepare("DELETE FROM %s WHERE test_date < %s", $this->benchmark_results_table, $one_week_ago));
     }
 
     public function get_fastest_and_slowest_results() {
@@ -245,7 +246,8 @@ class Wpspeedtestpro_DB {
         global $wpdb;
         return $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$this->benchmark_results_table} WHERE id > %d ORDER BY id ASC",
+                "SELECT * FROM %s WHERE id > %d ORDER BY id ASC",
+                $this->benchmark_results_table,
                 $last_id
             ),
             ARRAY_A
@@ -302,19 +304,19 @@ class Wpspeedtestpro_DB {
         
         // Get unsynced benchmark results using prepared statement
         $benchmark_results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$this->benchmark_results_table} WHERE synced = %d", 0),
+            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->benchmark_results_table, 0),
             ARRAY_A
         );
 
         // Get unsynced hosting benchmarking results using prepared statement
         $hosting_results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$this->hosting_benchmarking_table} WHERE synced = %d", 0),
+            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->hosting_benchmarking_table, 0),
             ARRAY_A
         );
 
         // Get unsynced speedvitals results using prepared statement
         $pagespeed_results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM {$this->pagespeed_table} WHERE synced = %d", 0),
+            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->pagespeed_table, 0),
             ARRAY_A
         );
 

@@ -357,8 +357,7 @@ class Wpspeedtestpro_Server_Performance {
         $time_start = microtime(true);
         global $wpdb;
         
-        $query = "SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))";
-        $result = $wpdb->query($wpdb->prepare($query, 1000000, 'WPSpeedTestPro', 'benchmark', 512));
+        $result = $wpdb->query($wpdb->prepare("SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))", 1000000, 'WPSpeedTestPro', 'benchmark', 512));
         
         return $this->timer_delta($time_start);
     }
