@@ -77,14 +77,14 @@ class Wpspeedtestpro_Server_Information {
         $info['hosting'] = array(
             'operating_system' => function_exists('php_uname') ? php_uname('s') . ' ' . esc_html(php_uname('r')) . ' ' . esc_html(php_uname('m')) : 'N/A',
             'server_hostname' => function_exists('php_uname') ? esc_html(php_uname('n')) : 'N/A',
-            'server_ip' => isset($_SERVER['SERVER_ADDR']) ? esc_html($_SERVER['SERVER_ADDR']) : 'N/A',
-            'server_protocol' => isset($_SERVER['SERVER_PROTOCOL']) ? esc_html($_SERVER['SERVER_PROTOCOL']) : 'N/A',
-            'server_admin' => isset($_SERVER['SERVER_ADMIN']) ? esc_html($_SERVER['SERVER_ADMIN']) : '[no address given]',
+            'server_ip' => isset($_SERVER['SERVER_ADDR']) ? esc_html(wp_unslash($_SERVER['SERVER_ADDR'])) : 'N/A',
+            'server_protocol' => isset($_SERVER['SERVER_PROTOCOL']) ? esc_html(wp_unslash($_SERVER['SERVER_PROTOCOL'])) : 'N/A',
+            'server_admin' => isset($_SERVER['SERVER_ADMIN']) ? esc_html(wp_unslash($_SERVER['SERVER_ADMIN'])) : '[no address given]',
             'server_port' => isset($_SERVER['SERVER_PORT']) ? absint($_SERVER['SERVER_PORT']) : 'N/A',
-            'web_server' => isset($_SERVER['SERVER_SOFTWARE']) ? esc_html($_SERVER['SERVER_SOFTWARE']) : 'N/A',
+            'web_server' => isset($_SERVER['SERVER_SOFTWARE']) ? esc_html(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : 'N/A',
             'php_version' => function_exists('phpversion')  ? phpversion() : 'N/A' ,
             'php_memory_limit' => ini_get('memory_limit'),
-            'cgi_version' => isset($_SERVER['GATEWAY_INTERFACE']) ? $_SERVER['GATEWAY_INTERFACE'] : 'N/A'
+            'cgi_version' => isset($_SERVER['GATEWAY_INTERFACE']) ? esc_html(wp_unslash($_SERVER['GATEWAY_INTERFACE'])) : 'N/A'
         );
 
         // Database Information

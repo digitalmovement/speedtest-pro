@@ -63,7 +63,7 @@ class Wpspeedtestpro_Deactivator {
             return;
         }
 
-        if (!isset($_POST['delete_data']) || !$_POST['delete_data']) {
+        if (!isset($_POST['delete_data']) || !sanitize_text_field(wp_unslash($_POST['delete_data']))) {
             wp_send_json_success();
             return;
         }
@@ -92,7 +92,7 @@ class Wpspeedtestpro_Deactivator {
             );
 
             foreach ($tables as $table) {
-                $wpdb->query("DROP TABLE IF EXISTS {$table}");
+                $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %s", $table));
             }
 
             // Delete all plugin options

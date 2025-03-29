@@ -274,7 +274,7 @@ class Wpspeedtestpro_Latency_Testing {
     public function get_results_for_time_range() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
-        $time_range = isset($_POST['time_range']) ? sanitize_text_field($_POST['time_range']) : '24_hours';
+        $time_range = isset($_POST['time_range']) ? sanitize_text_field(wp_unslash($_POST['time_range'])) : '24_hours';
     
         // Fetch results from DB based on the time range
         $results = $this->core->db->get_results_by_time_range($time_range);

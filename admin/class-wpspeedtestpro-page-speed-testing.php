@@ -118,9 +118,9 @@ class Wpspeedtestpro_PageSpeed {
         return;
     }
 
-    $url = isset($_POST['url']) ? esc_url_raw(sanitize_url($_POST['url'])) : '';
-    $device = isset($_POST['device']) ? sanitize_text_field($_POST['device']) : 'desktop';
-    $frequency = isset($_POST['frequency']) ? sanitize_text_field($_POST['frequency']) : 'once';
+    $url = isset($_POST['url']) ? esc_url_raw(sanitize_url(wp_unslash($_POST['url']))) : '';
+    $device = isset($_POST['device']) ? sanitize_text_field(wp_unslash($_POST['device'])) : 'desktop';
+    $frequency = isset($_POST['frequency']) ? sanitize_text_field(wp_unslash($_POST['frequency'])) : 'once';
 
     if (empty($url)) {
         wp_send_json_error('URL is required');
@@ -195,7 +195,7 @@ public function ajax_check_test_status() {
         return;
     }
 
-    $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
+    $url = isset($_POST['url']) ? sanitize_url(wp_unslash($_POST['url'])) : '';
     if (empty($url)) {
         wp_send_json_error('URL is required');
         return;

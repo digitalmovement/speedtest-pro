@@ -103,13 +103,13 @@ class Wpspeedtestpro_Wizard {
         }
     
         $settings = array(
-            'gcp_region' => sanitize_text_field($_POST['region']),
-            'user_country' => sanitize_text_field($_POST['user_country']),
-            'provider_id' => absint($_POST['provider_id']),
-            'package_id' => sanitize_text_field($_POST['package_id']),
+            'gcp_region' => isset($_POST['region']) ? sanitize_text_field(wp_unslash($_POST['region'])) : '',
+            'user_country' => isset($_POST['user_country']) ? sanitize_text_field(wp_unslash($_POST['user_country'])) : '',
+            'provider_id' => isset($_POST['provider_id']) ? absint($_POST['provider_id']) : 0,
+            'package_id' => isset($_POST['package_id']) ? sanitize_text_field(wp_unslash($_POST['package_id'])) : '',
             'allow_data_collection' => isset($_POST['allow_data_collection']) ? 
-                (bool) $_POST['allow_data_collection'] : false,
-            'uptimerobot_api_key' => sanitize_text_field($_POST['uptimerobot_key'])
+                (bool) sanitize_text_field(wp_unslash($_POST['allow_data_collection'])) : false,
+            'uptimerobot_api_key' => isset($_POST['uptimerobot_key']) ? sanitize_text_field(wp_unslash($_POST['uptimerobot_key'])) : ''
         );
     
         // Define default values for options
@@ -131,7 +131,7 @@ class Wpspeedtestpro_Wizard {
         }
         if (isset($_POST['allow_data_collection'])) {
             // Convert various truthy values to boolean
-            $value = strtolower($_POST['allow_data_collection']);
+            $value = strtolower(sanitize_text_field(wp_unslash($_POST['allow_data_collection'])));
             $allow_data_collection = in_array($value, ['true', '1', 'yes', 'on'], true);
         }
         

@@ -124,7 +124,7 @@ class Wpspeedtestpro_Admin {
                $screen = get_current_screen();
                if ($screen && strpos($screen->id, $this->plugin_name) !== 0) {
                 wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
-                wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css');
+                wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css', array(), $this->version, 'all');
 
 
                    wp_enqueue_style(
@@ -156,7 +156,7 @@ class Wpspeedtestpro_Admin {
             wp_enqueue_script('jquery-ui-tabs');
             
             // Enqueue jQuery UI CSS
-            wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css');
+            wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css', array(), $this->version, 'all');
 
                 wp_localize_script(
                     $this->plugin_name . '-dashboard',
@@ -367,7 +367,7 @@ class Wpspeedtestpro_Sync_Handler {
             'php_version' => phpversion(),
             'wp_version' => $wp_version,
             'mysql_version' => $this->get_mysql_version(),
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+            'server_software' => isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : 'unknown',
             'os' => PHP_OS,
             'max_execution_time' => ini_get('max_execution_time'),
             'max_input_vars' => ini_get('max_input_vars'),

@@ -139,74 +139,52 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_options',
             array(
                 'type' => 'array',
-                'sanitize_callback' => array($this, 'sanitize_settings')
+                'sanitize_callback' => array($this, 'sanitize_settings'),
+                'default' => array()
             )
         );
 
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_selected_region',
-            array(
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => ''
-            )
+            'sanitize_text_field'
         );
         
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_selected_provider',
-            array(
-                'type' => 'integer',
-                'sanitize_callback' => 'absint',
-                'default' => 0
-            )
+            'absint'
         );
         
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_selected_package',
-            array(
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => ''
-            )
+            'sanitize_text_field'
         );
         
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_allow_data_collection', array(
-            'type' => 'boolean',
-            'default' => true,
-            'sanitize_callback' => 'boolval'
-        ));
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_allow_data_collection', 
+            'boolval'
+        );
         
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_uptimerobot_api_key',
-            array(
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => ''
-            )
+            'sanitize_text_field'
         );
         
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_pagespeed_api_key',
-            array(
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => ''
-            )
+            'sanitize_text_field'
         );
         
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_user_country',
-            array(
-                'type' => 'string',
-                'sanitize_callback' => 'sanitize_text_field',
-                'default' => ''
-            )
+            'sanitize_text_field'
+        )
         );
 
         // Add settings section
@@ -514,7 +492,7 @@ class Wpspeedtestpro_Settings {
     public function ajax_get_provider_packages() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
-        $provider_id = absint($_POST['provider']); // Convert to integer and sanitize
+        $provider_id = isset($_POST['provider']) ? absint($_POST['provider']) : 0; // Convert to integer and sanitize
         $providers = $this->core->api->get_hosting_providers();
     
         $packages = array();
@@ -867,9 +845,13 @@ class Wpspeedtestpro_Settings {
     }
 
     public function handle_settings_saved() {
+        if (!isset($_GET['page']) || !wp_verify_nonce(wp_create_nonce('wpspeedtestpro-settings-nonce'), 'wpspeedtestpro-settings-nonce')) {
+            return;
+        }
+        
         if (
             isset($_GET['settings-updated']) && 
-            sanitize_text_field($_GET['settings-updated']) === 'true'
+            sanitize_text_field(wp_unslash($_GET['settings-updated'])) === 'true'
         ) {
             add_settings_error(
                 'wpspeedtestpro_messages',

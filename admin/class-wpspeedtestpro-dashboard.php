@@ -284,7 +284,7 @@ class Wpspeedtestpro_Dashboard {
         // Get latest desktop result
         $desktop = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT * FROM $table_name 
+                "SELECT * FROM `{$wpdb->prefix}wpspeedtestpro_pagespeed_results` 
                 WHERE device = %s 
                 ORDER BY test_date DESC 
                 LIMIT 1",
@@ -295,7 +295,7 @@ class Wpspeedtestpro_Dashboard {
         // Get latest mobile result
         $mobile = $wpdb->get_row(
             $wpdb->prepare(
-                "SELECT * FROM $table_name 
+                "SELECT * FROM `{$wpdb->prefix}wpspeedtestpro_pagespeed_results` 
                 WHERE device = %s 
                 ORDER BY test_date DESC 
                 LIMIT 1",
@@ -449,18 +449,18 @@ class Wpspeedtestpro_Bug_Report_Handler {
 
         // Collect form data
         $report_data = array(
-            'email' => sanitize_email($_POST['email']),
-            'message' => sanitize_textarea_field($_POST['message']),
-            'priority' => sanitize_text_field($_POST['priority']),
-            'severity' => sanitize_text_field($_POST['severity']),
-            'steps_to_reproduce' => sanitize_textarea_field($_POST['stepsToReproduce']),
-            'expected_behavior' => sanitize_textarea_field($_POST['expectedBehavior']),
-            'actual_behavior' => sanitize_textarea_field($_POST['actualBehavior']),
-            'frequency' => sanitize_text_field($_POST['frequency']),
+            'email' => isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '',
+            'message' => isset($_POST['message']) ? sanitize_textarea_field(wp_unslash($_POST['message'])) : '',
+            'priority' => isset($_POST['priority']) ? sanitize_text_field(wp_unslash($_POST['priority'])) : '',
+            'severity' => isset($_POST['severity']) ? sanitize_text_field(wp_unslash($_POST['severity'])) : '',
+            'steps_to_reproduce' => isset($_POST['stepsToReproduce']) ? sanitize_textarea_field(wp_unslash($_POST['stepsToReproduce'])) : '',
+            'expected_behavior' => isset($_POST['expectedBehavior']) ? sanitize_textarea_field(wp_unslash($_POST['expectedBehavior'])) : '',
+            'actual_behavior' => isset($_POST['actualBehavior']) ? sanitize_textarea_field(wp_unslash($_POST['actualBehavior'])) : '',
+            'frequency' => isset($_POST['frequency']) ? sanitize_text_field(wp_unslash($_POST['frequency'])) : '',
             'environment' => array(
-                'os' => sanitize_text_field($_POST['os']),
-                'browser' => sanitize_text_field($_POST['browser']),
-                'device_type' => sanitize_text_field($_POST['deviceType']),
+                'os' => isset($_POST['os']) ? sanitize_text_field(wp_unslash($_POST['os'])) : '',
+                'browser' => isset($_POST['browser']) ? sanitize_text_field(wp_unslash($_POST['browser'])) : '',
+                'device_type' => isset($_POST['deviceType']) ? sanitize_text_field(wp_unslash($_POST['deviceType'])) : '',
             ),
             'site_info' => $this->get_site_info(),
             'timestamp' => current_time('mysql'),

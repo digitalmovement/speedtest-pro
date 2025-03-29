@@ -197,7 +197,7 @@ class Wpspeedtestpro_Server_Performance {
             wp_send_json_error('Insufficient permissions');
         }
 
-        $status = sanitize_text_field(wp_unslash($_POST['status']));
+        $status = isset($_POST['status']) ? sanitize_text_field(wp_unslash($_POST['status'])) : '';
         update_option('wpspeedtestpro_performance_test_status', $status);
         wp_send_json_success();
     }
