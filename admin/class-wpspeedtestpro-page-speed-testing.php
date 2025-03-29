@@ -302,7 +302,7 @@ public function ajax_check_test_status() {
         $results = $wpdb->get_results($wpdb->prepare(
             "DELETE FROM  %s WHERE test_date < %s",$this->pagespeed_table,
             $threshold_date
-        ););
+        ));
 
         if ($result === false) {
             wp_send_json_error('Failed to delete old results');
