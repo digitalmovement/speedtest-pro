@@ -207,7 +207,7 @@ class Wpspeedtestpro_DB {
 
         $results = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM %i WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
+                "SELECT * FROM %s WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
                 $this->hosting_benchmarking_table,
                 $interval_number
             )
@@ -231,7 +231,7 @@ class Wpspeedtestpro_DB {
 
         $results = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM %i  WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
+                "SELECT * FROM %s  WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
                 $this->benchmark_results_table,
                 $interval_number
             )
