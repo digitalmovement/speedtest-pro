@@ -202,19 +202,17 @@ class Wpspeedtestpro_DB {
         // Default to 24 hours if not a valid selection
         $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
         
-        // Create a safe query using wpdb's built-in methods
-        $table_name = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results'; // Use prefix properly
         
         // Use CAST to ensure numeric value without quotes
-        $query = "
-            SELECT * FROM {$this->hosting_benchmarking_table}
-            WHERE test_time >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY)
-            ORDER BY test_time ASC
-        ";
-        
-        $safe_query = $wpdb->prepare($query, $interval_number); // Add appropriate parameters
-        $results = $wpdb->get_results($safe_query);
 
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM %i WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
+                $this->hosting_benchmarking_table,
+                $interval_number
+            )
+        );
+    
         return $results;
     }
 
@@ -230,15 +228,17 @@ class Wpspeedtestpro_DB {
 
         $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
    
-        $query = "
-            SELECT * FROM {$this->benchmark_results_table}
-            WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY)
-            ORDER BY test_time ASC
-             ";
-        $safe_query = $wpdb->prepare($query, $parameters); // Add appropriate parameters
-        $results = $wpdb->get_results($safe_query);
 
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM %i  WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
+                $this->benchmark_results_table,
+                $interval_number
+            )
+        );
+    
         return $results;
+
     }
 
     public function get_new_benchmark_results($last_id = 0) {

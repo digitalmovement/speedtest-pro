@@ -298,12 +298,11 @@ public function ajax_check_test_status() {
         $threshold_date = gmdate('Y-m-d H:i:s', strtotime("-{$days} days"));
         
         // Delete records older than the threshold
-        $query = $wpdb->prepare(
-            "DELETE FROM {$this->pagespeed_table } WHERE test_date < %s",
+     
+        $results = $wpdb->get_results($wpdb->prepare(
+            "DELETE FROM  %s WHERE test_date < %s",$this->pagespeed_table,
             $threshold_date
-        );
-
-        $results = $wpdb->get_results($query);
+        ););
 
         if ($result === false) {
             wp_send_json_error('Failed to delete old results');
