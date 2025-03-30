@@ -72,6 +72,7 @@ class Wpspeedtestpro_Loader {
             $this->actions = $this->add($this->actions, $hook, $component, $callback, $priority, $accepted_args);
             $this->registered_hooks[$hook_key] = true;
         } 
+	}
 	/**
 	 * Add a new filter to the collection to be registered with WordPress.
 	 *

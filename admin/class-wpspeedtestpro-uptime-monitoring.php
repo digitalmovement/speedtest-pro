@@ -163,7 +163,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         ));
     
         if (is_wp_error($response)) {
-            error_log("WPSpeedTestPro: WP Error in create_monitor: " . $response->get_error_message());
             return array('success' => false, 'message' => 'WordPress error: ' . $response->get_error_message());
         }
     
@@ -173,7 +172,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $data = json_decode($response_body, true);
     
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("WPSpeedTestPro: JSON decode error: " . json_last_error_msg());
             return array('success' => false, 'message' => 'JSON decode error: ' . json_last_error_msg());
         }
     
@@ -207,7 +205,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         ));
     
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in UptimeRobot API response: ' . $response->get_error_message());
             return false;
         }
     
@@ -216,7 +213,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $data = json_decode($response_body, true);
     
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log('WPSpeedTestPro: JSON decoding error: ' . json_last_error_msg());
             return false;
         }
     

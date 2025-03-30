@@ -625,9 +625,6 @@ class Wpspeedtestpro_Server_Performance {
                 }
             }, $results);
         } catch (Exception $e) {
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('WP Speedtest Pro Server Performance Error: ' . esc_html($e->getMessage()));
-            }
             return array();
         }
     }
