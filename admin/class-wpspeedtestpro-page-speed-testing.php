@@ -389,7 +389,7 @@ public function ajax_check_test_status() {
         if (false === $scheduled_test) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $scheduled_test = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
+                "SELECT * FROM " . $this->pagespeed_scheduled_table . " WHERE id = %d",
                 $schedule_id
             ));
             
@@ -542,7 +542,7 @@ public function ajax_check_test_status() {
         $response = wp_remote_get($request_url, $args);
 
         if (is_wp_error($response)) {
-            error_log('PageSpeed API Error: ' . $response->get_error_message());
+
             return [
                 'success' => false,
                 'error' => $response->get_error_message()
@@ -551,7 +551,7 @@ public function ajax_check_test_status() {
 
         $status_code = wp_remote_retrieve_response_code($response);
         if (($status_code !== 200) && ($status_code !== 400)) {
-            error_log('PageSpeed API HTTP Error: ' . $status_code);
+            
             return [
                 'success' => false,
                 'error' => 'HTTP Error: ' . $status_code
@@ -563,7 +563,7 @@ public function ajax_check_test_status() {
 
         if (!$data || isset($data['error'])) {
             $error_message = isset($data['error']['message']) ? $data['error']['message'] : 'Invalid API response';
-            error_log('PageSpeed API Response Error: ' . $error_message);
+
             return [
                 'success' => false,
                 'error' => $error_message
@@ -604,7 +604,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching    
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_table} WHERE id = %d",
+            "SELECT * FROM " . $this->pagespeed_table . " WHERE id = %d",
             $test_id
         ));
     
@@ -756,8 +756,7 @@ public function ajax_check_test_status() {
                         $audits['total-blocking-time']['numericValue'] : null
             ];
         } catch (Exception $e) {
-            error_log('Error parsing PageSpeed results: ' . $e->getMessage());
-            error_log('Raw data: ' . print_r($data, true));
+
             return null;
         }
     }
@@ -818,7 +817,7 @@ public function ajax_check_test_status() {
             if (false === $desktop) {
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $desktop = $wpdb->get_row($wpdb->prepare(
-                    "SELECT * FROM {$this->pagespeed_table} 
+                    "SELECT * FROM " . $this->pagespeed_table . " 
                     WHERE url = %s AND device = 'desktop' 
                     ORDER BY test_date DESC LIMIT 1",
                     $url
@@ -836,7 +835,7 @@ public function ajax_check_test_status() {
             if (false === $mobile) {
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $mobile = $wpdb->get_row($wpdb->prepare(
-                    "SELECT * FROM {$this->pagespeed_table} 
+                    "SELECT * FROM " . $this->pagespeed_table . " 
                     WHERE url = %s AND device = 'mobile' 
                     ORDER BY test_date DESC LIMIT 1",
                     $url
@@ -859,7 +858,7 @@ public function ajax_check_test_status() {
         if (false === $result) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $result = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table} 
+                "SELECT * FROM " . $this->pagespeed_table . " 
                 WHERE url = %s AND device = %s 
                 ORDER BY test_date DESC LIMIT 1",
                 $url,
@@ -1056,7 +1055,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
-            "SELECT * FROM {$this->pagespeed_scheduled_table} 
+            "SELECT * FROM " . $this->pagespeed_scheduled_table . " 
             ORDER BY next_run ASC"
         );
     
@@ -1119,13 +1118,13 @@ public function ajax_check_test_status() {
     
         // Get total count for pagination
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM {$this->pagespeed_table}");
+        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM " . $this->pagespeed_table);
     
         // Get results with pagination
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table}
+                "SELECT * FROM " . $this->pagespeed_table . "
                 ORDER BY test_date DESC
                 LIMIT %d OFFSET %d",
                 $per_page,
@@ -1250,7 +1249,7 @@ public function ajax_check_test_status() {
                 MIN(performance_score) as min_performance,
                 MAX(performance_score) as max_performance,
                 COUNT(*) as total_tests
-            FROM {$this->pagespeed_table}
+            FROM " . $this->pagespeed_table . "
             {$where}
         ");
     
@@ -1294,7 +1293,7 @@ public function ajax_check_test_status() {
             "SELECT 
                 DATE(test_date) as date,
                 AVG(%s) as value
-            FROM {$this->pagespeed_table}
+            FROM " . $this->pagespeed_table . "
             {$where_clause}
             GROUP BY DATE(test_date)
             ORDER BY date ASC",
@@ -1312,7 +1311,7 @@ public function ajax_check_test_status() {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $scheduled_tests = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_scheduled_table} 
+                "SELECT * FROM " . $this->pagespeed_scheduled_table . " 
                 WHERE next_run <= %s 
                 AND (last_run IS NULL OR last_run != %s)",
                 current_time('mysql'),
@@ -1362,11 +1361,7 @@ public function ajax_check_test_status() {
 
             } else {
                 // Log the error
-                error_log(sprintf(
-                    'PageSpeed scheduled test failed for URL: %s, Schedule ID: %d',
-                    $test->url,
-                    $test->id
-                ));
+             
             }
 
             // Add a small delay between tests to avoid API rate limits

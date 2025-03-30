@@ -150,37 +150,9 @@ class Wpspeedtestpro_Server_Information {
 
 class Wpspeedtestpro_Php_Info {
     
-    private function is_phpinfo_available() {
-        ob_start();
-        $exists = function_exists('phpinfo');
-        if ($exists) {
-            try {
-                phpinfo();
-                $output = ob_get_contents();
-                ob_end_clean();
-                return !empty($output);
-            } catch (Exception $e) {
-                ob_end_clean();
-                return false;
-            }
-        }
-        ob_end_clean();
-        return false;
-    }
 
     public function get_php_info() {
-        if ($this->is_phpinfo_available()) {
-            ob_start();
-            phpinfo();
-            $phpinfo = ob_get_clean();
-            
-            // Convert phpinfo HTML to be WordPress-friendly
-            $phpinfo = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $phpinfo);
-            $phpinfo = str_replace('<table>', '<table class="wp-list-table widefat fixed striped">', $phpinfo);
-            return $phpinfo;
-        } else {
             return $this->get_soft_php_info();
-        }
     }
 
     private function get_soft_php_info() {
