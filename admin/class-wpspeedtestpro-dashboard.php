@@ -282,6 +282,7 @@ class Wpspeedtestpro_Dashboard {
         $table_name = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
         
         // Get latest desktop result
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $desktop = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT * FROM `{$wpdb->prefix}wpspeedtestpro_pagespeed_results` 
@@ -292,7 +293,8 @@ class Wpspeedtestpro_Dashboard {
             )
         );
 
-        // Get latest mobile result
+            // Get latest mobile result
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $mobile = $wpdb->get_row(
             $wpdb->prepare(
                 "SELECT * FROM `{$wpdb->prefix}wpspeedtestpro_pagespeed_results` 

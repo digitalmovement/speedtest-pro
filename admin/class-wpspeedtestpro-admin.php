@@ -391,6 +391,7 @@ class Wpspeedtestpro_Sync_Handler {
 
     private function get_mysql_version() {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->get_var("SELECT VERSION()");
     }
 

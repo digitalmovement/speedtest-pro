@@ -413,6 +413,7 @@ public function ajax_check_test_status() {
         }
 
         // Update the last run time
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->update(
             $this->pagespeed_scheduled_table,
             array(
@@ -601,6 +602,7 @@ public function ajax_check_test_status() {
         }
     
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching    
         $result = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM {$this->pagespeed_table} WHERE id = %d",
             $test_id
@@ -877,6 +879,7 @@ public function ajax_check_test_status() {
         
         $next_run = $this->calculate_next_run($frequency);
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->insert(
             $this->pagespeed_scheduled_table,
             array(
@@ -1051,7 +1054,7 @@ public function ajax_check_test_status() {
         }
     
         global $wpdb;
-        
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
             "SELECT * FROM {$this->pagespeed_scheduled_table} 
             ORDER BY next_run ASC"
@@ -1118,6 +1121,7 @@ public function ajax_check_test_status() {
         $total_items = $wpdb->get_var("SELECT COUNT(*) FROM {$this->pagespeed_table}");
     
         // Get results with pagination
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM {$this->pagespeed_table}
@@ -1235,6 +1239,7 @@ public function ajax_check_test_status() {
     
         $where = $url ? $wpdb->prepare("WHERE url = %s", $url) : "";
     
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $stats = $wpdb->get_row("
             SELECT 
                 AVG(performance_score) as avg_performance,
@@ -1283,6 +1288,7 @@ public function ajax_check_test_status() {
     
         $where_clause = "WHERE " . implode(" AND ", $where);
     
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->get_results($wpdb->prepare(
             "SELECT 
                 DATE(test_date) as date,
@@ -1302,6 +1308,7 @@ public function ajax_check_test_status() {
         global $wpdb;
 
         // Get all tests that need to be run
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $scheduled_tests = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM {$this->pagespeed_scheduled_table} 
@@ -1340,6 +1347,7 @@ public function ajax_check_test_status() {
                 }
 
                 // Update last run and next run times
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $wpdb->update(
                     $this->pagespeed_scheduled_table,
                     array(
