@@ -71,10 +71,7 @@ class Wpspeedtestpro_Loader {
         if (!isset($this->registered_hooks[$hook_key])) {
             $this->actions = $this->add($this->actions, $hook, $component, $callback, $priority, $accepted_args);
             $this->registered_hooks[$hook_key] = true;
-        } else {
-            error_log("WPSpeedTestPro: Prevented duplicate action registration for hook: {$hook_key}");
-        }
-    }
+        } 
 	/**
 	 * Add a new filter to the collection to be registered with WordPress.
 	 *
@@ -92,9 +89,7 @@ class Wpspeedtestpro_Loader {
         if (!isset($this->registered_hooks[$hook_key])) {
             $this->filters = $this->add($this->filters, $hook, $component, $callback, $priority, $accepted_args);
             $this->registered_hooks[$hook_key] = true;
-        } else {
-            error_log("WPSpeedTestPro: Prevented duplicate filter registration for hook: {$hook_key}");
-        }
+        } 
     }
     private function get_hook_key($hook, $component, $callback, $priority) {
         return sprintf(

@@ -248,7 +248,7 @@ class Wpspeedtestpro_SSL_Testing {
 
         // Raw Data
         $output .= '<div id="tab-raw" class="ssl-tab">';
-        $output .= '<pre>' . esc_html(print_r($result, true)) . '</pre>';
+        $output .= '<pre>' . esc_html(wp_json_encode($result, JSON_PRETTY_PRINT)) . '</pre>';
         $output .= '</div>';
 
         $output .= '</div>'; // End tab content

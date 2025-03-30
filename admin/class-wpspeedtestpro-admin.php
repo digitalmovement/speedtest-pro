@@ -515,7 +515,6 @@ class Wpspeedtestpro_Sync_Handler {
             }
 
         } catch (Exception $e) {
-            error_log('WPSpeedTestPro Sync Error: ' . $e->getMessage());
         }
     }
 }

@@ -440,7 +440,7 @@ class Wpspeedtestpro_Settings {
             }
             return $gcp_endpoints;
         } catch (Exception $e) {
-            error_log('Error fetching GCP endpoints: ' . $e->getMessage());
+    
             // Return some default regions if API call fails
             return array(
                 array('region_name' => 'us-central1'),
@@ -460,7 +460,7 @@ class Wpspeedtestpro_Settings {
             }
             return wp_send_json_success($gcp_endpoints);
         } catch (Exception $e) {
-            error_log('Error fetching GCP endpoints: ' . $e->getMessage());
+    
             // Return some default regions if API call fails
             return wp_send_json_error(array(
                 array('region_name' => 'us-central1'),
@@ -479,7 +479,7 @@ class Wpspeedtestpro_Settings {
             }
             return $providers;
         } catch (Exception $e) {
-            error_log('Error fetching hosting providers: ' . $e->getMessage());
+ 
             // Return some default providers if API call fails
             return array(
                 array('name' => 'Provider A', 'packages' => array(array('type' => 'Basic'), array('type' => 'Pro'))),

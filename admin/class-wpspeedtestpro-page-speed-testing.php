@@ -1118,6 +1118,7 @@ public function ajax_check_test_status() {
         $offset = ($page - 1) * $per_page;
     
         // Get total count for pagination
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $total_items = $wpdb->get_var("SELECT COUNT(*) FROM {$this->pagespeed_table}");
     
         // Get results with pagination
