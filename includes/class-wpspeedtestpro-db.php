@@ -193,7 +193,7 @@ class Wpspeedtestpro_DB {
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
-            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A);
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
@@ -404,11 +404,11 @@ class Wpspeedtestpro_DB {
                 ARRAY_A
             );
 
-            // Get unsynced hosting benchmarking results using prepared statement
-            $hosting_results = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->hosting_benchmarking_table, 0),
-                ARRAY_A
-            );
+        // Get unsynced hosting benchmarking results using prepared statement
+        $hosting_results = $wpdb->get_results(
+            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->hosting_benchmarking_table, 0),
+            ARRAY_A
+        );
 
             // Get unsynced speedvitals results using prepared statement
             $pagespeed_results = $wpdb->get_results(
