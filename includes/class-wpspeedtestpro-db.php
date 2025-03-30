@@ -77,6 +77,7 @@ class Wpspeedtestpro_DB {
         global $wpdb;
 
         // Fetch the latest result for the same region
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery 
         $latest_result = $wpdb->get_row($wpdb->prepare(
             "SELECT latency FROM %s WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
             $this->hosting_benchmarking_table,
