@@ -299,9 +299,9 @@ public function ajax_check_test_status() {
         
         // Delete records older than the threshold
      
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results($wpdb->prepare(
-            "DELETE FROM  %s WHERE test_date < %s",$this->pagespeed_table,
+            "DELETE FROM {$this->pagespeed_table} WHERE test_date < %s",
             $threshold_date
         ));
 
@@ -343,7 +343,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $result = $wpdb->delete(
             $table_name,
             array('id' => $schedule_id),
@@ -387,7 +387,7 @@ public function ajax_check_test_status() {
         $scheduled_test = wp_cache_get($cache_key);
         
         if (false === $scheduled_test) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $scheduled_test = $wpdb->get_row($wpdb->prepare(
                 "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
                 $schedule_id
@@ -815,7 +815,7 @@ public function ajax_check_test_status() {
             $desktop = wp_cache_get($cache_key);
             
             if (false === $desktop) {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $desktop = $wpdb->get_row($wpdb->prepare(
                     "SELECT * FROM {$this->pagespeed_table} 
                     WHERE url = %s AND device = 'desktop' 
@@ -833,7 +833,7 @@ public function ajax_check_test_status() {
             $mobile = wp_cache_get($cache_key);
             
             if (false === $mobile) {
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $mobile = $wpdb->get_row($wpdb->prepare(
                     "SELECT * FROM {$this->pagespeed_table} 
                     WHERE url = %s AND device = 'mobile' 
@@ -856,7 +856,7 @@ public function ajax_check_test_status() {
         $result = wp_cache_get($cache_key);
         
         if (false === $result) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
             $result = $wpdb->get_row($wpdb->prepare(
                 "SELECT * FROM {$this->pagespeed_table} 
                 WHERE url = %s AND device = %s 
@@ -1053,9 +1053,9 @@ public function ajax_check_test_status() {
         }
     
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results(
-            "SELECT * FROM " . $this->pagespeed_scheduled_table . " 
+            "SELECT * FROM {$this->pagespeed_scheduled_table} 
             ORDER BY next_run ASC"
         );
     
@@ -1124,7 +1124,7 @@ public function ajax_check_test_status() {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM " . $this->pagespeed_table . "
+                "SELECT * FROM {$this->pagespeed_table}
                 ORDER BY test_date DESC
                 LIMIT %d OFFSET %d",
                 $per_page,
@@ -1239,7 +1239,7 @@ public function ajax_check_test_status() {
     
         $where = $url ? $wpdb->prepare("WHERE url = %s", $url) : "";
     
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $stats = $wpdb->get_row("
             SELECT 
                 AVG(performance_score) as avg_performance,
@@ -1249,7 +1249,7 @@ public function ajax_check_test_status() {
                 MIN(performance_score) as min_performance,
                 MAX(performance_score) as max_performance,
                 COUNT(*) as total_tests
-            FROM " . $this->pagespeed_table . "
+            FROM {$this->pagespeed_table}
             {$where}
         ");
     
@@ -1288,12 +1288,12 @@ public function ajax_check_test_status() {
     
         $where_clause = "WHERE " . implode(" AND ", $where);
     
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->get_results($wpdb->prepare(
             "SELECT 
                 DATE(test_date) as date,
                 AVG(%s) as value
-            FROM " . $this->pagespeed_table . "
+            FROM {$this->pagespeed_table}
             {$where_clause}
             GROUP BY DATE(test_date)
             ORDER BY date ASC",
@@ -1308,10 +1308,10 @@ public function ajax_check_test_status() {
         global $wpdb;
 
         // Get all tests that need to be run
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $scheduled_tests = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM " . $this->pagespeed_scheduled_table . " 
+                "SELECT * FROM {$this->pagespeed_scheduled_table} 
                 WHERE next_run <= %s 
                 AND (last_run IS NULL OR last_run != %s)",
                 current_time('mysql'),
@@ -1347,7 +1347,7 @@ public function ajax_check_test_status() {
                 }
 
                 // Update last run and next run times
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $wpdb->update(
                     $this->pagespeed_scheduled_table,
                     array(
