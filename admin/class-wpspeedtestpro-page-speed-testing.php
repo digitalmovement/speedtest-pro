@@ -1059,7 +1059,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Get the page number and results per page
-        $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])b) : 1;
+        $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
         $per_page = isset($_POST['per_page']) ? absint($_POST['per_page']) : 20;
         $offset = ($page - 1) * $per_page;
     
