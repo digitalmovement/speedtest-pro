@@ -19,6 +19,12 @@
  * @subpackage Wpspeedtestpro/admin
  * @author     WP Speedtest Pro Team <support@wpspeedtestpro.com>
  */
+
+ function wpspeedtestpro_sanitize_options($options) {
+    return Wpspeedtestpro_Settings::sanitize_settings($options);
+}
+
+
 class Wpspeedtestpro_Settings {
 
     /**
@@ -139,11 +145,12 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_options',
             array(
                 'type' => 'array',
-                'sanitize_callback' => array('Wpspeedtestpro_Settings', 'sanitize_settings'),
+                'sanitize_callback' => 'wpspeedtestpro_sanitize_options',
                 'default' => array()
             )
         );
 
+        
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_selected_region',
