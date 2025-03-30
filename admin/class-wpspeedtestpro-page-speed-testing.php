@@ -301,7 +301,8 @@ public function ajax_check_test_status() {
      
         // phpcs:ignore 
         $results = $wpdb->get_results($wpdb->prepare(
-            "DELETE FROM {$this->pagespeed_table} WHERE test_date < %s",
+            "DELETE FROM %i WHERE test_date < %s",
+            $this->pagespeed_table,
             $threshold_date
         ));
 

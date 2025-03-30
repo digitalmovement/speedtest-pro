@@ -2,7 +2,7 @@
 Contributors: wpspeedtestproteam
 Donate link: https://wpspeedtestpro.com/
 Tags: performance, speed test, benchmark, server performance
-Requires at least: 5.0
+Requires at least: 6.2
 Tested up to: 6.7
 Stable tag: 1.1.1
 License: GPLv2 or later
