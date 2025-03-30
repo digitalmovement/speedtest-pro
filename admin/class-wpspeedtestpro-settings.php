@@ -139,7 +139,7 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_options',
             array(
                 'type' => 'array',
-                'sanitize_callback' => array(__CLASS__, 'sanitize_settings'), 
+                'sanitize_callback' => array('Wpspeedtestpro_Settings::sanitize_settings'), 
                 'default' => array()
             )
         );
