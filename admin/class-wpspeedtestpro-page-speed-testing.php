@@ -389,7 +389,7 @@ public function ajax_check_test_status() {
         if (false === $scheduled_test) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $scheduled_test = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM " . $this->pagespeed_scheduled_table . " WHERE id = %d",
+                "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
                 $schedule_id
             ));
             
