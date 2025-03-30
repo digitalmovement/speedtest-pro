@@ -457,9 +457,17 @@ class Wpspeedtestpro_DB {
         
         if (empty($table)) return;
         
-        // Use placeholders for each ID and prepare the query properly
-        $placeholders = implode(',', array_fill(0, count($ids), '%d'));
-        $wpdb->query($wpdb->prepare("UPDATE {$table} SET synced = 1 WHERE id IN ($placeholders)", $ids)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // Update each ID individually to avoid interpolation issues
+        foreach ($ids as $id) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->update(
+                $table,
+                ['synced' => 1],
+                ['id' => $id],
+                ['%d'],
+                ['%d']
+            );
+        }
         
         // Invalidate the unsynced data cache
         wp_cache_delete('wpspeedtestpro_unsynced_data');
