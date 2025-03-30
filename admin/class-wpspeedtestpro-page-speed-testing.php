@@ -1258,8 +1258,8 @@ public function ajax_check_test_status() {
                 MAX(performance_score) as max_performance,
                 COUNT(*) as total_tests
             FROM %i
-            {$where}
-        ", $this->pagespeed_table);
+            %i
+        ", $this->pagespeed_table, $where);
     
         if ($stats) {
             return [
@@ -1321,9 +1321,10 @@ public function ajax_check_test_status() {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $scheduled_tests = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_scheduled_table} 
+                "SELECT * FROM %i 
                 WHERE next_run <= %s 
                 AND (last_run IS NULL OR last_run != %s)",
+                $this->pagespeed_scheduled_table,
                 current_time('mysql'),
                 current_time('mysql', 'DATE')
             )
