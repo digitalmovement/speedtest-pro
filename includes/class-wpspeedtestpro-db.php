@@ -97,6 +97,17 @@ class Wpspeedtestpro_DB {
                 'latency_difference' => $latency_difference
             )
         );
+
+        // Invalidate related caches
+        wp_cache_delete('wpspeedtestpro_latest_results');
+        wp_cache_delete('wpspeedtestpro_latest_results_by_region');
+        wp_cache_delete('wpspeedtestpro_fastest_and_slowest_results');
+        
+        // For time range caches, you might want to delete all possible time ranges
+        $time_ranges = ['24_hours', '7_days', '90_days'];
+        foreach ($time_ranges as $range) {
+            wp_cache_delete('wpspeedtestpro_results_' . $range);
+        }
     }
 
     public function insert_benchmark_result($results) {
@@ -126,38 +137,95 @@ class Wpspeedtestpro_DB {
                 'location' => $results['speed_test']['location']
             )
         );
+
+        // Invalidate related caches
+        wp_cache_delete('wpspeedtestpro_latest_benchmark_results');
+        
+        // Delete all possible benchmark results caches with different limits
+        for ($i = 1; $i <= 100; $i++) {
+            wp_cache_delete('wpspeedtestpro_benchmark_results_' . $i);
+        }
+        
+        // For time range caches
+        $time_ranges = ['24_hours', '7_days', '90_days'];
+        foreach ($time_ranges as $range) {
+            wp_cache_delete('wpspeedtestpro_benchmark_results_' . $range);
+        }
     }
 
     public function get_latest_results() {
         global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_time DESC LIMIT %d", $this->hosting_benchmarking_table, 10), ARRAY_A);
+        
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_latest_results';
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_time DESC LIMIT %d", $this->hosting_benchmarking_table, 10), ARRAY_A);
+            // Cache the results for 1 hour (3600 seconds)
+            wp_cache_set($cache_key, $results, '', 3600);
+        }
+        
+        return $results;
     }
 
     public function get_latest_benchmark_results() {
         global $wpdb;
-        return $wpdb->get_row($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, 1), ARRAY_A);
+        
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_latest_benchmark_results';
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            $results = $wpdb->get_row($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, 1), ARRAY_A);
+            // Cache the results for 1 hour
+            wp_cache_set($cache_key, $results, '', 3600);
+        }
+        
+        return $results;
     }
 
     public function get_benchmark_results($limit = 30) {
         global $wpdb;
-        return $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A);
+        
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_benchmark_results_' . $limit;
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A);
+            // Cache the results for 1 hour
+            wp_cache_set($cache_key, $results, '', 3600);
+        }
+        
+        return $results;
     }
 
     public function get_latest_results_by_region() {
         global $wpdb;
         
-        $query = "
-            SELECT r1.*
-            FROM {$this->hosting_benchmarking_table} r1
-            INNER JOIN (
-                SELECT region_name, MAX(test_time) as max_time
-                FROM {$this->hosting_benchmarking_table}
-                GROUP BY region_name
-            ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
-            ORDER BY r1.region_name
-        ";
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_latest_results_by_region';
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            $query = "
+                SELECT r1.*
+                FROM {$this->hosting_benchmarking_table} r1
+                INNER JOIN (
+                    SELECT region_name, MAX(test_time) as max_time
+                    FROM {$this->hosting_benchmarking_table}
+                    GROUP BY region_name
+                ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
+                ORDER BY r1.region_name
+            ";
 
-        return $wpdb->get_results($wpdb->prepare("%s", $query));
+            $results = $wpdb->get_results($wpdb->prepare("%s", $query));
+            // Cache the results for 1 hour
+            wp_cache_set($cache_key, $results, '', 3600);
+        }
+        
+        return $results;
     }
 
     public function delete_all_results() {
@@ -165,6 +233,8 @@ class Wpspeedtestpro_DB {
         $wpdb->query($wpdb->prepare("TRUNCATE TABLE %s", $this->hosting_benchmarking_table));
         $wpdb->query($wpdb->prepare("TRUNCATE TABLE %s", $this->benchmark_results_table));
         
+        // Clear all caches
+        wp_cache_flush();
     }
 
     public function purge_old_results() {
@@ -176,70 +246,91 @@ class Wpspeedtestpro_DB {
 
     public function get_fastest_and_slowest_results() {
         global $wpdb;
-    
-        $query = "
-            SELECT region_name,
-                   MIN(latency) AS fastest_latency,
-                   MAX(latency) AS slowest_latency
-            FROM {$this->hosting_benchmarking_table}
-            GROUP BY region_name
-        ";
-    
-       // Add appropriate parameters
-        $results = $wpdb->get_results($wpdb->prepare("%s", $query));
+
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_fastest_and_slowest_results';
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            $query = "
+                SELECT region_name,
+                       MIN(latency) AS fastest_latency,
+                       MAX(latency) AS slowest_latency
+                FROM {$this->hosting_benchmarking_table}
+                GROUP BY region_name
+            ";
+        
+            $results = $wpdb->get_results($wpdb->prepare("%s", $query));
+            // Cache the results for 1 hour
+            wp_cache_set($cache_key, $results, '', 3600);
+        }
+        
         return $results;
     }
 
     public function get_results_by_time_range($time_range) {
         global $wpdb;
         
-        // Validate time range using a whitelist approach
-        $valid_intervals = [
-            '24_hours' => 1,
-            '7_days' => 7,
-            '90_days' => 90,
-        ];
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_results_' . $time_range;
+        $results = wp_cache_get($cache_key);
         
-        // Default to 24 hours if not a valid selection
-        $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
+        if (false === $results) {
+            // Validate time range using a whitelist approach
+            $valid_intervals = [
+                '24_hours' => 1,
+                '7_days' => 7,
+                '90_days' => 90,
+            ];
+            
+            // Default to 24 hours if not a valid selection
+            $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
+            
+            $results = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM %s WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
+                    $this->hosting_benchmarking_table,
+                    $interval_number
+                )
+            );
+            
+            // Cache the results for 30 minutes (1800 seconds)
+            wp_cache_set($cache_key, $results, '', 1800);
+        }
         
-        
-        // Use CAST to ensure numeric value without quotes
-
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM %s WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
-                $this->hosting_benchmarking_table,
-                $interval_number
-            )
-        );
-    
         return $results;
     }
 
     public function get_benchmark_results_by_time_range($time_range) {
         global $wpdb;
         
-        // Determine the time range - validate input
-        $valid_intervals = [
-            '24_hours' => 1,
-            '7_days' => 7,
-            '90_days' => 90,
-        ];
+        // Try to get from cache first
+        $cache_key = 'wpspeedtestpro_benchmark_results_' . $time_range;
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            // Determine the time range - validate input
+            $valid_intervals = [
+                '24_hours' => 1,
+                '7_days' => 7,
+                '90_days' => 90,
+            ];
 
-        $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
-   
-
-        $results = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM %s  WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
-                $this->benchmark_results_table,
-                $interval_number
-            )
-        );
-    
+            $interval_number = isset($valid_intervals[$time_range]) ? $valid_intervals[$time_range] : 1;
+       
+            $results = $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM %s WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
+                    $this->benchmark_results_table,
+                    $interval_number
+                )
+            );
+            
+            // Cache the results for 30 minutes
+            wp_cache_set($cache_key, $results, '', 1800);
+        }
+        
         return $results;
-
     }
 
     public function get_new_benchmark_results($last_id = 0) {
@@ -302,29 +393,40 @@ class Wpspeedtestpro_DB {
     public function get_unsynced_data() {
         global $wpdb;
         
-        // Get unsynced benchmark results using prepared statement
-        $benchmark_results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->benchmark_results_table, 0),
-            ARRAY_A
-        );
+        // This data changes frequently, so use a shorter cache time (5 minutes)
+        $cache_key = 'wpspeedtestpro_unsynced_data';
+        $results = wp_cache_get($cache_key);
+        
+        if (false === $results) {
+            // Get unsynced benchmark results using prepared statement
+            $benchmark_results = $wpdb->get_results(
+                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->benchmark_results_table, 0),
+                ARRAY_A
+            );
 
-        // Get unsynced hosting benchmarking results using prepared statement
-        $hosting_results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->hosting_benchmarking_table, 0),
-            ARRAY_A
-        );
+            // Get unsynced hosting benchmarking results using prepared statement
+            $hosting_results = $wpdb->get_results(
+                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->hosting_benchmarking_table, 0),
+                ARRAY_A
+            );
 
-        // Get unsynced speedvitals results using prepared statement
-        $pagespeed_results = $wpdb->get_results(
-            $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->pagespeed_table, 0),
-            ARRAY_A
-        );
+            // Get unsynced speedvitals results using prepared statement
+            $pagespeed_results = $wpdb->get_results(
+                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->pagespeed_table, 0),
+                ARRAY_A
+            );
 
-        return [
-            'benchmark_results' => $benchmark_results,
-            'hosting_results' => $hosting_results,
-            'pagespeed_results' => $pagespeed_results
-        ];
+            $results = [
+                'benchmark_results' => $benchmark_results,
+                'hosting_results' => $hosting_results,
+                'pagespeed_results' => $pagespeed_results
+            ];
+            
+            // Cache for a shorter time since this data changes frequently
+            wp_cache_set($cache_key, $results, '', 300);
+        }
+        
+        return $results;
     }
 
     // Method to mark records as synced
@@ -351,6 +453,9 @@ class Wpspeedtestpro_DB {
         // Use placeholders for each ID and prepare the query properly
         $placeholders = implode(',', array_fill(0, count($ids), '%d'));
         $wpdb->query($wpdb->prepare("UPDATE {$table} SET synced = 1 WHERE id IN ($placeholders)", $ids));
+        
+        // Invalidate the unsynced data cache
+        wp_cache_delete('wpspeedtestpro_unsynced_data');
     }
 
 

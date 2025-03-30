@@ -285,7 +285,7 @@ public function ajax_check_test_status() {
             return;
         }
 
-        $days = isset($_POST['days']) ? intval($_POST['days']) : 30;
+        $days = isset($_POST['days']) ? intval(wp_unslash($_POST['days'])) : 30;
 
         if ($days < 1) {
             wp_send_json_error('Invalid number of days');
@@ -332,7 +332,7 @@ public function ajax_check_test_status() {
             return;
         }
 
-        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+        $schedule_id = isset($_POST['schedule_id']) ? intval(wp_unslash($_POST['schedule_id'])) : 0;
 
         if (!$schedule_id) {
             wp_send_json_error('Invalid schedule ID');
@@ -371,7 +371,7 @@ public function ajax_check_test_status() {
             return;
         }
 
-        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+        $schedule_id = isset($_POST['schedule_id']) ? intval(wp_unslash($_POST['schedule_id'])) : 0;
 
         if (!$schedule_id) {
             wp_send_json_error('Invalid schedule ID');
@@ -438,7 +438,7 @@ public function ajax_check_test_status() {
             return;
         }
     
-        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+        $schedule_id = isset($_POST['schedule_id']) ? intval(wp_unslash($_POST['schedule_id'])) : 0;
     
         if (!$schedule_id) {
             wp_send_json_error('Invalid schedule ID');
@@ -1059,7 +1059,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Get the page number and results per page
-        $page = isset($_POST['page']) ? absint($_POST['page']) : 1;
+        $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])b) : 1;
         $per_page = isset($_POST['per_page']) ? absint($_POST['per_page']) : 20;
         $offset = ($page - 1) * $per_page;
     

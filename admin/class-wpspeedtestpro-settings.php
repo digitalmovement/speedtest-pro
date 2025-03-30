@@ -184,7 +184,6 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_user_country',
             'sanitize_text_field'
-        )
         );
 
         // Add settings section
