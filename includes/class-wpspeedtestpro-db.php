@@ -193,8 +193,9 @@ class Wpspeedtestpro_DB {
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A);
             // Cache the results for 1 hour
-            wp_cache_set($cache_key,$wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A), '', 3600);
+            wp_cache_set($cache_key, $results, '', 3600);
         }
         
         return $results;
