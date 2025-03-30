@@ -263,7 +263,7 @@ class Wpspeedtestpro_Settings {
         
     }
 
-    public function sanitize_settings($input) {
+    public static function sanitize_settings($input) {
         $sanitized_input = array();
         
         $errors = array();
