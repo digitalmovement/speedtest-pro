@@ -299,7 +299,7 @@ public function ajax_check_test_status() {
         
         // Delete records older than the threshold
      
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore 
         $results = $wpdb->get_results($wpdb->prepare(
             "DELETE FROM {$this->pagespeed_table} WHERE test_date < %s",
             $threshold_date
@@ -413,7 +413,7 @@ public function ajax_check_test_status() {
         }
 
         // Update the last run time
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $wpdb->update(
             $this->pagespeed_scheduled_table,
             array(
@@ -1117,11 +1117,11 @@ public function ajax_check_test_status() {
         $offset = ($page - 1) * $per_page;
     
         // Get total count for pagination
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM " . $this->pagespeed_table);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM {$this->pagespeed_table}");
     
         // Get results with pagination
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared  
         $results = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM {$this->pagespeed_table}
