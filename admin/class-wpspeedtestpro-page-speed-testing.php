@@ -604,7 +604,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching    
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM " . $this->pagespeed_table . " WHERE id = %d",
+            "SELECT * FROM {$this->pagespeed_table} WHERE id = %d",
             $test_id
         ));
     
@@ -817,7 +817,7 @@ public function ajax_check_test_status() {
             if (false === $desktop) {
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $desktop = $wpdb->get_row($wpdb->prepare(
-                    "SELECT * FROM " . $this->pagespeed_table . " 
+                    "SELECT * FROM {$this->pagespeed_table} 
                     WHERE url = %s AND device = 'desktop' 
                     ORDER BY test_date DESC LIMIT 1",
                     $url
@@ -835,7 +835,7 @@ public function ajax_check_test_status() {
             if (false === $mobile) {
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $mobile = $wpdb->get_row($wpdb->prepare(
-                    "SELECT * FROM " . $this->pagespeed_table . " 
+                    "SELECT * FROM {$this->pagespeed_table} 
                     WHERE url = %s AND device = 'mobile' 
                     ORDER BY test_date DESC LIMIT 1",
                     $url
@@ -858,7 +858,7 @@ public function ajax_check_test_status() {
         if (false === $result) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $result = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM " . $this->pagespeed_table . " 
+                "SELECT * FROM {$this->pagespeed_table} 
                 WHERE url = %s AND device = %s 
                 ORDER BY test_date DESC LIMIT 1",
                 $url,
