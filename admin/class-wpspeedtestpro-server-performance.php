@@ -357,6 +357,7 @@ class Wpspeedtestpro_Server_Performance {
         $time_start = microtime(true);
         global $wpdb;
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->query($wpdb->prepare("SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))", 1000000, 'WPSpeedTestPro', 'benchmark', 512));
         
         return $this->timer_delta($time_start);
@@ -371,13 +372,17 @@ class Wpspeedtestpro_Server_Performance {
         $dummytext = str_repeat('Lorem ipsum dolor sit amet ', 100);
 
         for ($x = 0; $x < $count; $x++) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->insert($table, array('option_name' => $optionname . $x, 'option_value' => $dummytext));
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $result = $wpdb->get_var($wpdb->prepare(
                 "SELECT option_value FROM %s WHERE option_name = %s",
                 $table,
                 $optionname . $x
             ));
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->update($table, array('option_value' => 'updated_' . $dummytext), array('option_name' => $optionname . $x));
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->delete($table, array('option_name' => $optionname . $x));
         }
 

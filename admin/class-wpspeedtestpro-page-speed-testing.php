@@ -299,6 +299,7 @@ public function ajax_check_test_status() {
         
         // Delete records older than the threshold
      
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $results = $wpdb->get_results($wpdb->prepare(
             "DELETE FROM  %s WHERE test_date < %s",$this->pagespeed_table,
             $threshold_date
@@ -342,6 +343,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $result = $wpdb->delete(
             $table_name,
             array('id' => $schedule_id),
@@ -381,10 +383,20 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Get the scheduled test details
-        $scheduled_test = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
-            $schedule_id
-        ));
+        $cache_key = 'wpspeedtestpro_scheduled_test_' . $schedule_id;
+        $scheduled_test = wp_cache_get($cache_key);
+        
+        if (false === $scheduled_test) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $scheduled_test = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
+                $schedule_id
+            ));
+            
+            if ($scheduled_test) {
+                wp_cache_set($cache_key, $scheduled_test, '', 3600);
+            }
+        }
 
         if (!$scheduled_test) {
             wp_send_json_error('Scheduled test not found');
@@ -781,7 +793,14 @@ public function ajax_check_test_status() {
             $sanitized_results
         );
 
-        return $wpdb->insert($this->pagespeed_table, $data);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $result = $wpdb->insert($this->pagespeed_table, $data);
+        
+        // Clear any cached results for this URL
+        wp_cache_delete('wpspeedtestpro_pagespeed_' . md5($data['url'] . '_desktop'), '');
+        wp_cache_delete('wpspeedtestpro_pagespeed_' . md5($data['url'] . '_mobile'), '');
+        
+        return $result;
     }
 
     public function get_latest_result($url, $device = 'both') {
@@ -791,20 +810,40 @@ public function ajax_check_test_status() {
             $results = array();
             
             // Get desktop result
-            $desktop = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table} 
-                WHERE url = %s AND device = 'desktop' 
-                ORDER BY test_date DESC LIMIT 1",
-                $url
-            ));
+            $cache_key = 'wpspeedtestpro_pagespeed_' . md5($url . '_desktop');
+            $desktop = wp_cache_get($cache_key);
+            
+            if (false === $desktop) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $desktop = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM {$this->pagespeed_table} 
+                    WHERE url = %s AND device = 'desktop' 
+                    ORDER BY test_date DESC LIMIT 1",
+                    $url
+                ));
+                
+                if ($desktop) {
+                    wp_cache_set($cache_key, $desktop, '', 3600); // Cache for 1 hour
+                }
+            }
 
             // Get mobile result
-            $mobile = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table} 
-                WHERE url = %s AND device = 'mobile' 
-                ORDER BY test_date DESC LIMIT 1",
-                $url
-            ));
+            $cache_key = 'wpspeedtestpro_pagespeed_' . md5($url . '_mobile');
+            $mobile = wp_cache_get($cache_key);
+            
+            if (false === $mobile) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $mobile = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM {$this->pagespeed_table} 
+                    WHERE url = %s AND device = 'mobile' 
+                    ORDER BY test_date DESC LIMIT 1",
+                    $url
+                ));
+                
+                if ($mobile) {
+                    wp_cache_set($cache_key, $mobile, '', 3600); // Cache for 1 hour
+                }
+            }
 
             return array(
                 'desktop' => $desktop,
@@ -812,13 +851,25 @@ public function ajax_check_test_status() {
             );
         }
 
-        return $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_table} 
-            WHERE url = %s AND device = %s 
-            ORDER BY test_date DESC LIMIT 1",
-            $url,
-            $device
-        ));
+        $cache_key = 'wpspeedtestpro_pagespeed_' . md5($url . '_' . $device);
+        $result = wp_cache_get($cache_key);
+        
+        if (false === $result) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $result = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$this->pagespeed_table} 
+                WHERE url = %s AND device = %s 
+                ORDER BY test_date DESC LIMIT 1",
+                $url,
+                $device
+            ));
+            
+            if ($result) {
+                wp_cache_set($cache_key, $result, '', 3600); // Cache for 1 hour
+            }
+        }
+        
+        return $result;
     }
 
     public function schedule_test($url, $frequency) {
