@@ -654,7 +654,7 @@ public function ajax_check_test_status() {
             $text = preg_replace('/\s+/', ' ', $text);
             
             // Trim and sanitize
-            return sanitize_text_field(trim($text));
+            return (trim($text));
         };
     
         // Clean up audits with proper sanitization
