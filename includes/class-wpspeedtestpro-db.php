@@ -79,7 +79,7 @@ class Wpspeedtestpro_DB {
         // Fetch the latest result for the same region
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $latest_result = $wpdb->get_row($wpdb->prepare(
-            "SELECT latency FROM %s WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
+            "SELECT latency FROM %i WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
             $this->hosting_benchmarking_table,
             $region_name
         )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -164,7 +164,7 @@ class Wpspeedtestpro_DB {
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
-            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_time DESC LIMIT %d", $this->hosting_benchmarking_table, 10), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i ORDER BY test_time DESC LIMIT %d", $this->hosting_benchmarking_table, 10), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour (3600 seconds)
             wp_cache_set($cache_key, $results, '', 3600);
         }
@@ -180,7 +180,7 @@ class Wpspeedtestpro_DB {
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
-            $results = $wpdb->get_row($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, 1), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, 1), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
@@ -196,7 +196,7 @@ class Wpspeedtestpro_DB {
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
-            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %s ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i ORDER BY test_date DESC LIMIT %d", $this->benchmark_results_table, $limit), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
@@ -243,8 +243,8 @@ class Wpspeedtestpro_DB {
     public function purge_old_results() {
         global $wpdb;
         $one_week_ago = gmdate('Y-m-d H:i:s', strtotime('-1 week'));
-        $wpdb->query($wpdb->prepare("DELETE FROM %s WHERE test_time < %s", $this->hosting_benchmarking_table, $one_week_ago)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->query($wpdb->prepare("DELETE FROM %s WHERE test_date < %s", $this->benchmark_results_table, $one_week_ago)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("DELETE FROM %i WHERE test_time < %s", $this->hosting_benchmarking_table, $one_week_ago)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("DELETE FROM %i WHERE test_date < %s", $this->benchmark_results_table, $one_week_ago)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
     public function get_fastest_and_slowest_results() {
@@ -291,7 +291,7 @@ class Wpspeedtestpro_DB {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $results = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SELECT * FROM %s WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
+                    "SELECT * FROM %i WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
                     $this->hosting_benchmarking_table,
                     $interval_number
                 )
@@ -323,7 +323,7 @@ class Wpspeedtestpro_DB {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $results = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SELECT * FROM %s WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
+                    "SELECT * FROM %i WHERE test_date >= DATE_SUB(NOW(), INTERVAL CAST(%d AS UNSIGNED) DAY) ORDER BY test_date ASC",
                     $this->benchmark_results_table,
                     $interval_number
                 )
@@ -341,7 +341,7 @@ class Wpspeedtestpro_DB {
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM %s WHERE id > %d ORDER BY id ASC",
+                "SELECT * FROM %i WHERE id > %d ORDER BY id ASC",
                 $this->benchmark_results_table,
                 $last_id
             ),
@@ -405,21 +405,21 @@ class Wpspeedtestpro_DB {
             // Get unsynced benchmark results using prepared statement
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $benchmark_results = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->benchmark_results_table, 0),
+                $wpdb->prepare("SELECT * FROM %i WHERE synced = %d", $this->benchmark_results_table, 0),
                 ARRAY_A
             ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
             // Get unsynced hosting benchmarking results using prepared statement
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $hosting_results = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->hosting_benchmarking_table, 0),
+                $wpdb->prepare("SELECT * FROM %i WHERE synced = %d", $this->hosting_benchmarking_table, 0),
                 ARRAY_A
             ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
             // Get unsynced speedvitals results using prepared statement
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $pagespeed_results = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM %s WHERE synced = %d", $this->pagespeed_table, 0),
+                $wpdb->prepare("SELECT * FROM %i WHERE synced = %d", $this->pagespeed_table, 0),
                 ARRAY_A
             ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
