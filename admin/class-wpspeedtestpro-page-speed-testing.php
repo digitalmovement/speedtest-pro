@@ -648,7 +648,7 @@ public function ajax_check_test_status() {
             $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             
             // Strip any remaining HTML tags
-            $text = wp_strip_all_tags($text);
+            $text = ($text);
             
             // Remove extra whitespace
             $text = preg_replace('/\s+/', ' ', $text);
