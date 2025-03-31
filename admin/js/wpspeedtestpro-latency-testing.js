@@ -7,10 +7,10 @@ jQuery(document).ready(function($) {
     const $status = $('#test-status');
 
     const regionGroups = {
-        'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris'],
+        'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris', 'Stockholm'],
         'US': ['Montréal', 'Toronto', 'Iowa', 'South Carolina', 'North Virginia', 'Columbus', 'Dallas', 'Oregon', 'Los Angeles', 'Salt Lake City', 'Las Vegas'],
         'Asia': ['Taiwan', 'Hong Kong', 'Tokyo', 'Osaka', 'Seoul', 'Mumbai', 'Delhi', 'Singapore', 'Jakarta'],
-        'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
+        'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv', 'México']
     };
 
     
@@ -40,12 +40,14 @@ jQuery(document).ready(function($) {
         'Frankfurt': 'de',
         'London': 'gb',
         'Turin': 'it',
+        'México': 'mx',
         'Milan': 'it',
         'Tel Aviv': 'il',
         'Montréal': 'ca',
         'Toronto': 'ca',
         'São Paulo': 'br',
         'Santiago': 'cl',
+        'Stockholm': 'se',
         'Columbus': 'us',
         'North Virginia': 'us',
         'South Carolina': 'us',
