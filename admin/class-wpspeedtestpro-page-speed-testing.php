@@ -1517,7 +1517,7 @@ public function ajax_check_test_status() {
                     $mobile_score = $results['mobile']->performance_score;
                     $mobile_class = $this->get_score_class($mobile_score);
                     echo '<div class="pagespeed-device">';
-                    echo esc_html($this->render_indicator($mobile_class, $mobile_score, false, 'mobile'));
+                    echo wp_kses_post($this->render_indicator($mobile_class, $mobile_score, false, 'mobile'));
                     echo '</div>';
                 }
             }
