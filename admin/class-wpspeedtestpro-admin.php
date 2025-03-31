@@ -125,14 +125,6 @@ class Wpspeedtestpro_Admin {
                if ($screen && strpos($screen->id, $this->plugin_name) !== 0) {
                 wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
                 wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css', array(), $this->version, 'all');
-
-
-                   wp_enqueue_style(
-                       $this->plugin_name . '-dashboard',
-                       plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-dashboard.css',
-                       array(),
-                       $this->version
-                   );
                }
 
     }
