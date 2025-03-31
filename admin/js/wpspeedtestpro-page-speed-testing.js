@@ -660,7 +660,7 @@ jQuery(document).ready(function($) {
     
     // Helper function to safely escape HTML
     function escapeHtml(str) {
-        if (str === null || str === undefined) return '';
+        if (typeof str !== 'string') return '';
         
         // Regular expression to find anchor tags
         const anchorRegex = /<a\s+(?:[^>]*?\s+)?href=("|')(.*?)\1(?:\s+(?:[^>]*?\s+)?.*?)?>(.*?)<\/a>/gi;
@@ -690,6 +690,7 @@ jQuery(document).ready(function($) {
         return escapedHtml;
     }
     
+
     
     // Event handlers for scheduled test actions
     $(document).on('click', '.cancel-schedule', function(e) {
