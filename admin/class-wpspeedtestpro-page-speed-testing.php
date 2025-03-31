@@ -1508,7 +1508,7 @@ public function ajax_check_test_status() {
                     $desktop_score = $results['desktop']->performance_score;
                     $desktop_class = $this->get_score_class($desktop_score);
                     echo '<div class="pagespeed-device">';
-                    echo esc_html($this->render_indicator($desktop_class, $desktop_score, false, 'desktop'));
+                    echo wp_kses_post($this->render_indicator($desktop_class, $desktop_score, false, 'desktop'));
                     echo '</div>';  
                 }
     

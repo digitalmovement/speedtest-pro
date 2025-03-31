@@ -140,7 +140,7 @@
                 <?php
         
                 $php_info = new Wpspeedtestpro_Php_Info();
-                echo esc_html($php_info->get_php_info());
+                echo wp_kses_post($php_info->get_php_info());
                 ?>
             </div>
         </div>
