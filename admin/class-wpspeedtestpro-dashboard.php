@@ -80,7 +80,6 @@ class Wpspeedtestpro_Dashboard {
             $screen = get_current_screen();
             return $screen && $screen->id === 'toplevel_page_wpspeedtestpro';    
         }
-        print_r($screen);
     }
 
 
