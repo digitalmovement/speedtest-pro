@@ -259,7 +259,7 @@ class Wpspeedtestpro_DB {
                 SELECT region_name,
                        MIN(latency) AS fastest_latency,
                        MAX(latency) AS slowest_latency
-                FROM {$this->hosting_benchmarking_table}
+                FROM nml_wpspeedtestpro_hosting_benchmarking_results 
                 GROUP BY region_name
             ";
         
