@@ -1501,7 +1501,7 @@ public function ajax_check_test_status() {
             echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '" data-status="' . esc_attr($post_status) . '">';
             
             if (empty($results['desktop']) && empty($results['mobile'])) {
-                echo esc_html($this->render_indicator('no-test', 'No test', true));
+                echo wp_kses_post($this->render_indicator('no-test', 'No test', true));
             } else {
                 // Display Desktop Score
                 if (!empty($results['desktop'])) {
