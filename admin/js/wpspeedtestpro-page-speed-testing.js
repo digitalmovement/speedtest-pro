@@ -660,7 +660,7 @@ jQuery(document).ready(function($) {
     
     // Helper function to safely escape HTML
     function escapeHtml(str) {
-        if (typeof str !== 'string') return '';
+        if (typeof str !== 'string') return str;
         
         // Regular expression to find anchor tags
         const anchorRegex = /<a\s+(?:[^>]*?\s+)?href=("|')(.*?)\1(?:\s+(?:[^>]*?\s+)?.*?)?>(.*?)<\/a>/gi;
