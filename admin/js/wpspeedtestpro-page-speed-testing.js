@@ -663,19 +663,16 @@ jQuery(document).ready(function($) {
         if (str === null || str === undefined) return '';
         
         // Regular expression to find anchor tags
-        const anchorRegex = /<a\s+(?:[^>]*?\s+)?href=(["'])(.*?)\1(?:\s+(?:[^>]*?\s+)?.*?)?>([^<]*)<\/a>/gi;
+        const anchorRegex = /<a\s+(?:[^>]*?\s+)?href=("|')(.*?)\1(?:\s+(?:[^>]*?\s+)?.*?)?>(.*?)<\/a>/gi;
         
         // Store anchor tags temporarily
-        let anchors = [];
+        let anchors = new Map();
         let counter = 0;
         
         // Replace anchor tags with placeholders
-        const placeholderText = str.replace(anchorRegex, function(match, quote, url, text) {
+        let placeholderText = str.replace(anchorRegex, function(match) {
             const placeholder = `__ANCHOR_PLACEHOLDER_${counter}__`;
-            anchors.push({
-                placeholder: placeholder,
-                html: match
-            });
+            anchors.set(placeholder, match);
             counter++;
             return placeholder;
         });
@@ -686,12 +683,14 @@ jQuery(document).ready(function($) {
         let escapedHtml = div.innerHTML;
         
         // Restore anchor tags
-        anchors.forEach(function(anchor) {
-            escapedHtml = escapedHtml.replace(anchor.placeholder, anchor.html);
+        anchors.forEach((html, placeholder) => {
+            escapedHtml = escapedHtml.replace(placeholder, html);
         });
         
         return escapedHtml;
     }
+    
+    
     // Event handlers for scheduled test actions
     $(document).on('click', '.cancel-schedule', function(e) {
         e.preventDefault();
