@@ -251,7 +251,7 @@ class Wpspeedtestpro_DB {
         global $wpdb;
 
         // Try to get from cache first
-        $cache_key = 'wpspeedtestpro_fastest_and_slowest_results1';
+        $cache_key = 'wpspeedtestpro_fastest_and_slowest_results';
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
