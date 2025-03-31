@@ -129,7 +129,7 @@ class Wpspeedtestpro_Admin {
 
                    wp_enqueue_style(
                        $this->plugin_name . '-dashboard',
-                       plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing-meta.css',
+                       plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-dashboard.css',
                        array(),
                        $this->version
                    );
