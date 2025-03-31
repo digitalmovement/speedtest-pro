@@ -225,7 +225,7 @@
             <div class="advert-card" id="advert-1">
                 <div class="advert-image">
                     <a target="_blank" href="#" class="advert-link">
-                        <img src="" alt="Advertisement">
+                        <?php echo wp_get_attachment_image(0, 'full', false, array('alt' => 'Advertisement', 'id' => 'ad-placeholder')); ?>
                     </a>
                 </div>
                 <div class="advert-content">
@@ -236,7 +236,9 @@
             </div>
             <div class="advert-card" id="advert-2">
                 <div class="advert-image">
-                    <img src="" alt="Advertisement">
+                    <a target="_blank" href="#" class="advert-link">
+                        <?php echo wp_get_attachment_image(0, 'full', false, array('alt' => 'Advertisement', 'id' => 'ad-placeholder')); ?>
+                    </a>
                 </div>
                 <div class="advert-content">
                     <h3 class="advert-title"></h3>
