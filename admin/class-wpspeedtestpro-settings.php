@@ -145,12 +145,11 @@ class Wpspeedtestpro_Settings {
             'wpspeedtestpro_options',
             array(
                 'type' => 'array',
-                'sanitize_callback' => 'wpspeedtestpro_sanitize_options',
-                'default' => array()
+                'sanitize_callback' => 'wpspeedtestpro_sanitize_options'
             )
         );
 
-        
+
         register_setting(
             'wpspeedtestpro_settings_group', 
             'wpspeedtestpro_selected_region',
