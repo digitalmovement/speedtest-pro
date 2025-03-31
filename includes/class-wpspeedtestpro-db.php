@@ -263,7 +263,11 @@ class Wpspeedtestpro_DB {
                 GROUP BY region_name
             ";
         
-            $results = $wpdb->get_results($wpdb->prepare("%s", $query)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results($wpdb->prepare("SELECT region_name,
+                       MIN(latency) AS fastest_latency,
+                       MAX(latency) AS slowest_latency
+                FROM %i 
+                GROUP BY region_name", $this->hosting_benchmarking_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
