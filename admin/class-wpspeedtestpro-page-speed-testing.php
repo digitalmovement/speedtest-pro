@@ -596,7 +596,7 @@ public function ajax_check_test_status() {
             return;
         }
     
-        $test_id = isset($_POST['test_id']) ? intval($_POST['test_id']) : 0;
+        $test_id = isset($_POST['test_id']) ? intval(wp_unslash($_POST['test_id'])) : 0;
     
         if (!$test_id) {
             wp_send_json_error('Invalid test ID');
@@ -630,9 +630,19 @@ public function ajax_check_test_status() {
             }
             
             // Remove markdown bold syntax
+            $links = array();
+            preg_match_all('/\[([^\]]+)\]\(([^\)]+)\)/', $text, $matches, PREG_SET_ORDER);
+            foreach ($matches as $match) {
+                $linkText = $match[1];
+                $linkUrl = $match[2];
+                // Store the links for later use
+                $links[$linkText] = $linkUrl;
+            }
+            
+            // Remove markdown bold
             $text = preg_replace('/\*\*(.*?)\*\*/', '$1', $text);
             
-            // Remove markdown links but keep the text
+            // Replace markdown links with just the text for now
             $text = preg_replace('/\[([^\]]+)\]\([^\)]+\)/', '$1', $text);
             
             // Remove markdown backticks
@@ -648,13 +658,26 @@ public function ajax_check_test_status() {
             $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
             
             // Strip any remaining HTML tags
-            $text = ($text);
+            $text = wp_strip_all_tags($text);
             
             // Remove extra whitespace
             $text = preg_replace('/\s+/', ' ', $text);
             
-            // Trim and sanitize
-            return (trim($text));
+            // Trim the text
+            $text = trim($text);
+            
+            // Now restore the links with proper HTML
+            foreach ($links as $linkText => $linkUrl) {
+                // Escape the URL and text for safety
+                $safeUrl = esc_url($linkUrl);
+                $safeText = esc_html($linkText);
+                
+                // Replace the plain text with an HTML link
+                $text = str_replace($linkText, '<a href="' . $safeUrl . '" target="_blank" rel="noopener noreferrer">' . $safeText . '</a>', $text);
+            }
+
+            return $text;
+            
         };
     
         // Clean up audits with proper sanitization
