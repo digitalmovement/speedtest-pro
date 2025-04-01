@@ -223,7 +223,7 @@ class Wpspeedtestpro_DB {
                 ORDER BY r1.region_name
             ";
 
-            $results = $wpdb->get_results($wpdb->prepare("%s", $query)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results($wpdb->prepare("%i", $query)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
