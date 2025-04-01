@@ -777,12 +777,22 @@ jQuery(document).ready(function($) {
 
 
     $(function() {
+        // Initialize tabs first
         $("#tabs").tabs();
         
-        // Initialize
+        // Then proceed with the rest
         checkContinuousTestingStatus();
         checkTestStatus();
-        initializeTimeRange();
+        
+        // Modify the initializeTimeRange function to ensure proper order
+        var storedTimeRange = getStoredTimeRange();
+        $('#time-range').val(storedTimeRange);
+        
+        // Small delay to ensure tabs are fully initialized
+        setTimeout(function() {
+            updateResults(storedTimeRange);
+        }, 100);
+        
         setInterval(function() {
             updateResults(getStoredTimeRange());
         }, 60000);
