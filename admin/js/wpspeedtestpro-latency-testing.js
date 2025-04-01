@@ -337,16 +337,21 @@ jQuery(document).ready(function($) {
             }
         }
     }
-
     function createGraphContainer(regionName, groupName) {
         var containerId = 'graph-container-' + regionName.replace(/\s+/g, '-').toLowerCase();
         var container = $('<div>').attr('id', containerId).addClass('graph-container').css({
             width: '100%',
-            marginBottom: '40px'  // Add margin to the bottom of each graph container
+            marginBottom: '40px'
         });
-
+    
         var canvas = $('<canvas>').attr('id', 'graph-' + regionName.replace(/\s+/g, '-').toLowerCase());
         container.append(canvas);
+        
+        // Make sure jQuery UI tabs are initialized before adding content
+        if (!$('#tabs').hasClass('ui-tabs')) {
+            $("#tabs").tabs();
+        }
+        
         $('#graphs-' + groupName.toLowerCase()).append(container);
     }
 
@@ -768,13 +773,13 @@ jQuery(document).ready(function($) {
 
     $(function() {
         $("#tabs").tabs();
+        
+        // Initialize
+        checkContinuousTestingStatus();
+        checkTestStatus();
+        initializeTimeRange();
+        setInterval(function() {
+            updateResults(getStoredTimeRange());
+        }, 60000);
     });
-
-    // Initialize
-    checkContinuousTestingStatus();
-    checkTestStatus();
-    initializeTimeRange();
-    setInterval(function() {
-        updateResults(getStoredTimeRange());
-    }, 60000);
 });
