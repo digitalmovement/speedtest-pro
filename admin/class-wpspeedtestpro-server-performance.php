@@ -80,7 +80,7 @@ class Wpspeedtestpro_Server_Performance {
             wp_enqueue_script('jquery-ui-dialog');
           //  wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
            // wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
-            wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery','jquery-ui-core','jquery-ui-tabs','jquery-ui-dialog' ), $this->version, false );
             
             $continuous_test_status = get_option('wpspeedtestpro_continuous_test_status', 'stopped');
             $continuous_test_start_time = get_option('wpspeedtestpro_continuous_test_start_time', 0);
