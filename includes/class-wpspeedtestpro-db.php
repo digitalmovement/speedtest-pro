@@ -223,7 +223,16 @@ class Wpspeedtestpro_DB {
                 ORDER BY r1.region_name
             ";
 
-            $results = $wpdb->get_results($wpdb->prepare("%i", $query)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results($wpdb->prepare("
+                            SELECT r1.*
+                FROM %i r1
+                INNER JOIN (
+                    SELECT region_name, MAX(test_time) as max_time
+                    FROM %i
+                    GROUP BY region_name
+                ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
+                ORDER BY r1.region_name
+            ", $this->latency_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
