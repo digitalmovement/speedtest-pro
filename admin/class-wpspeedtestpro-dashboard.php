@@ -138,7 +138,7 @@ class Wpspeedtestpro_Dashboard {
 
         // Use API and DB functionalities
         $endpoints = $api->get_gcp_endpoints();
-        $latest_results = $db->get_latest_results();
+        $latest_results = $db->get_latest_latency_results();
 
         if (!current_user_can('manage_options')) {
             return;
