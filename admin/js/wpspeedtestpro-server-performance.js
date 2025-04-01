@@ -879,6 +879,12 @@ function initializeTabs() {
         $('.wpspeedtestpro-tab-content ' + currentAttrValue).show().siblings().hide();
         $(this).parent('li').addClass('active').siblings().removeClass('active');
     });
+
+    // Ensure the default/active tab is shown initially
+    var defaultTab = $('.wpspeedtestpro-tab-links li.active a').attr('href') || $('.wpspeedtestpro-tab-links a').first().attr('href');
+    if (defaultTab) {
+        $('.wpspeedtestpro-tab-content ' + defaultTab).show().siblings().hide();
+    }
 }
 
 
