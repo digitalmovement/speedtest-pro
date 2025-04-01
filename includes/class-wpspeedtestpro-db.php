@@ -1,7 +1,7 @@
 <?php
 
 class Wpspeedtestpro_DB {
-    private $hosting_benchmarking_table;
+    private $latency_table;
     private $benchmark_results_table;
     private $pagespeed_table;
     private $pagespeed_scheduled_table;
@@ -9,17 +9,17 @@ class Wpspeedtestpro_DB {
 
     public function __construct() {
         global $wpdb;
-        $this->hosting_benchmarking_table        = $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results';
+        $this->latency_table                     = $wpdb->prefix . 'wpspeedtestpro_latency_results';
         $this->benchmark_results_table           = $wpdb->prefix . 'wpspeedtestpro_benchmark_results';
         $this->pagespeed_table                   = $wpdb->prefix . 'wpspeedtestpro_pagespeed_results';
         $this->pagespeed_scheduled_table         = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
     }
 
-    public function create_table() {
+    public function create_latency_table() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE {$this->hosting_benchmarking_table} (
+        $sql = "CREATE TABLE {$this->latency_table} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             test_time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
             region varchar(20) NOT NULL,
@@ -73,14 +73,14 @@ class Wpspeedtestpro_DB {
         dbDelta($sql); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
-    public function insert_result($region, $region_name, $latency) {
+    public function insert_latency_result($region, $region_name, $latency) {
         global $wpdb;
 
         // Fetch the latest result for the same region
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $latest_result = $wpdb->get_row($wpdb->prepare(
             "SELECT latency FROM %i WHERE region_name = %s ORDER BY test_time DESC LIMIT 1",
-            $this->hosting_benchmarking_table,
+            $this->latency_table,
             $region_name
         )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
@@ -91,7 +91,7 @@ class Wpspeedtestpro_DB {
         // Insert the new result with latency difference
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->insert(
-            $this->hosting_benchmarking_table,
+            $this->latency_table,
             array(
                 'test_time' => current_time('mysql'),
                 'region' => $region,
@@ -156,15 +156,15 @@ class Wpspeedtestpro_DB {
         }
     }
 
-    public function get_latest_results() {
+    public function get_latest_latency_results() {
         global $wpdb;
         
         // Try to get from cache first
-        $cache_key = 'wpspeedtestpro_latest_results';
+        $cache_key = 'wpspeedtestpro_latest_latency_results';
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
-            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i ORDER BY test_time DESC LIMIT %d", $this->hosting_benchmarking_table, 10), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i ORDER BY test_time DESC LIMIT %d", $this->latency_table, 10), ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour (3600 seconds)
             wp_cache_set($cache_key, $results, '', 3600);
         }
@@ -204,20 +204,20 @@ class Wpspeedtestpro_DB {
         return $results;
     }
 
-    public function get_latest_results_by_region() {
+    public function get_latest_latency_results_by_region() {
         global $wpdb;
         
         // Try to get from cache first
-        $cache_key = 'wpspeedtestpro_latest_results_by_region';
+        $cache_key = 'wpspeedtestpro_latest_latency_results_by_region';
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
             $query = "
                 SELECT r1.*
-                FROM {$this->hosting_benchmarking_table} r1
+                FROM {$this->latency_table} r1
                 INNER JOIN (
                     SELECT region_name, MAX(test_time) as max_time
-                    FROM {$this->hosting_benchmarking_table}
+                    FROM {$this->latency_table}
                     GROUP BY region_name
                 ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
                 ORDER BY r1.region_name
@@ -231,14 +231,22 @@ class Wpspeedtestpro_DB {
         return $results;
     }
 
-    public function delete_all_results() {
+    public function delete_all_latency_results() {
         global $wpdb;
-        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %s", $this->hosting_benchmarking_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %s", $this->benchmark_results_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->latency_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         
         // Clear all caches
         wp_cache_flush();
     }
+
+    public function delete_all_benchmark_results() {
+        global $wpdb;
+        $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->benchmark_results_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        
+        // Clear all caches
+        wp_cache_flush();
+    }
+
 
     public function purge_old_results() {
         global $wpdb;
@@ -247,7 +255,7 @@ class Wpspeedtestpro_DB {
         $wpdb->query($wpdb->prepare("DELETE FROM %i WHERE test_date < %s", $this->benchmark_results_table, $one_week_ago)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
     }
 
-    public function get_fastest_and_slowest_results() {
+    public function get_fastest_and_slowest_latency_results() {
         global $wpdb;
 
         // Try to get from cache first
@@ -267,7 +275,7 @@ class Wpspeedtestpro_DB {
                        MIN(latency) AS fastest_latency,
                        MAX(latency) AS slowest_latency
                 FROM %i 
-                GROUP BY region_name", $this->hosting_benchmarking_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                GROUP BY region_name", $this->latency_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
@@ -275,11 +283,11 @@ class Wpspeedtestpro_DB {
         return $results;
     }
 
-    public function get_results_by_time_range($time_range) {
+    public function get_latency_results_by_time_range($time_range) {
         global $wpdb;
         
         // Try to get from cache first
-        $cache_key = 'wpspeedtestpro_results_' . $time_range;
+        $cache_key = 'wpspeedtestpro_latency_results_' . $time_range;
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
@@ -296,7 +304,7 @@ class Wpspeedtestpro_DB {
             $results = $wpdb->get_results(
                 $wpdb->prepare(
                     "SELECT * FROM %i WHERE test_time >= DATE_SUB(NOW(), INTERVAL %d DAY) ORDER BY test_time ASC",
-                    $this->hosting_benchmarking_table,
+                    $this->latency_table,
                     $interval_number
                 )
             ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -416,7 +424,7 @@ class Wpspeedtestpro_DB {
             // Get unsynced hosting benchmarking results using prepared statement
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $hosting_results = $wpdb->get_results(
-                $wpdb->prepare("SELECT * FROM %i WHERE synced = %d", $this->hosting_benchmarking_table, 0),
+                $wpdb->prepare("SELECT * FROM %i WHERE synced = %d", $this->latency_table, 0),
                 ARRAY_A
             ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
@@ -451,8 +459,8 @@ class Wpspeedtestpro_DB {
             case 'benchmark':
                 $table = $this->benchmark_results_table;
                 break;
-            case 'hosting':
-                $table = $this->hosting_benchmarking_table;
+            case 'latency':
+                $table = $this->latency_table;
                 break;
             case 'pagespeed':
                 $table = $this->pagespeed_table;

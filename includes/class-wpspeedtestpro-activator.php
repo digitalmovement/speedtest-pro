@@ -39,8 +39,8 @@ class Wpspeedtestpro_Activator {
         $api = new Wpspeedtestpro_API();
 
         // Call the create_table method
-        $db->create_table();
         $db->create_benchmark_table();
+        $db->create_latency_table();
         $db->create_pagespeed_tables();
 
         // API calls

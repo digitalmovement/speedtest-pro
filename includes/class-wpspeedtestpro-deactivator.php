@@ -85,10 +85,10 @@ class Wpspeedtestpro_Deactivator {
         try {
             // Delete all plugin tables
             $tables = array(
-                $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results',
                 $wpdb->prefix . 'wpspeedtestpro_benchmark_results',
                 $wpdb->prefix . 'wpspeedtestpro_pagespeed_results',
-                $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled'
+                $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled',
+                $wpdb->prefix . 'wpspeedtestpro_latency_results'
             );
 
             foreach ($tables as $table) {
@@ -111,7 +111,7 @@ class Wpspeedtestpro_Deactivator {
             $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wpspeedtestpro_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_pagespeed_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_pagespeed_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_latency_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Clear all plugin-related object cache entries
             $cache_groups = ['', 'wpspeedtestpro', 'pagespeed'];
             foreach ($cache_groups as $group) {
@@ -120,12 +120,15 @@ class Wpspeedtestpro_Deactivator {
                 wp_cache_delete('wpspeedtestpro_latest_results_by_region', $group);
                 wp_cache_delete('wpspeedtestpro_fastest_and_slowest_results', $group);
                 wp_cache_delete('wpspeedtestpro_unsynced_data', $group);
-                
+                wp_cache_delete('wpspeedtestpro_latency_results', $group);
+                wp_cache_delete('wpspeedtestpro_latency_results_by_region', $group);
+                wp_cache_delete('wpspeedtestpro_fastest_and_slowest_latency_results', $group);
+
                 // Delete time range caches
                 $time_ranges = ['24_hours', '7_days', '90_days'];
                 foreach ($time_ranges as $range) {
-                    wp_cache_delete('wpspeedtestpro_results_' . $range, $group);
                     wp_cache_delete('wpspeedtestpro_benchmark_results_' . $range, $group);
+                    wp_cache_delete('wpspeedtestpro_latency_results_' . $range, $group);
                 }
                 
                 // Delete benchmark results with different limits
@@ -151,7 +154,7 @@ class Wpspeedtestpro_Deactivator {
         // Handle basic deactivation tasks
         wp_clear_scheduled_hook('pagespeed_check_scheduled_tests');
         wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
-
+        wp_clear_scheduled_hook('wpspeedtestpro_check_scheduled_pagespeed_tests');
         $timestamp = wp_next_scheduled('wpspeedtestpro_check_scheduled_pagespeed_tests');
         if ($timestamp) {
             wp_unschedule_event($timestamp, 'wpspeedtestpro_check_scheduled_pagespeed_tests');
