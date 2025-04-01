@@ -1149,8 +1149,7 @@ public function ajax_check_test_status() {
     
         // Get total count for pagination
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM %i", $this->pagespeed_table);
-    
+        $total_items = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i", $this->pagespeed_table));
         // Get results with pagination
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared  
         $results = $wpdb->get_results(
