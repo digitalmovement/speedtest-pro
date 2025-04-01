@@ -64,9 +64,10 @@ class Wpspeedtestpro_Admin {
     private $server_performance;
     private $uptime_monitoring;
     private $page_speed_testing;
-
+    private $sync_handler;
     private $server_information;
-   
+    private $dashboard;
+    private $wizard;
 
 
     public function __construct( $plugin_name, $version, $core ) {
