@@ -371,6 +371,17 @@ jQuery(document).ready(function($) {
             regionData[result.region_name].latencies.push(parseFloat(result.latency));
             regionData[result.region_name].lastUpdated = result.test_time;
         });
+            // Force tabs initialization/refresh before creating chart containers
+        if ($("#tabs").tabs("instance") === undefined) {
+            $("#tabs").tabs();
+        } else {
+            $("#tabs").tabs("refresh");
+        }
+        
+        // Clear existing graph containers that might be in the wrong tabs
+        $('.graph-container').remove();
+
+        
 
         Object.keys(regionData).forEach(function(region) {
             var groupName = Object.keys(regionGroups).find(group => regionGroups[group].includes(region)) || 'Other';
