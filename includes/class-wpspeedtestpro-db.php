@@ -232,7 +232,7 @@ class Wpspeedtestpro_DB {
                     GROUP BY region_name
                 ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
                 ORDER BY r1.region_name
-            ", $this->latency_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            ", $this->latency_table, $this->latency_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             // Cache the results for 1 hour
             wp_cache_set($cache_key, $results, '', 3600);
         }
