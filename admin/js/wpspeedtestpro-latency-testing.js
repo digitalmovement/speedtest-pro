@@ -415,16 +415,32 @@ jQuery(document).ready(function($) {
                 }
             };
 
-            // Function to get evenly spaced sample dates
+// Function to get evenly spaced sample dates
             function getSampleDates(dates, numSamples) {
+                if (!dates || dates.length === 0) {
+                    return [];
+                }
+                
                 var result = [];
+                
+                // If we have fewer dates than requested samples, return all dates
+                if (dates.length <= numSamples) {
+                    return dates;
+                }
+                
                 var step = Math.floor(dates.length / (numSamples - 1));
+                // Ensure step is at least 1
+                step = Math.max(1, step);
+                
                 for (var i = 0; i < dates.length; i += step) {
                     result.push(dates[Math.min(i, dates.length - 1)]);
                 }
+                
+                // Make sure the last date is included
                 if (result[result.length - 1] !== dates[dates.length - 1]) {
-                    result[result.length - 1] = dates[dates.length - 1];
+                    result.push(dates[dates.length - 1]);
                 }
+                
                 return result;
             }
 
