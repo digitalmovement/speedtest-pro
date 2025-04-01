@@ -212,17 +212,8 @@ class Wpspeedtestpro_DB {
         $results = wp_cache_get($cache_key);
         
         if (false === $results) {
-            $query = "
-                SELECT r1.*
-                FROM {$this->latency_table} r1
-                INNER JOIN (
-                    SELECT region_name, MAX(test_time) as max_time
-                    FROM {$this->latency_table}
-                    GROUP BY region_name
-                ) r2 ON r1.region_name = r2.region_name AND r1.test_time = r2.max_time
-                ORDER BY r1.region_name
-            ";
 
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $results = $wpdb->get_results($wpdb->prepare("
                             SELECT r1.*
                 FROM %i r1
@@ -242,6 +233,8 @@ class Wpspeedtestpro_DB {
 
     public function delete_all_latency_results() {
         global $wpdb;
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $wpdb->query($wpdb->prepare("TRUNCATE TABLE %i", $this->latency_table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         
         // Clear all caches
