@@ -245,8 +245,8 @@ class Wpspeedtestpro_Dashboard {
 
     private function get_latency_summary() {
         $selected_region = get_option('wpspeedtestpro_selected_region');
-        $latest_results = $this->core->db->get_latest_results_by_region();
-        $fastest_slowest = $this->core->db->get_fastest_and_slowest_results();
+        $latest_results = $this->core->db->get_latest_latency_results_by_region();
+        $fastest_slowest = $this->core->db->get_fastest_and_slowest_latency_results();
 
         return array(
             'selected_region' => $selected_region,
