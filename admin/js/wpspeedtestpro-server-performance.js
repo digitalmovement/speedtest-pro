@@ -885,5 +885,8 @@ function initializeTabs() {
 initializeTabs();
 updateButtonState(testStatus);
 updateContinuousTestInfo();
-loadResults();
+    // Add a slight delay before loading results to ensure tabs are properly initialized
+    setTimeout(function() {
+        loadResults();
+    }, 100);
 });
