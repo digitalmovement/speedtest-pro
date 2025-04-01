@@ -756,10 +756,15 @@ jQuery(document).ready(function($) {
         return date.toLocaleString();
     }
 
-
     function initializeTimeRange() {
         var storedTimeRange = getStoredTimeRange();
         $('#time-range').val(storedTimeRange);
+        
+        // Make sure tabs are initialized first
+        if (!$('#tabs').hasClass('ui-tabs')) {
+            $("#tabs").tabs();
+        }
+        
         updateResults(storedTimeRange);
     }
 
