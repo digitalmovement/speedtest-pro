@@ -1084,10 +1084,11 @@ public function ajax_check_test_status() {
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results(
-            "SELECT * FROM %i 
+            $wpdb->prepare(
+                "SELECT * FROM %i 
             ORDER BY next_run ASC",
             $this->pagespeed_scheduled_table
-        );
+        ));
     
         if ($results === false) {
             wp_send_json_error('Database error occurred');
