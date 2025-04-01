@@ -222,7 +222,7 @@ class Wpspeedtestpro_Admin {
         $db = $this->core->get_db();
         $data = array(
             'endpoints' => $api->get_gcp_endpoints(),
-            'latest_results' => $db->get_latest_results()
+            'latest_results' => $db->get_latest_latency_results()
         );
 
         $dashboard->display_dashboard();
