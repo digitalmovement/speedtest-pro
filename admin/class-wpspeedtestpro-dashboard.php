@@ -167,7 +167,7 @@ class Wpspeedtestpro_Dashboard {
     }
 
     private function get_latest_latency_test() {
-        return $this->core->db->get_latest_results_by_region();
+        return $this->core->db->get_latest_latency_results_by_region();
     }
 
     private function get_latest_ssl_test() {
