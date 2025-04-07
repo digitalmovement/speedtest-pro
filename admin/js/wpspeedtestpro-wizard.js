@@ -886,9 +886,9 @@ jQuery(document).ready(function($) {
             if (hasUptimeRobotKey) {
                 tests.unshift('uptimerobot');
             }
-            
+        
             $('.progress-label').text('Starting tests...');
-            
+        
             // Start SSL test separately and update UI
             const $sslTestItem = $('.test-item[data-test="ssl"]');
             const $sslStatus = $sslTestItem.find('.test-status');
@@ -905,7 +905,7 @@ jQuery(document).ready(function($) {
                 $sslProgressBar.hide(); // Hide progress bar on failure
                 console.error('SSL test failed to start:', error);
             });
-            
+        
             // Run other tests sequentially
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
@@ -914,7 +914,7 @@ jQuery(document).ready(function($) {
                 
                 $status.removeClass('pending').addClass('running').text('Running...');
                 $progressBar.show();
-            
+        
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
@@ -935,13 +935,13 @@ jQuery(document).ready(function($) {
                     $progressBar.hide();
                     console.error(`Test ${testType} failed:`, error);
                 }
-            
+        
                 // Calculate progress excluding SSL test from total
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
                 $('.progress-label').text(`${completedTests} of ${tests.length} tests completed`);
             }
-            
+        
             // Final status update
             if (failedTests.length > 0) {
                 const failedTestsNames = failedTests.map(t => {
@@ -963,7 +963,7 @@ jQuery(document).ready(function($) {
                     </span>
                 `);
             }
-            
+        
             // Show next step button after tests are complete
             $('.next-step').prop('disabled', false).show();
             $('.start-tests').hide();
@@ -1179,13 +1179,16 @@ jQuery(document).ready(function($) {
                     // Save settings after validation
                     saveWizardSettings();
                     return true;
-                    
                 case 3:
+                    saveWizardSettings();
+                    return true;
+                             
+                case 4:
                     // Save settings even if Google API key is skipped
                     saveWizardSettings();
                     return true;
                     
-                case 4:
+                case 5:
                     return $('.test-status.completed, .test-status.failed').length > 0;
                 default:
                     return true;
