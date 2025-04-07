@@ -26,15 +26,20 @@ jQuery(document).ready(function($) {
                             <div class="step-item">
                                 <div class="step-circle">3</div>
                                 <div class="step-line"></div>
-                                <div class="step-label">UptimeRobot</div>
+                                <div class="step-label">Google PageSpeed API</div>
                             </div>
                             <div class="step-item">
                                 <div class="step-circle">4</div>
                                 <div class="step-line"></div>
-                                <div class="step-label">Testing</div>
+                                <div class="step-label">UptimeRobot</div>
                             </div>
                             <div class="step-item">
                                 <div class="step-circle">5</div>
+                                <div class="step-line"></div>
+                                <div class="step-label">Testing</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-circle">6</div>
                                 <div class="step-label">Complete</div>
                             </div>
                         </div>
@@ -348,7 +353,32 @@ jQuery(document).ready(function($) {
                             </div>
                         </div>
 
+                        <!-- Step 3: Google PageSpeed API -->
                         <div class="wizard-step" data-step="3" style="display: none;">
+                            <h2>Google PageSpeed API Setup</h2>
+                            <p>To run PageSpeed tests, you'll need a Google API key with the PageSpeed Insights API enabled.</p>
+                            
+                            <div class="form-group">
+                                <label for="pagespeed-api-key">Google API Key</label>
+                                <input type="text" id="pagespeed-api-key" name="pagespeed_api_key" placeholder="Enter your Google API key">
+                                <p class="description">
+                                    <a href="https://developers.google.com/speed/docs/insights/v5/get-started" target="_blank">
+                                        Learn how to create a Google API key
+                                    </a>
+                                </p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <p class="description">You can skip this step if you don't want to run PageSpeed tests.</p>
+                            </div>
+                            
+                            <div class="wizard-buttons">
+                                <button type="button" class="button prev-step">Previous</button>
+                                <button type="button" class="button button-primary next-step">Next</button>
+                            </div>
+                        </div>
+
+                        <div class="wizard-step" data-step="4" style="display: none;">
                             <h3>UptimeRobot Integration</h3>
                             <p>Monitor your website's uptime and performance with UptimeRobot integration.</p>
                             <div class="form-group">
@@ -362,8 +392,8 @@ jQuery(document).ready(function($) {
                             <p class="skip-note">You can skip this step and set it up later.</p>
                         </div>
 
-                        <!-- Step 3: Testing -->
-                        <div class="wizard-step" data-step="4" style="display: none;">
+                        <!-- Step 5: Testing -->
+                        <div class="wizard-step" data-step="5" style="display: none;">
                             <div class="testing-container">
                                 <h3>Initial Performance Analysis</h3>
                                 <p>We'll run a comprehensive series of tests to analyze your site's performance. This might take a few minutes.</p>
@@ -416,8 +446,8 @@ jQuery(document).ready(function($) {
                             </div>
                         </div>
 
-                        <!-- Step 4: Completion -->
-                        <div class="wizard-step" data-step="5" style="display: none;">
+                        <!-- Step 6: Completion -->
+                        <div class="wizard-step" data-step="6" style="display: none;">
                             <h3>Setup Complete!</h3>
                             <p>You're all set to start monitoring your site's performance.</p>
                             <div class="completion-summary">
@@ -816,7 +846,7 @@ jQuery(document).ready(function($) {
         $('body').append(wizardHtml);
 
         let currentStep = 1;
-        const totalSteps = 5;
+        const totalSteps = 6;
 
         // Load initial data
         loadGCPRegions();
@@ -846,16 +876,23 @@ jQuery(document).ready(function($) {
 
         async function runAllTests() {
             const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
-            const tests = ['latency', 'performance', 'pagespeed'];
+            const hasPageSpeedKey = $('#pagespeed-api-key').val().trim() !== '';
+            const tests = ['latency', 'performance'];
+            
+            // Only add PageSpeed test if API key is provided
+            if (hasPageSpeedKey) {
+                tests.push('pagespeed');
+            }
+            
             let completedTests = 0;
             let failedTests = [];
-        
+            
             if (hasUptimeRobotKey) {
                 tests.unshift('uptimerobot');
             }
-        
+            
             $('.progress-label').text('Starting tests...');
-        
+            
             // Start SSL test separately and update UI
             const $sslTestItem = $('.test-item[data-test="ssl"]');
             const $sslStatus = $sslTestItem.find('.test-status');
@@ -872,7 +909,7 @@ jQuery(document).ready(function($) {
                 $sslProgressBar.hide(); // Hide progress bar on failure
                 console.error('SSL test failed to start:', error);
             });
-        
+            
             // Run other tests sequentially
             for (const testType of tests) {
                 const $testItem = $(`.test-item[data-test="${testType}"]`);
@@ -881,7 +918,7 @@ jQuery(document).ready(function($) {
                 
                 $status.removeClass('pending').addClass('running').text('Running...');
                 $progressBar.show();
-        
+            
                 try {
                     if (testType === 'uptimerobot') {
                         await setupUptimeRobot($('#uptimerobot-key').val());
@@ -902,13 +939,13 @@ jQuery(document).ready(function($) {
                     $progressBar.hide();
                     console.error(`Test ${testType} failed:`, error);
                 }
-        
+            
                 // Calculate progress excluding SSL test from total
                 const progress = (completedTests / tests.length) * 100;
                 $('.overall-progress .progress-fill').css('width', `${progress}%`);
                 $('.progress-label').text(`${completedTests} of ${tests.length} tests completed`);
             }
-        
+            
             // Final status update
             if (failedTests.length > 0) {
                 const failedTestsNames = failedTests.map(t => {
@@ -930,7 +967,7 @@ jQuery(document).ready(function($) {
                     </span>
                 `);
             }
-        
+            
             // Show next step button after tests are complete
             $('.next-step').prop('disabled', false).show();
             $('.start-tests').hide();
@@ -1031,6 +1068,7 @@ jQuery(document).ready(function($) {
                         ajaxData.url = window.location.origin; // Homepage URL
                         ajaxData.device = 'both';
                         ajaxData.frequency = 'once';
+                        ajaxData.api_key = $('#pagespeed-api-key').val(); // Add API key to request
                         break;
                         
                     default:
@@ -1085,11 +1123,11 @@ jQuery(document).ready(function($) {
             // Update button visibility based on current step
             $('.prev-step').toggle(currentStep > 1);
             $('.next-step').toggle(currentStep < totalSteps);
-            $('.start-tests').toggle(currentStep === 4);
+            $('.start-tests').toggle(currentStep === 5);
             $('.finish-setup').toggle(currentStep === totalSteps);
 
             // Hide next button during testing phase
-            if (currentStep === 4) {
+            if (currentStep === 5) {
                 $('.next-step').hide();
                 const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
                 const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
@@ -1147,7 +1185,7 @@ jQuery(document).ready(function($) {
                     return true;
                     
                 case 3:
-                    // Save settings even if UptimeRobot is skipped
+                    // Save settings even if Google API key is skipped
                     saveWizardSettings();
                     return true;
                     
@@ -1176,7 +1214,8 @@ jQuery(document).ready(function($) {
                     provider_id: $('#hosting-provider').val(),
                     package_id: $('#hosting-package').val(),
                     allow_data_collection: $('#allow-data-collection').is(':checked'),
-                    uptimerobot_key: $('#uptimerobot-key').val()
+                    uptimerobot_key: $('#uptimerobot-key').val(),
+                    pagespeed_api_key: $('#pagespeed-api-key').val()
                 }
             });
         }
@@ -1436,11 +1475,15 @@ jQuery(document).ready(function($) {
 
 
         $('.close-wizard').on('click', function() {
-            dismissWizard();
+            if (confirm('Are you sure you want to exit the setup wizard? You can always access these settings later.')) {
+                $('#wpspeedtestpro-setup-wizard').remove();
+            }
         });
 
         $('.finish-setup').on('click', function() {
-            completeWizard();
+            localStorage.setItem('wpspeedtestpro_setup_complete', 'true');
+            $('#wpspeedtestpro-setup-wizard').remove();
+            window.location.href = 'admin.php?page=wpspeedtestpro';
         });
 
         $('#hosting-provider').on('change', function() {
@@ -1542,6 +1585,8 @@ jQuery(document).ready(function($) {
                 `Hosting Provider: ${$('#hosting-provider option:selected').text()}`,
                 `Package: ${$('#hosting-package option:selected').text()}`,
                 `Data Collection: ${$('#allow-data-collection').is(':checked') ? 'Enabled' : 'Disabled'}`,
+                 `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`,
+                `PageSpeed API Key: ${$('#pagespeed-api-key').val() ? 'Configured' : 'Skipped'}`
                 `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`
             ];
         
