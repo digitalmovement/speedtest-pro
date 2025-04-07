@@ -340,7 +340,7 @@ jQuery(document).ready(function($) {
                                 </div>
                                 <div class="form-group privacy-opt">
                                     <label>
-                                        <input type="checkbox" id="allow-data-collection" name="allow-data-collection" checked>
+                                        <input type="checkbox" id="allow-data-collection" name="allow-data-collection">
                                         Help improve WP Speed Test Pro by allowing anonymous data collection
                                     </label>
                                     <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. You can stop sharing at any time in Settings.
