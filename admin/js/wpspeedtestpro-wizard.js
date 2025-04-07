@@ -1,7 +1,6 @@
 jQuery(document).ready(function($) {
-    if (!localStorage.getItem('wpspeedtestpro_setup_complete')) {
-        initSetupWizard();
-    }
+    // The wizard will now show based on the WordPress option, not localStorage
+    initSetupWizard();
 
     function initSetupWizard() {
         const wizardHtml = `
@@ -46,7 +45,7 @@ jQuery(document).ready(function($) {
                         <div class="wizard-step" data-step="1">
                             <div class="welcome-content">
                                 <h1>Welcome to WP Speedtest Pro! 👋</h1>
-                                <p class="welcome-intro">Ready to discover your WordPress site's true performance?</p>
+                                <p class="welcome-intro">Ready to discover your site's true performance?</p>
                                 
                                 <div class="feature-grid">
                                     <div class="feature-item">
@@ -73,7 +72,7 @@ jQuery(document).ready(function($) {
 
                                 <div class="mission-statement">
                                     <h3>Our Mission</h3>
-                                    <p>WP Speedtest Pro helps WordPress users choose better hosting with clear, data-driven performance insights. We identify the best hosting providers, call out the worst, and help users get more value from their hosting. Committed to the WordPress community, we offer this plguin for free.</p>
+                                    <p>WP Speedtest Pro helps users choose better hosting with clear, data-driven performance insights. We identify the best hosting providers, call out the worst, and help users get more value from their hosting. Committed to the community, we offer this plguin for free.</p>
                                 </div>
                             </div>
                         </div>
@@ -341,9 +340,9 @@ jQuery(document).ready(function($) {
                                 <div class="form-group privacy-opt">
                                     <label>
                                         <input type="checkbox" id="allow-data-collection" name="allow-data-collection">
-                                        Help improve WP Speed Test Pro by allowing anonymous data collection
+                                        Help improve WP Speedtest Pro by allowing anonymous data collection
                                     </label>
-                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. You can stop sharing at any time in Settings.
+                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the community. You can stop sharing at any time in Settings.
                                    For more information you can view our full <a target="_new" href="https://wpspeedtestpro.com/privacy">privacy policy</a></p>
                                 </div>
                             </div>
@@ -420,7 +419,7 @@ jQuery(document).ready(function($) {
                         <!-- Step 4: Completion -->
                         <div class="wizard-step" data-step="5" style="display: none;">
                             <h3>Setup Complete!</h3>
-                            <p>You're all set to start monitoring your WordPress site's performance.</p>
+                            <p>You're all set to start monitoring your site's performance.</p>
                             <div class="completion-summary">
                                 <h4>Here's what we've set up:</h4>
                                 <ul class="setup-summary"></ul>
@@ -1437,15 +1436,11 @@ jQuery(document).ready(function($) {
 
 
         $('.close-wizard').on('click', function() {
-            if (confirm('Are you sure you want to exit the setup wizard? You can always access these settings later.')) {
-                $('#wpspeedtestpro-setup-wizard').remove();
-            }
+            dismissWizard();
         });
 
         $('.finish-setup').on('click', function() {
-            localStorage.setItem('wpspeedtestpro_setup_complete', 'true');
-            $('#wpspeedtestpro-setup-wizard').remove();
-            window.location.href = 'admin.php?page=wpspeedtestpro';
+            completeWizard();
         });
 
         $('#hosting-provider').on('change', function() {
@@ -1560,6 +1555,32 @@ jQuery(document).ready(function($) {
             summaryItems.forEach(item => {
                 $summary.append(`<li>${item}</li>`);
             });
+        }
+
+        // Function to dismiss the wizard (when X is clicked)
+        function dismissWizard() {
+            // Send AJAX request to mark wizard as dismissed
+            $.ajax({
+                url: wpspeedtestpro_wizard.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'wpspeedtestpro_dismiss_wizard',
+                    nonce: wpspeedtestpro_wizard.nonce
+                },
+                success: function(response) {
+                    $('#wpspeedtestpro-setup-wizard').remove();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error dismissing wizard:', error);
+                }
+            });
+        }
+        
+        // Function to complete the wizard (when finish button is clicked)
+        function completeWizard() {
+            // The save_wizard_settings AJAX call already marks the wizard as completed
+            $('#wpspeedtestpro-setup-wizard').remove();
+            window.location.href = wpspeedtestpro_wizard.dashboard_url;
         }
     }
 });

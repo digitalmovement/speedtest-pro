@@ -144,13 +144,16 @@ class Wpspeedtestpro_Wizard {
                 update_option('wpspeedtestpro_user_country', $settings['user_country']),
                 update_option('wpspeedtestpro_selected_provider', $settings['provider_id']),
                 update_option('wpspeedtestpro_selected_package', $settings['package_id']),
-                update_option('wpspeedtestpro_allow_data_collection',$allow_data_collection)
+                update_option('wpspeedtestpro_allow_data_collection', $allow_data_collection)
             );
     
             // Only update UptimeRobot API key if provided
             if (!empty($settings['uptimerobot_api_key'])) {
                 $update_results[] = update_option('wpspeedtestpro_uptimerobot_api_key', $settings['uptimerobot_api_key']);
             }
+    
+            // Mark setup as completed
+            update_option('wpspeedtestpro_setup_completed', true);
     
             // Check if any updates failed
             if (in_array(false, $update_results, true)) {
