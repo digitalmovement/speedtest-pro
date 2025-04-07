@@ -422,15 +422,6 @@ jQuery(document).ready(function($) {
                                             <div class="progress-fill"></div>
                                         </div>
                                     </div>
-                                    <div class="test-item" data-test="pagespeed">
-                                        <div class="test-info">
-                                            <span class="test-name">PageSpeed Analysis</span>
-                                            <span class="test-status pending">Pending</span>
-                                        </div>
-                                        <div class="test-progress-bar" style="display: none;">
-                                            <div class="progress-fill"></div>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="overall-progress">
@@ -1126,8 +1117,28 @@ jQuery(document).ready(function($) {
             if (currentStep === 5) {
                 $('.next-step').hide();
                 const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
-                const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
+                const hasPageSpeedKey = $('#pagespeed-api-key').val().trim() !== '';
+                const tests = ['latency', 'ssl', 'performance'];
     
+                if (hasPageSpeedKey) {
+                    const existingPageSpeed = $('.test-item[data-test="pagespeed"]');
+                    if (existingPageSpeed.length === 0) {
+                        const $pageSpeedItem = $(`
+                            <div class="test-item" data-test="pagespeed">
+                                <div class="test-info">
+                                    <span class="test-name">PageSpeed Test</span>
+                                    <span class="test-status pending">Pending</span>
+                                </div>
+                                <div class="test-progress-bar" style="display: none;">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        `);
+                        $('.test-status-container').prepend($pageSpeedItem);
+                        tests.unshift('pagespeed');
+                    }
+                }
+
                 if (hasUptimeRobotKey) {
                     // Check if UptimeRobot test item already exists
                     const existingUptimeRobot = $('.test-item[data-test="uptimerobot"]');
@@ -1622,6 +1633,7 @@ jQuery(document).ready(function($) {
         
         // Function to complete the wizard (when finish button is clicked)
         function completeWizard() {
+
             // The save_wizard_settings AJAX call already marks the wizard as completed
             $('#wpspeedtestpro-setup-wizard').remove();
             window.location.href = wpspeedtestpro_wizard.dashboard_url;
