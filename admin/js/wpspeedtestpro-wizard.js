@@ -26,7 +26,7 @@ jQuery(document).ready(function($) {
                             <div class="step-item">
                                 <div class="step-circle">3</div>
                                 <div class="step-line"></div>
-                                <div class="step-label">Google PageSpeed API</div>
+                                <div class="step-label">PageSpeed</div>
                             </div>
                             <div class="step-item">
                                 <div class="step-circle">4</div>
@@ -371,11 +371,7 @@ jQuery(document).ready(function($) {
                             <div class="form-group">
                                 <p class="description">You can skip this step if you don't want to run PageSpeed tests.</p>
                             </div>
-                            
-                            <div class="wizard-buttons">
-                                <button type="button" class="button prev-step">Previous</button>
-                                <button type="button" class="button button-primary next-step">Next</button>
-                            </div>
+                        
                         </div>
 
                         <div class="wizard-step" data-step="4" style="display: none;">
