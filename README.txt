@@ -8,7 +8,7 @@ Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WP Speedtest Pro analyzes your WordPress site's performance with comprehensive server benchmarks and speed testing tools.
+WP Speedtest Pro analyzes your site's performance with comprehensive server benchmarks and speed testing tools.
 
 == Description ==
 
