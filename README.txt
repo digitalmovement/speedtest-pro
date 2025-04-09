@@ -12,14 +12,14 @@ WP Speedtest Pro analyzes your WordPress site's performance with comprehensive s
 
 == Description ==
 
-WP Speedtest Pro is a powerful tool designed to help you understand and optimize your WordPress site's performance. With the new server performance benchmarking feature, you can now get detailed insights into your server's capabilities.
+WP Speedtest Pro is a powerful tool designed to help you understand and optimize your site's performance. With the new server performance benchmarking feature, you can now get detailed insights into your server's capabilities.
 
 Key features include:
 
 * Comprehensive server performance benchmarks
 * Math, string, loops, and conditionals tests
 * MySQL performance testing
-* WordPress-specific performance metrics
+* Hosting performance metrics
 * Historical data tracking and visualization
 * Easy-to-understand charts and graphs
 
