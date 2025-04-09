@@ -1,7 +1,7 @@
 === WP Speedtest Pro ===
 Contributors: wpspeedtestproteam
 Donate link: https://wpspeedtestpro.com/
-Tags: performance, speed test, benchmark, server performance
+Tags: performance, speed test, benchmark, server performance, pagespeed
 Requires at least: 6.2
 Tested up to: 6.7
 Stable tag: 1.1.1
@@ -12,14 +12,15 @@ WP Speedtest Pro analyzes your site's performance with comprehensive server benc
 
 == Description ==
 
-WP Speedtest Pro is a powerful tool designed to help you understand and optimize your site's performance. With the new server performance benchmarking feature, you can now get detailed insights into your server's capabilities.
+WP Speedtest Pro helps you benchmark your WordPress site using real-world performance data and Google PageSpeed Insights. With the new server performance benchmarking feature, you can now get detailed insights into your server's capabilities.
 
 Key features include:
 
 * Comprehensive server performance benchmarks
 * Math, string, loops, and conditionals tests
 * MySQL performance testing
-* Hosting performance metrics
+* Hosting speed and stability metrics
+* Google PageSpeed API integration
 * Historical data tracking and visualization
 * Easy-to-understand charts and graphs
 
