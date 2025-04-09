@@ -18,7 +18,6 @@
  * Description:       An advanced plugin to test your WordPress Performance, including comprehensive server performance benchmarks.
  * Version:           1.1.1
  * Author:            Speedtest Pro Team
- * Author URI:        https://wpspeedtestpro.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       speedtestpro
