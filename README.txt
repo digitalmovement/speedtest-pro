@@ -49,14 +49,14 @@ The tests are designed to be non-intrusive, but they do use some server resource
 
 1. Server Performance Dashboard
 2. Benchmark Results Chart
-3. Historical Performance Data
+3. Google PageSpeed Insights Historical Performance Data
 
 == Changelog ==
 
 = 1.1.0 =
 * Added comprehensive server performance benchmarking feature
 * Introduced new tests for math, string, loops, and conditionals performance
-* Added MySQL and WordPress-specific performance tests
+* Added MySQL and specific performance tests
 * Implemented historical data tracking and visualization
 * Updated user interface for easier interpretation of results
 
