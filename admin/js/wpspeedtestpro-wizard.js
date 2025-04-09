@@ -1119,25 +1119,6 @@ jQuery(document).ready(function($) {
                 const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
                 const hasPageSpeedKey = $('#pagespeed-api-key').val().trim() !== '';
                 const tests = ['latency', 'ssl', 'performance'];
-    
-                if (hasPageSpeedKey) {
-                    const existingPageSpeed = $('.test-item[data-test="pagespeed"]');
-                    if (existingPageSpeed.length === 0) {
-                        const $pageSpeedItem = $(`
-                            <div class="test-item" data-test="pagespeed">
-                                <div class="test-info">
-                                    <span class="test-name">PageSpeed Test</span>
-                                    <span class="test-status pending">Pending</span>
-                                </div>
-                                <div class="test-progress-bar" style="display: none;">
-                                    <div class="progress-fill"></div>
-                                </div>
-                            </div>
-                        `);
-                        $('.test-status-container').prepend($pageSpeedItem);
-                        tests.unshift('pagespeed');
-                    }
-                }
 
                 if (hasUptimeRobotKey) {
                     // Check if UptimeRobot test item already exists
@@ -1155,9 +1136,30 @@ jQuery(document).ready(function($) {
                             </div>
                         `);
                         $('.test-status-container').prepend($uptimeRobotItem);
-                        tests.unshift('uptimerobot');
+                        tests.push('uptimerobot');
                     }
                 }
+
+    
+                if (hasPageSpeedKey) {
+                    const existingPageSpeed = $('.test-item[data-test="pagespeed"]');
+                    if (existingPageSpeed.length === 0) {
+                        const $pageSpeedItem = $(`
+                            <div class="test-item" data-test="pagespeed">
+                                <div class="test-info">
+                                    <span class="test-name">PageSpeed Test</span>
+                                    <span class="test-status pending">Pending</span>
+                                </div>
+                                <div class="test-progress-bar" style="display: none;">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        `);
+                        $('.test-status-container').prepend($pageSpeedItem);
+                        tests.push('pagespeed');
+                    }
+                }
+
 
             }
 
@@ -1596,7 +1598,7 @@ jQuery(document).ready(function($) {
                 `Package: ${$('#hosting-package option:selected').text()}`,
                 `Data Collection: ${$('#allow-data-collection').is(':checked') ? 'Enabled' : 'Disabled'}`,
                  `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`,
-                `PageSpeed API Key: ${$('#pagespeed-api-key').val() ? 'Configured' : 'Skipped'}`
+                `PageSpeed API Key: ${$('#pagespeed-api-key').val() ? 'Configured' : 'Skipped'}`,
                 `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`
             ];
         

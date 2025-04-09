@@ -163,3 +163,7 @@
     display: inline-block;
     vertical-align: middle;
 }
+
+.time-range-container {
+    margin-top: 40px;
+}
