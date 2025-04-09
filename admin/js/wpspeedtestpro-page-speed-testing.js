@@ -660,12 +660,38 @@ jQuery(document).ready(function($) {
     
     // Helper function to safely escape HTML
     function escapeHtml(str) {
-        if (str === null || str === undefined) return '';
+        if (typeof str !== 'string') return str;
+        
+        // Regular expression to find anchor tags
+        const anchorRegex = /<a\s+(?:[^>]*?\s+)?href=("|')(.*?)\1(?:\s+(?:[^>]*?\s+)?.*?)?>(.*?)<\/a>/gi;
+        
+        // Store anchor tags temporarily
+        let anchors = new Map();
+        let counter = 0;
+        
+        // Replace anchor tags with placeholders
+        let placeholderText = str.replace(anchorRegex, function(match) {
+            const placeholder = `__ANCHOR_PLACEHOLDER_${counter}__`;
+            anchors.set(placeholder, match);
+            counter++;
+            return placeholder;
+        });
+        
+        // Escape the HTML content
         const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        div.textContent = placeholderText;
+        let escapedHtml = div.innerHTML;
+        
+        // Restore anchor tags
+        anchors.forEach((html, placeholder) => {
+            escapedHtml = escapedHtml.replace(placeholder, html);
+        });
+        
+        return escapedHtml;
     }
+    
 
+    
     // Event handlers for scheduled test actions
     $(document).on('click', '.cancel-schedule', function(e) {
         e.preventDefault();

@@ -249,8 +249,8 @@ class Wpspeedtestpro_Latency_Testing {
             return;
         }
 
-        $latest_results = $this->core->db->get_latest_results_by_region();
-        $fastest_and_slowest = $this->core->db->get_fastest_and_slowest_results();
+        $latest_results = $this->core->db->get_latest_latency_results_by_region();
+        $fastest_and_slowest = $this->core->db->get_fastest_and_slowest_latency_results();
 
         // Merge the data
         foreach ($latest_results as &$result) {
@@ -274,13 +274,13 @@ class Wpspeedtestpro_Latency_Testing {
     public function get_results_for_time_range() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
         
-        $time_range = isset($_POST['time_range']) ? sanitize_text_field($_POST['time_range']) : '24_hours';
+        $time_range = isset($_POST['time_range']) ? sanitize_text_field(wp_unslash($_POST['time_range'])) : '24_hours';
     
         // Fetch results from DB based on the time range
-        $results = $this->core->db->get_results_by_time_range($time_range);
-        $fastest_and_slowest = $this->core->db->get_fastest_and_slowest_results();
+        $results = $this->core->db->get_latency_results_by_time_range($time_range);
+        $fastest_and_slowest = $this->core->db->get_fastest_and_slowest_latency_results();
 
-
+     
         // Merge the data
         foreach ($results as &$result) {
             foreach ($fastest_and_slowest as $fas_slow) {
@@ -306,7 +306,7 @@ class Wpspeedtestpro_Latency_Testing {
      */
     public function delete_all_results() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
-        $this->core->db->delete_all_results();
+        $this->core->db->delete_all_latency_results();
         wp_send_json_success('All results deleted');
     }
 
@@ -320,7 +320,7 @@ class Wpspeedtestpro_Latency_Testing {
         foreach ($endpoints as $endpoint) {
             $latency = $this->core->api->ping_endpoint($endpoint['url']);
             if ($latency !== false) {
-                $this->core->db->insert_result($endpoint['region'],$endpoint['region_name'], $latency);
+                $this->core->db->insert_latency_result($endpoint['region'],$endpoint['region_name'], $latency);
             }
         }
     }

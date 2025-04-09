@@ -1,7 +1,6 @@
 jQuery(document).ready(function($) {
-    if (!localStorage.getItem('wpspeedtestpro_setup_complete')) {
-        initSetupWizard();
-    }
+    // The wizard will now show based on the WordPress option, not localStorage
+    initSetupWizard();
 
     function initSetupWizard() {
         const wizardHtml = `
@@ -27,15 +26,20 @@ jQuery(document).ready(function($) {
                             <div class="step-item">
                                 <div class="step-circle">3</div>
                                 <div class="step-line"></div>
-                                <div class="step-label">UptimeRobot</div>
+                                <div class="step-label">PageSpeed</div>
                             </div>
                             <div class="step-item">
                                 <div class="step-circle">4</div>
                                 <div class="step-line"></div>
-                                <div class="step-label">Testing</div>
+                                <div class="step-label">UptimeRobot</div>
                             </div>
                             <div class="step-item">
                                 <div class="step-circle">5</div>
+                                <div class="step-line"></div>
+                                <div class="step-label">Testing</div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-circle">6</div>
                                 <div class="step-label">Complete</div>
                             </div>
                         </div>
@@ -46,7 +50,7 @@ jQuery(document).ready(function($) {
                         <div class="wizard-step" data-step="1">
                             <div class="welcome-content">
                                 <h1>Welcome to WP Speedtest Pro! 👋</h1>
-                                <p class="welcome-intro">Ready to discover your WordPress site's true performance?</p>
+                                <p class="welcome-intro">Ready to discover your site's true performance?</p>
                                 
                                 <div class="feature-grid">
                                     <div class="feature-item">
@@ -73,7 +77,7 @@ jQuery(document).ready(function($) {
 
                                 <div class="mission-statement">
                                     <h3>Our Mission</h3>
-                                    <p>WP Speedtest Pro helps WordPress users choose better hosting with clear, data-driven performance insights. We identify the best hosting providers, call out the worst, and help users get more value from their hosting. Committed to the WordPress community, we offer this plguin for free.</p>
+                                    <p>WP Speedtest Pro helps users choose better hosting with clear, data-driven performance insights. We identify the best hosting providers, call out the worst, and help users get more value from their hosting. Committed to the community, we offer this plguin for free.</p>
                                 </div>
                             </div>
                         </div>
@@ -340,16 +344,37 @@ jQuery(document).ready(function($) {
                                 </div>
                                 <div class="form-group privacy-opt">
                                     <label>
-                                        <input type="checkbox" id="allow-data-collection" name="allow-data-collection" checked>
-                                        Help improve WP Speed Test Pro by allowing anonymous data collection
+                                        <input type="checkbox" id="allow-data-collection" name="allow-data-collection">
+                                        Help improve WP Speedtest Pro by allowing anonymous data collection
                                     </label>
-                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the WordPress community. You can stop sharing at any time in Settings.
+                                    <p class="privacy-note">Your data helps us identify trends and improve hosting recommendations for the community. You can stop sharing at any time in Settings.
                                    For more information you can view our full <a target="_new" href="https://wpspeedtestpro.com/privacy">privacy policy</a></p>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Step 3: Google PageSpeed API -->
                         <div class="wizard-step" data-step="3" style="display: none;">
+                            <h2>Google PageSpeed API Setup</h2>
+                            <p>To run PageSpeed tests, you'll need a Google API key with the PageSpeed Insights API enabled.</p>
+                            
+                            <div class="form-group">
+                                <label for="pagespeed-api-key">Google API Key</label>
+                                <input type="text" id="pagespeed-api-key" name="pagespeed_api_key" placeholder="Enter your Google API key">
+                                <p class="description">
+                                    <a href="https://developers.google.com/speed/docs/insights/v5/get-started" target="_blank">
+                                        Learn how to create a Google API key
+                                    </a>
+                                </p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <p class="description">You can skip this step if you don't want to run PageSpeed tests.</p>
+                            </div>
+                        
+                        </div>
+
+                        <div class="wizard-step" data-step="4" style="display: none;">
                             <h3>UptimeRobot Integration</h3>
                             <p>Monitor your website's uptime and performance with UptimeRobot integration.</p>
                             <div class="form-group">
@@ -363,8 +388,8 @@ jQuery(document).ready(function($) {
                             <p class="skip-note">You can skip this step and set it up later.</p>
                         </div>
 
-                        <!-- Step 3: Testing -->
-                        <div class="wizard-step" data-step="4" style="display: none;">
+                        <!-- Step 5: Testing -->
+                        <div class="wizard-step" data-step="5" style="display: none;">
                             <div class="testing-container">
                                 <h3>Initial Performance Analysis</h3>
                                 <p>We'll run a comprehensive series of tests to analyze your site's performance. This might take a few minutes.</p>
@@ -397,15 +422,6 @@ jQuery(document).ready(function($) {
                                             <div class="progress-fill"></div>
                                         </div>
                                     </div>
-                                    <div class="test-item" data-test="pagespeed">
-                                        <div class="test-info">
-                                            <span class="test-name">PageSpeed Analysis</span>
-                                            <span class="test-status pending">Pending</span>
-                                        </div>
-                                        <div class="test-progress-bar" style="display: none;">
-                                            <div class="progress-fill"></div>
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="overall-progress">
@@ -417,10 +433,10 @@ jQuery(document).ready(function($) {
                             </div>
                         </div>
 
-                        <!-- Step 4: Completion -->
-                        <div class="wizard-step" data-step="5" style="display: none;">
+                        <!-- Step 6: Completion -->
+                        <div class="wizard-step" data-step="6" style="display: none;">
                             <h3>Setup Complete!</h3>
-                            <p>You're all set to start monitoring your WordPress site's performance.</p>
+                            <p>You're all set to start monitoring your site's performance.</p>
                             <div class="completion-summary">
                                 <h4>Here's what we've set up:</h4>
                                 <ul class="setup-summary"></ul>
@@ -817,7 +833,7 @@ jQuery(document).ready(function($) {
         $('body').append(wizardHtml);
 
         let currentStep = 1;
-        const totalSteps = 5;
+        const totalSteps = 6;
 
         // Load initial data
         loadGCPRegions();
@@ -847,10 +863,17 @@ jQuery(document).ready(function($) {
 
         async function runAllTests() {
             const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
-            const tests = ['latency', 'performance', 'pagespeed'];
+            const hasPageSpeedKey = $('#pagespeed-api-key').val().trim() !== '';
+            const tests = ['latency', 'performance'];
+            
+            // Only add PageSpeed test if API key is provided
+            if (hasPageSpeedKey) {
+                tests.push('pagespeed');
+            }
+            
             let completedTests = 0;
             let failedTests = [];
-        
+            
             if (hasUptimeRobotKey) {
                 tests.unshift('uptimerobot');
             }
@@ -1032,6 +1055,7 @@ jQuery(document).ready(function($) {
                         ajaxData.url = window.location.origin; // Homepage URL
                         ajaxData.device = 'both';
                         ajaxData.frequency = 'once';
+                        ajaxData.api_key = $('#pagespeed-api-key').val(); // Add API key to request
                         break;
                         
                     default:
@@ -1086,15 +1110,16 @@ jQuery(document).ready(function($) {
             // Update button visibility based on current step
             $('.prev-step').toggle(currentStep > 1);
             $('.next-step').toggle(currentStep < totalSteps);
-            $('.start-tests').toggle(currentStep === 4);
+            $('.start-tests').toggle(currentStep === 5);
             $('.finish-setup').toggle(currentStep === totalSteps);
 
             // Hide next button during testing phase
-            if (currentStep === 4) {
+            if (currentStep === 5) {
                 $('.next-step').hide();
                 const hasUptimeRobotKey = $('#uptimerobot-key').val().trim() !== '';
-                const tests = ['latency', 'ssl', 'performance', 'pagespeed'];
-    
+                const hasPageSpeedKey = $('#pagespeed-api-key').val().trim() !== '';
+                const tests = ['latency', 'ssl', 'performance'];
+
                 if (hasUptimeRobotKey) {
                     // Check if UptimeRobot test item already exists
                     const existingUptimeRobot = $('.test-item[data-test="uptimerobot"]');
@@ -1111,9 +1136,30 @@ jQuery(document).ready(function($) {
                             </div>
                         `);
                         $('.test-status-container').prepend($uptimeRobotItem);
-                        tests.unshift('uptimerobot');
+                        tests.push('uptimerobot');
                     }
                 }
+
+    
+                if (hasPageSpeedKey) {
+                    const existingPageSpeed = $('.test-item[data-test="pagespeed"]');
+                    if (existingPageSpeed.length === 0) {
+                        const $pageSpeedItem = $(`
+                            <div class="test-item" data-test="pagespeed">
+                                <div class="test-info">
+                                    <span class="test-name">PageSpeed Test</span>
+                                    <span class="test-status pending">Pending</span>
+                                </div>
+                                <div class="test-progress-bar" style="display: none;">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        `);
+                        $('.test-status-container').append($pageSpeedItem);
+                        tests.push('pagespeed');
+                    }
+                }
+
 
             }
 
@@ -1146,13 +1192,16 @@ jQuery(document).ready(function($) {
                     // Save settings after validation
                     saveWizardSettings();
                     return true;
-                    
                 case 3:
-                    // Save settings even if UptimeRobot is skipped
+                    saveWizardSettings();
+                    return true;
+                             
+                case 4:
+                    // Save settings even if Google API key is skipped
                     saveWizardSettings();
                     return true;
                     
-                case 4:
+                case 5:
                     return $('.test-status.completed, .test-status.failed').length > 0;
                 default:
                     return true;
@@ -1177,7 +1226,8 @@ jQuery(document).ready(function($) {
                     provider_id: $('#hosting-provider').val(),
                     package_id: $('#hosting-package').val(),
                     allow_data_collection: $('#allow-data-collection').is(':checked'),
-                    uptimerobot_key: $('#uptimerobot-key').val()
+                    uptimerobot_key: $('#uptimerobot-key').val(),
+                    pagespeed_api_key: $('#pagespeed-api-key').val()
                 }
             });
         }
@@ -1547,6 +1597,8 @@ jQuery(document).ready(function($) {
                 `Hosting Provider: ${$('#hosting-provider option:selected').text()}`,
                 `Package: ${$('#hosting-package option:selected').text()}`,
                 `Data Collection: ${$('#allow-data-collection').is(':checked') ? 'Enabled' : 'Disabled'}`,
+                 `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`,
+                `PageSpeed API Key: ${$('#pagespeed-api-key').val() ? 'Configured' : 'Skipped'}`,
                 `UptimeRobot Integration: ${$('#uptimerobot-key').val() ? 'Configured' : 'Skipped'}`
             ];
         
@@ -1560,6 +1612,33 @@ jQuery(document).ready(function($) {
             summaryItems.forEach(item => {
                 $summary.append(`<li>${item}</li>`);
             });
+        }
+
+        // Function to dismiss the wizard (when X is clicked)
+        function dismissWizard() {
+            // Send AJAX request to mark wizard as dismissed
+            $.ajax({
+                url: wpspeedtestpro_wizard.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'wpspeedtestpro_dismiss_wizard',
+                    nonce: wpspeedtestpro_wizard.nonce
+                },
+                success: function(response) {
+                    $('#wpspeedtestpro-setup-wizard').remove();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error dismissing wizard:', error);
+                }
+            });
+        }
+        
+        // Function to complete the wizard (when finish button is clicked)
+        function completeWizard() {
+
+            // The save_wizard_settings AJAX call already marks the wizard as completed
+            $('#wpspeedtestpro-setup-wizard').remove();
+            window.location.href = wpspeedtestpro_wizard.dashboard_url;
         }
     }
 });

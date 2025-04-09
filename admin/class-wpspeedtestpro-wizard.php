@@ -103,13 +103,14 @@ class Wpspeedtestpro_Wizard {
         }
     
         $settings = array(
-            'gcp_region' => sanitize_text_field($_POST['region']),
-            'user_country' => sanitize_text_field($_POST['user_country']),
-            'provider_id' => absint($_POST['provider_id']),
-            'package_id' => sanitize_text_field($_POST['package_id']),
+            'gcp_region' => isset($_POST['region']) ? sanitize_text_field(wp_unslash($_POST['region'])) : '',
+            'user_country' => isset($_POST['user_country']) ? sanitize_text_field(wp_unslash($_POST['user_country'])) : '',
+            'provider_id' => isset($_POST['provider_id']) ? absint($_POST['provider_id']) : 0,
+            'package_id' => isset($_POST['package_id']) ? sanitize_text_field(wp_unslash($_POST['package_id'])) : '',
             'allow_data_collection' => isset($_POST['allow_data_collection']) ? 
-                (bool) $_POST['allow_data_collection'] : false,
-            'uptimerobot_api_key' => sanitize_text_field($_POST['uptimerobot_key'])
+                (bool) sanitize_text_field(wp_unslash($_POST['allow_data_collection'])) : false,
+            'uptimerobot_api_key' => isset($_POST['uptimerobot_key']) ? sanitize_text_field(wp_unslash($_POST['uptimerobot_key'])) : '',
+            'pagespeed_api_key' => isset($_POST['pagespeed_api_key']) ? sanitize_text_field(wp_unslash($_POST['pagespeed_api_key'])) : ''
         );
     
         // Define default values for options
@@ -120,6 +121,7 @@ class Wpspeedtestpro_Wizard {
             'wpspeedtestpro_selected_package' => '',
             'wpspeedtestpro_allow_data_collection' => false,
             'wpspeedtestpro_uptimerobot_api_key' => '',
+            'wpspeedtestpro_pagespeed_api_key' => '',
             'wpspeedtestpro_setup_completed' => true
         );
     
@@ -131,7 +133,7 @@ class Wpspeedtestpro_Wizard {
         }
         if (isset($_POST['allow_data_collection'])) {
             // Convert various truthy values to boolean
-            $value = strtolower($_POST['allow_data_collection']);
+            $value = strtolower(sanitize_text_field(wp_unslash($_POST['allow_data_collection'])));
             $allow_data_collection = in_array($value, ['true', '1', 'yes', 'on'], true);
         }
         
@@ -144,13 +146,21 @@ class Wpspeedtestpro_Wizard {
                 update_option('wpspeedtestpro_user_country', $settings['user_country']),
                 update_option('wpspeedtestpro_selected_provider', $settings['provider_id']),
                 update_option('wpspeedtestpro_selected_package', $settings['package_id']),
-                update_option('wpspeedtestpro_allow_data_collection',$allow_data_collection)
+                update_option('wpspeedtestpro_allow_data_collection', $allow_data_collection)
             );
     
             // Only update UptimeRobot API key if provided
             if (!empty($settings['uptimerobot_api_key'])) {
                 $update_results[] = update_option('wpspeedtestpro_uptimerobot_api_key', $settings['uptimerobot_api_key']);
             }
+    
+            // Only update PageSpeed API key if provided
+            if (!empty($settings['pagespeed_api_key'])) {
+                $update_results[] = update_option('wpspeedtestpro_pagespeed_api_key', $settings['pagespeed_api_key']);
+            }
+    
+            // Mark setup as completed
+            update_option('wpspeedtestpro_setup_completed', true);
     
             // Check if any updates failed
             if (in_array(false, $update_results, true)) {
@@ -179,7 +189,8 @@ class Wpspeedtestpro_Wizard {
             'provider_id' => get_option('wpspeedtestpro_selected_provider_id'),
             'package_id' => get_option('wpspeedtestpro_selected_package_id'),
             'allow_data_collection' => get_option('wpspeedtestpro_allow_data_collection', true),
-            'uptimerobot_api_key' => get_option('wpspeedtestpro_uptimerobot_api_key')
+            'uptimerobot_api_key' => get_option('wpspeedtestpro_uptimerobot_api_key'),
+            'pagespeed_api_key' => get_option('wpspeedtestpro_pagespeed_api_key')
         );
     
         wp_send_json_success($data);

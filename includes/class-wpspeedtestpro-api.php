@@ -5,14 +5,12 @@ class Wpspeedtestpro_API {
     public function get_gcp_endpoints() {
         $response = wp_remote_get('https://global.gcping.com/api/endpoints');
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in get_gcp_endpoints() - ' . $response->get_error_message());
             return false;
         }
         $body = wp_remote_retrieve_body($response);
         $endpoints = json_decode($body, true);
         
         if (!is_array($endpoints)) {
-            error_log('WPSpeedTestPro: Invalid response in get_gcp_endpoints() - ' . print_r($body, true));
             return false;
         }
 
@@ -33,7 +31,6 @@ class Wpspeedtestpro_API {
         $response = wp_remote_get($url . '/api/ping');
         $end_time = microtime(true);
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in ping_endpoint() - ' . $response->get_error_message());
             return false;
         }
         $ping_time = round(($end_time - $start_time) * 1000, 1);
@@ -84,7 +81,7 @@ class Wpspeedtestpro_API {
 
     public function test_ssl_certificate($domain, $email, $getStatus="on") {
         $api_url = 'https://api.ssllabs.com/api/v4/analyze';
-        $host = parse_url($domain, PHP_URL_HOST);
+        $host = wp_parse_url($domain, PHP_URL_HOST);
         
         $args = array(
             'timeout' => 30,
@@ -104,7 +101,6 @@ class Wpspeedtestpro_API {
         
         if (is_wp_error($response)) {
             $error_message = $response->get_error_message();
-            error_log('WPSpeedTestPro: WP Error in test_ssl_certificate() - ' . $error_message);
             return array('error' => 'Failed to connect to SSL Labs API: ' . $error_message);
         }
         
@@ -113,13 +109,11 @@ class Wpspeedtestpro_API {
         $data = json_decode($body, true);
         
         if (!$data) {
-            error_log('WPSpeedTestPro: JSON Decode Error in test_ssl_certificate() - ' . json_last_error_msg());
             return array('error' => 'Failed to parse SSL Labs API response');
         }
         
         
         if (isset($data['errors']) && !empty($data['errors'])) {
-            error_log('WPSpeedTestPro: SSL Labs reported errors:');
             $error_messages = array();
             foreach ($data['errors'] as $index => $error) {
                 if (is_array($error) && isset($error['message'])) {
@@ -129,7 +123,6 @@ class Wpspeedtestpro_API {
                 } else {
                     $error_message = "Unknown error format";
                 }
-                error_log("WPSpeedTestPro: Error $index: $error_message");
                 $error_messages[] = $error_message;
             }
             
@@ -161,7 +154,6 @@ class Wpspeedtestpro_API {
     
         $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingproviders.json');
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error fetching hosting providers - ' . $response->get_error_message());
             return false;
         }
     
@@ -169,7 +161,6 @@ class Wpspeedtestpro_API {
         $data = json_decode($body, true);
     
         if (!isset($data['providers']) || !is_array($data['providers'])) {
-            error_log('WPSpeedTestPro: Invalid data structure in hosting providers response');
             return false;
         }
     
@@ -204,7 +195,6 @@ class Wpspeedtestpro_API {
     
         $response = wp_remote_get('https://assets.wpspeedtestpro.com/wphostingproviders.json');
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error fetching hosting providers JSON - ' . $response->get_error_message());
             return false;
         }
     
@@ -227,7 +217,6 @@ class Wpspeedtestpro_API {
     
         // Check for errors
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error fetching SSL emails - ' . $response->get_error_message());
             return false;
         }
     
@@ -259,7 +248,6 @@ class Wpspeedtestpro_API {
                 return false;
             }
         } else {
-            error_log('WPSpeedTestPro: Error decoding JSON or missing ssl_emails array');
             return false;
         }
     }

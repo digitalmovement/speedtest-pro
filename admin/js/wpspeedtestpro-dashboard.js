@@ -989,7 +989,7 @@ jQuery(document).ready(function($) {
 
             // Update content after brief delay
             setTimeout(() => {
-                card.find('img').attr('src', banner.imageUrl);
+                card.find('.advertisement-container').html('<img src="' + banner.imageUrl + '" alt="Advertisement">');
                 card.find('.advert-title').text(banner.title);
                 card.find('.advert-description').text(banner.description);
                 card.find('.advert-button')

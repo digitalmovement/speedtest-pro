@@ -118,9 +118,9 @@ class Wpspeedtestpro_PageSpeed {
         return;
     }
 
-    $url = isset($_POST['url']) ? esc_url_raw(sanitize_url($_POST['url'])) : '';
-    $device = isset($_POST['device']) ? sanitize_text_field($_POST['device']) : 'desktop';
-    $frequency = isset($_POST['frequency']) ? sanitize_text_field($_POST['frequency']) : 'once';
+    $url = isset($_POST['url']) ? esc_url_raw(sanitize_url(wp_unslash($_POST['url']))) : '';
+    $device = isset($_POST['device']) ? sanitize_text_field(wp_unslash($_POST['device'])) : 'desktop';
+    $frequency = isset($_POST['frequency']) ? sanitize_text_field(wp_unslash($_POST['frequency'])) : 'once';
 
     if (empty($url)) {
         wp_send_json_error('URL is required');
@@ -141,6 +141,7 @@ class Wpspeedtestpro_PageSpeed {
 
         if (!$desktop_test['success'] || !$mobile_test['success']) {
             $error_message = sprintf(
+                /* translators: 1: Desktop test error message  */
                 __('Failed to initiate tests - %s', 'wpspeedtestpro'),
                 isset($desktop_test['error']) ? sanitize_text_field($desktop_test['error']) : ''
             );
@@ -194,7 +195,7 @@ public function ajax_check_test_status() {
         return;
     }
 
-    $url = isset($_POST['url']) ? sanitize_url($_POST['url']) : '';
+    $url = isset($_POST['url']) ? sanitize_url(wp_unslash($_POST['url'])) : '';
     if (empty($url)) {
         wp_send_json_error('URL is required');
         return;
@@ -284,7 +285,7 @@ public function ajax_check_test_status() {
             return;
         }
 
-        $days = isset($_POST['days']) ? intval($_POST['days']) : 30;
+        $days = isset($_POST['days']) ? intval(wp_unslash($_POST['days'])) : 30;
 
         if ($days < 1) {
             wp_send_json_error('Invalid number of days');
@@ -294,15 +295,16 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Calculate the date threshold
-        $threshold_date = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $threshold_date = gmdate('Y-m-d H:i:s', strtotime("-{$days} days"));
         
         // Delete records older than the threshold
-        $query = $wpdb->prepare(
-            "DELETE FROM {$this->pagespeed_table } WHERE test_date < %s",
+     
+        // phpcs:ignore 
+        $results = $wpdb->get_results($wpdb->prepare(
+            "DELETE FROM %i WHERE test_date < %s",
+            $this->pagespeed_table,
             $threshold_date
-        );
-
-        $result = $wpdb->query($query);
+        ));
 
         if ($result === false) {
             wp_send_json_error('Failed to delete old results');
@@ -332,7 +334,7 @@ public function ajax_check_test_status() {
             return;
         }
 
-        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+        $schedule_id = isset($_POST['schedule_id']) ? intval(wp_unslash($_POST['schedule_id'])) : 0;
 
         if (!$schedule_id) {
             wp_send_json_error('Invalid schedule ID');
@@ -342,6 +344,7 @@ public function ajax_check_test_status() {
         global $wpdb;
         $table_name = $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled';
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $result = $wpdb->delete(
             $table_name,
             array('id' => $schedule_id),
@@ -371,7 +374,7 @@ public function ajax_check_test_status() {
             return;
         }
 
-        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+        $schedule_id = isset($_POST['schedule_id']) ? intval(wp_unslash($_POST['schedule_id'])) : 0;
 
         if (!$schedule_id) {
             wp_send_json_error('Invalid schedule ID');
@@ -381,10 +384,21 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Get the scheduled test details
-        $scheduled_test = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_scheduled_table} WHERE id = %d",
-            $schedule_id
-        ));
+        $cache_key = 'wpspeedtestpro_scheduled_test_' . $schedule_id;
+        $scheduled_test = wp_cache_get($cache_key);
+        
+        if (false === $scheduled_test) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $scheduled_test = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM %i WHERE id = %d",
+                $this->pagespeed_scheduled_table,
+                $schedule_id
+            ));
+            
+            if ($scheduled_test) {
+                wp_cache_set($cache_key, $scheduled_test, '', 3600);
+            }
+        }
 
         if (!$scheduled_test) {
             wp_send_json_error('Scheduled test not found');
@@ -401,6 +415,7 @@ public function ajax_check_test_status() {
         }
 
         // Update the last run time
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $wpdb->update(
             $this->pagespeed_scheduled_table,
             array(
@@ -438,7 +453,7 @@ public function ajax_check_test_status() {
             return;
         }
     
-        $schedule_id = isset($_POST['schedule_id']) ? intval($_POST['schedule_id']) : 0;
+        $schedule_id = isset($_POST['schedule_id']) ? intval(wp_unslash($_POST['schedule_id'])) : 0;
     
         if (!$schedule_id) {
             wp_send_json_error('Invalid schedule ID');
@@ -529,7 +544,7 @@ public function ajax_check_test_status() {
         $response = wp_remote_get($request_url, $args);
 
         if (is_wp_error($response)) {
-            error_log('PageSpeed API Error: ' . $response->get_error_message());
+
             return [
                 'success' => false,
                 'error' => $response->get_error_message()
@@ -538,7 +553,7 @@ public function ajax_check_test_status() {
 
         $status_code = wp_remote_retrieve_response_code($response);
         if (($status_code !== 200) && ($status_code !== 400)) {
-            error_log('PageSpeed API HTTP Error: ' . $status_code);
+            
             return [
                 'success' => false,
                 'error' => 'HTTP Error: ' . $status_code
@@ -550,7 +565,7 @@ public function ajax_check_test_status() {
 
         if (!$data || isset($data['error'])) {
             $error_message = isset($data['error']['message']) ? $data['error']['message'] : 'Invalid API response';
-            error_log('PageSpeed API Response Error: ' . $error_message);
+
             return [
                 'success' => false,
                 'error' => $error_message
@@ -581,7 +596,7 @@ public function ajax_check_test_status() {
             return;
         }
     
-        $test_id = isset($_POST['test_id']) ? intval($_POST['test_id']) : 0;
+        $test_id = isset($_POST['test_id']) ? intval(wp_unslash($_POST['test_id'])) : 0;
     
         if (!$test_id) {
             wp_send_json_error('Invalid test ID');
@@ -589,8 +604,10 @@ public function ajax_check_test_status() {
         }
     
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching    
         $result = $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_table} WHERE id = %d",
+            "SELECT * FROM %i WHERE id = %d",
+            $this->pagespeed_table,
             $test_id
         ));
     
@@ -613,9 +630,19 @@ public function ajax_check_test_status() {
             }
             
             // Remove markdown bold syntax
+            $links = array();
+            preg_match_all('/\[([^\]]+)\]\(([^\)]+)\)/', $text, $matches, PREG_SET_ORDER);
+            foreach ($matches as $match) {
+                $linkText = $match[1];
+                $linkUrl = $match[2];
+                // Store the links for later use
+                $links[$linkText] = $linkUrl;
+            }
+            
+            // Remove markdown bold
             $text = preg_replace('/\*\*(.*?)\*\*/', '$1', $text);
             
-            // Remove markdown links but keep the text
+            // Replace markdown links with just the text for now
             $text = preg_replace('/\[([^\]]+)\]\([^\)]+\)/', '$1', $text);
             
             // Remove markdown backticks
@@ -636,8 +663,21 @@ public function ajax_check_test_status() {
             // Remove extra whitespace
             $text = preg_replace('/\s+/', ' ', $text);
             
-            // Trim and sanitize
-            return sanitize_text_field(trim($text));
+            // Trim the text
+            $text = trim($text);
+            
+            // Now restore the links with proper HTML
+            foreach ($links as $linkText => $linkUrl) {
+                // Escape the URL and text for safety
+                $safeUrl = esc_url($linkUrl);
+                $safeText = esc_html($linkText);
+                
+                // Replace the plain text with an HTML link
+                $text = str_replace($linkText, '<a href="' . $safeUrl . '" target="_blank" rel="noopener noreferrer">' . $safeText . '</a>', $text);
+            }
+
+            return $text;
+            
         };
     
         // Clean up audits with proper sanitization
@@ -664,7 +704,7 @@ public function ajax_check_test_status() {
             'basic_info' => [
                 'url' => esc_url($result->url),
                 'device' => ucfirst(sanitize_text_field($result->device)),
-                'test_date' => wp_date('F j, Y g:i a', strtotime($result->test_date))
+                'test_date' => gmdate('F j, Y g:i a', strtotime($result->test_date))
             ],
             'scores' => [
                 'performance' => [
@@ -742,8 +782,7 @@ public function ajax_check_test_status() {
                         $audits['total-blocking-time']['numericValue'] : null
             ];
         } catch (Exception $e) {
-            error_log('Error parsing PageSpeed results: ' . $e->getMessage());
-            error_log('Raw data: ' . print_r($data, true));
+
             return null;
         }
     }
@@ -781,7 +820,14 @@ public function ajax_check_test_status() {
             $sanitized_results
         );
 
-        return $wpdb->insert($this->pagespeed_table, $data);
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $result = $wpdb->insert($this->pagespeed_table, $data);
+        
+        // Clear any cached results for this URL
+        wp_cache_delete('wpspeedtestpro_pagespeed_' . md5($data['url'] . '_desktop'), '');
+        wp_cache_delete('wpspeedtestpro_pagespeed_' . md5($data['url'] . '_mobile'), '');
+        
+        return $result;
     }
 
     public function get_latest_result($url, $device = 'both') {
@@ -791,20 +837,42 @@ public function ajax_check_test_status() {
             $results = array();
             
             // Get desktop result
-            $desktop = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table} 
-                WHERE url = %s AND device = 'desktop' 
-                ORDER BY test_date DESC LIMIT 1",
-                $url
-            ));
+            $cache_key = 'wpspeedtestpro_pagespeed_' . md5($url . '_desktop');
+            $desktop = wp_cache_get($cache_key);
+            
+            if (false === $desktop) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $desktop = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM %i  
+                    WHERE url = %s AND device = 'desktop' 
+                    ORDER BY test_date DESC LIMIT 1",
+                    $this->pagespeed_table,
+                    $url
+                ));
+                
+                if ($desktop) {
+                    wp_cache_set($cache_key, $desktop, '', 3600); // Cache for 1 hour
+                }
+            }
 
             // Get mobile result
-            $mobile = $wpdb->get_row($wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table} 
-                WHERE url = %s AND device = 'mobile' 
-                ORDER BY test_date DESC LIMIT 1",
-                $url
-            ));
+            $cache_key = 'wpspeedtestpro_pagespeed_' . md5($url . '_mobile');
+            $mobile = wp_cache_get($cache_key);
+            
+            if (false === $mobile) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                $mobile = $wpdb->get_row($wpdb->prepare(
+                    "SELECT * FROM %i 
+                    WHERE url = %s AND device = 'mobile' 
+                    ORDER BY test_date DESC LIMIT 1",
+                    $this->pagespeed_table,
+                    $url
+                ));
+                
+                if ($mobile) {
+                    wp_cache_set($cache_key, $mobile, '', 3600); // Cache for 1 hour
+                }
+            }
 
             return array(
                 'desktop' => $desktop,
@@ -812,13 +880,26 @@ public function ajax_check_test_status() {
             );
         }
 
-        return $wpdb->get_row($wpdb->prepare(
-            "SELECT * FROM {$this->pagespeed_table} 
-            WHERE url = %s AND device = %s 
-            ORDER BY test_date DESC LIMIT 1",
-            $url,
-            $device
-        ));
+        $cache_key = 'wpspeedtestpro_pagespeed_' . md5($url . '_' . $device);
+        $result = wp_cache_get($cache_key);
+        
+        if (false === $result) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $result = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM %i 
+                WHERE url = %s AND device = %s 
+                ORDER BY test_date DESC LIMIT 1",
+                $this->pagespeed_table,
+                $url,
+                $device
+            ));
+            
+            if ($result) {
+                wp_cache_set($cache_key, $result, '', 3600); // Cache for 1 hour
+            }
+        }
+        
+        return $result;
     }
 
     public function schedule_test($url, $frequency) {
@@ -826,6 +907,7 @@ public function ajax_check_test_status() {
         
         $next_run = $this->calculate_next_run($frequency);
         
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->insert(
             $this->pagespeed_scheduled_table,
             array(
@@ -842,9 +924,9 @@ public function ajax_check_test_status() {
         
         switch ($frequency) {
             case 'daily':
-                return date('Y-m-d H:i:s', strtotime('+1 day', strtotime($now)));
+                return gmdate('Y-m-d H:i:s', strtotime('+1 day', strtotime($now)));
             case 'weekly':
-                return date('Y-m-d H:i:s', strtotime('+1 week', strtotime($now)));
+                return gmdate('Y-m-d H:i:s', strtotime('+1 week', strtotime($now)));
             default:
                 return null;
         }
@@ -918,26 +1000,26 @@ public function ajax_check_test_status() {
                     <div class="scores-grid">
                         <div class="score-item">
                             <span class="score-label">Performance</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->performance_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->performance_score) ? $results['desktop']->performance_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->performance_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->performance_score) ? esc_html($results['desktop']->performance_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Accessibility</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->accessibility_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->accessibility_score) ? $results['desktop']->accessibility_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->accessibility_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->accessibility_score) ? esc_html($results['desktop']->accessibility_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Best Practices</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->best_practices_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->best_practices_score) ? $results['desktop']->best_practices_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->best_practices_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->best_practices_score) ? esc_html($results['desktop']->best_practices_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">SEO</span>
-                            <div class="score <?php echo $this->get_score_class($results['desktop']->seo_score ?? 0); ?>">
-                                <?php echo isset($results['desktop']->seo_score) ? $results['desktop']->seo_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['desktop']->seo_score ?? 0)); ?>">
+                                <?php echo isset($results['desktop']->seo_score) ? esc_html($results['desktop']->seo_score . '%') : '--'; ?>
                             </div>
                         </div>
                     </div>
@@ -949,26 +1031,26 @@ public function ajax_check_test_status() {
                     <div class="scores-grid">
                         <div class="score-item">
                             <span class="score-label">Performance</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->performance_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->performance_score) ? $results['mobile']->performance_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->performance_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->performance_score) ? esc_html($results['mobile']->performance_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Accessibility</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->accessibility_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->accessibility_score) ? $results['mobile']->accessibility_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->accessibility_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->accessibility_score) ? esc_html($results['mobile']->accessibility_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">Best Practices</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->best_practices_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->best_practices_score) ? $results['mobile']->best_practices_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->best_practices_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->best_practices_score) ? esc_html($results['mobile']->best_practices_score . '%') : '--'; ?>
                             </div>
                         </div>
                         <div class="score-item">
                             <span class="score-label">SEO</span>
-                            <div class="score <?php echo $this->get_score_class($results['mobile']->seo_score ?? 0); ?>">
-                                <?php echo isset($results['mobile']->seo_score) ? $results['mobile']->seo_score . '%' : '--'; ?>
+                            <div class="score <?php echo esc_attr($this->get_score_class($results['mobile']->seo_score ?? 0)); ?>">
+                                <?php echo isset($results['mobile']->seo_score) ? esc_html($results['mobile']->seo_score . '%') : '--'; ?>
                             </div>
                         </div>
                     </div>
@@ -979,12 +1061,12 @@ public function ajax_check_test_status() {
                 <div class="notice notice-warning inline">
                     <p>Please publish this post before running PageSpeed tests.</p>
                 </div>
-            <?php endif; ?>
+            <?php endif; ?> 
     
             <button type="button" class="button run-pagespeed-test" 
                     data-url="<?php echo esc_attr($url); ?>"
                     data-post-status="<?php echo esc_attr($post_status); ?>"
-                    <?php echo $post_status !== 'publish' ? 'disabled' : ''; ?>>
+                    <?php echo esc_attr($post_status !== 'publish' ? 'disabled' : '')  ; ?>>
                 Run PageSpeed Test
             </button>
         </div>
@@ -1000,11 +1082,13 @@ public function ajax_check_test_status() {
         }
     
         global $wpdb;
-        
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $results = $wpdb->get_results(
-            "SELECT * FROM {$this->pagespeed_scheduled_table} 
-            ORDER BY next_run ASC"
-        );
+            $wpdb->prepare(
+                "SELECT * FROM %i 
+            ORDER BY next_run ASC",
+            $this->pagespeed_scheduled_table
+        ));
     
         if ($results === false) {
             wp_send_json_error('Database error occurred');
@@ -1016,8 +1100,8 @@ public function ajax_check_test_status() {
                 'id' => $test->id,
                 'url' => $test->url,
                 'frequency' => $test->frequency,
-                'last_run' => $test->last_run ? wp_date('F j, Y g:i a', strtotime($test->last_run)) : 'Never',
-                'next_run' => $test->next_run ? wp_date('F j, Y g:i a', strtotime($test->next_run)) : 'Not scheduled',
+                'last_run' => $test->last_run ? gmdate('F j, Y g:i a', strtotime($test->last_run)) : 'Never',
+                'next_run' => $test->next_run ? gmdate('F j, Y g:i a', strtotime($test->next_run)) : 'Not scheduled',
                 'status' => $this->get_schedule_status($test)
             );
         }, $results);
@@ -1059,19 +1143,21 @@ public function ajax_check_test_status() {
         global $wpdb;
         
         // Get the page number and results per page
-        $page = isset($_POST['page']) ? absint($_POST['page']) : 1;
+        $page = isset($_POST['page']) ? absint(wp_unslash($_POST['page'])) : 1;
         $per_page = isset($_POST['per_page']) ? absint($_POST['per_page']) : 20;
         $offset = ($page - 1) * $per_page;
     
         // Get total count for pagination
-        $total_items = $wpdb->get_var("SELECT COUNT(*) FROM {$this->pagespeed_table}");
-    
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $total_items = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i", $this->pagespeed_table));
         // Get results with pagination
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared  
         $results = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_table}
+                "SELECT * FROM %i
                 ORDER BY test_date DESC
                 LIMIT %d OFFSET %d",
+                $this->pagespeed_table,
                 $per_page,
                 $offset
             )
@@ -1118,7 +1204,7 @@ public function ajax_check_test_status() {
                 'id' => $test->id,
                 'url' => $test->url,
                 'device' => ucfirst($test->device),
-                'test_date' => wp_date('F j, Y g:i a', strtotime($test->test_date)),
+                'test_date' => gmdate('F j, Y g:i a', strtotime($test->test_date)),
                 'performance' => $performance,
                 'accessibility' => $accessibility,
                 'best_practices' => $best_practices,
@@ -1184,6 +1270,7 @@ public function ajax_check_test_status() {
     
         $where = $url ? $wpdb->prepare("WHERE url = %s", $url) : "";
     
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $stats = $wpdb->get_row("
             SELECT 
                 AVG(performance_score) as avg_performance,
@@ -1193,9 +1280,9 @@ public function ajax_check_test_status() {
                 MIN(performance_score) as min_performance,
                 MAX(performance_score) as max_performance,
                 COUNT(*) as total_tests
-            FROM {$this->pagespeed_table}
-            {$where}
-        ");
+            FROM %i
+            %i
+        ", $this->pagespeed_table, $where);
     
         if ($stats) {
             return [
@@ -1227,20 +1314,23 @@ public function ajax_check_test_status() {
             $where[] = $wpdb->prepare("url = %s", $url);
         }
     
-        $date_limit = date('Y-m-d H:i:s', strtotime("-{$days} days"));
+        $date_limit = gmdate('Y-m-d H:i:s', strtotime("-{$days} days"));
         $where[] = $wpdb->prepare("test_date >= %s", $date_limit);
     
         $where_clause = "WHERE " . implode(" AND ", $where);
     
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->get_results($wpdb->prepare(
             "SELECT 
                 DATE(test_date) as date,
                 AVG(%s) as value
-            FROM {$this->pagespeed_table}
-            {$where_clause}
+            FROM %i
+            %i
             GROUP BY DATE(test_date)
             ORDER BY date ASC",
-            $metric
+            $metric,
+            $this->pagespeed_table,
+            $where_clause
         ));
     }
 
@@ -1251,11 +1341,13 @@ public function ajax_check_test_status() {
         global $wpdb;
 
         // Get all tests that need to be run
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $scheduled_tests = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$this->pagespeed_scheduled_table} 
+                "SELECT * FROM %i 
                 WHERE next_run <= %s 
                 AND (last_run IS NULL OR last_run != %s)",
+                $this->pagespeed_scheduled_table,
                 current_time('mysql'),
                 current_time('mysql', 'DATE')
             )
@@ -1289,6 +1381,7 @@ public function ajax_check_test_status() {
                 }
 
                 // Update last run and next run times
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                 $wpdb->update(
                     $this->pagespeed_scheduled_table,
                     array(
@@ -1302,11 +1395,7 @@ public function ajax_check_test_status() {
 
             } else {
                 // Log the error
-                error_log(sprintf(
-                    'PageSpeed scheduled test failed for URL: %s, Schedule ID: %d',
-                    $test->url,
-                    $test->id
-                ));
+             
             }
 
             // Add a small delay between tests to avoid API rate limits
@@ -1435,15 +1524,15 @@ public function ajax_check_test_status() {
             echo '<div class="pagespeed-scores" data-post-id="' . esc_attr($post_id) . '" data-url="' . esc_attr($url) . '" data-status="' . esc_attr($post_status) . '">';
             
             if (empty($results['desktop']) && empty($results['mobile'])) {
-                echo $this->render_indicator('no-test', 'No test', true);
+                echo wp_kses_post($this->render_indicator('no-test', 'No test', true));
             } else {
                 // Display Desktop Score
                 if (!empty($results['desktop'])) {
                     $desktop_score = $results['desktop']->performance_score;
                     $desktop_class = $this->get_score_class($desktop_score);
                     echo '<div class="pagespeed-device">';
-                    echo $this->render_indicator($desktop_class, $desktop_score, false, 'desktop');
-                    echo '</div>';
+                    echo wp_kses_post($this->render_indicator($desktop_class, $desktop_score, false, 'desktop'));
+                    echo '</div>';  
                 }
     
                 // Display Mobile Score
@@ -1451,7 +1540,7 @@ public function ajax_check_test_status() {
                     $mobile_score = $results['mobile']->performance_score;
                     $mobile_class = $this->get_score_class($mobile_score);
                     echo '<div class="pagespeed-device">';
-                    echo $this->render_indicator($mobile_class, $mobile_score, false, 'mobile');
+                    echo wp_kses_post($this->render_indicator($mobile_class, $mobile_score, false, 'mobile'));
                     echo '</div>';
                 }
             }

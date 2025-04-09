@@ -80,7 +80,7 @@ class Wpspeedtestpro_Server_Performance {
             wp_enqueue_script('jquery-ui-dialog');
           //  wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
            // wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
-            wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery' ), $this->version, false );
+            wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery','jquery-ui-core','jquery-ui-tabs','jquery-ui-dialog' ), $this->version, false );
             
             $continuous_test_status = get_option('wpspeedtestpro_continuous_test_status', 'stopped');
             $continuous_test_start_time = get_option('wpspeedtestpro_continuous_test_start_time', 0);
@@ -197,7 +197,7 @@ class Wpspeedtestpro_Server_Performance {
             wp_send_json_error('Insufficient permissions');
         }
 
-        $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : 'stopped';
+        $status = isset($_POST['status']) ? sanitize_text_field(wp_unslash($_POST['status'])) : '';
         update_option('wpspeedtestpro_performance_test_status', $status);
         wp_send_json_success();
     }
@@ -242,7 +242,7 @@ class Wpspeedtestpro_Server_Performance {
         try {
             update_option('wpspeedtestpro_performance_test_status', 'running');
             
-            $current_date = date('Y-m-d H:i:s');
+            $current_date = gmdate('Y-m-d H:i:s');
 
             // Run existing performance tests
             $results = array(
@@ -319,7 +319,7 @@ class Wpspeedtestpro_Server_Performance {
             addslashes($string);
             chunk_split($string);
             metaphone($string);
-            strip_tags($string);
+            wp_strip_all_tags($string);
             md5($string);
             sha1($string);
             strtoupper($string);
@@ -357,8 +357,8 @@ class Wpspeedtestpro_Server_Performance {
         $time_start = microtime(true);
         global $wpdb;
         
-        $query = "SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))";
-        $wpdb->query($wpdb->prepare($query, 1000000, 'WPSpeedTestPro', 'benchmark', 512));
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $result = $wpdb->query($wpdb->prepare("SELECT BENCHMARK(%d, AES_ENCRYPT(%s,UNHEX(SHA2(%s,%d))))", 1000000, 'WPSpeedTestPro', 'benchmark', 512));
         
         return $this->timer_delta($time_start);
     }
@@ -372,9 +372,17 @@ class Wpspeedtestpro_Server_Performance {
         $dummytext = str_repeat('Lorem ipsum dolor sit amet ', 100);
 
         for ($x = 0; $x < $count; $x++) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->insert($table, array('option_name' => $optionname . $x, 'option_value' => $dummytext));
-            $wpdb->get_var("SELECT option_value FROM $table WHERE option_name='$optionname$x'");
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $result = $wpdb->get_var($wpdb->prepare(
+                "SELECT option_value FROM %s WHERE option_name = %s",
+                $table,
+                $optionname . $x
+            ));
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->update($table, array('option_value' => 'updated_' . $dummytext), array('option_name' => $optionname . $x));
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $wpdb->delete($table, array('option_name' => $optionname . $x));
         }
 
@@ -390,7 +398,7 @@ class Wpspeedtestpro_Server_Performance {
     private function get_test_results() {
         return get_option('wpspeedtestpro_performance_test_results', array(
             'latest_results' => array(
-                'test_date' => date('Y-m-d H:i:s'), 
+                'test_date' => gmdate('Y-m-d H:i:s'), 
                 'math' => 0,
                 'string' => 0,
                 'loops' => 0,
@@ -411,7 +419,7 @@ class Wpspeedtestpro_Server_Performance {
                     'location' => ''
                 )
             ),
-            'test_date' => date('Y-m-d H:i:s'),
+            'test_date' => gmdate('Y-m-d H:i:s'),
             'math' => array(),
             'string' => array(),
             'loops' => array(),
@@ -617,7 +625,6 @@ class Wpspeedtestpro_Server_Performance {
                 }
             }, $results);
         } catch (Exception $e) {
-            error_log('Error getting historical results: ' . $e->getMessage());
             return array();
         }
     }

@@ -19,6 +19,12 @@
  * @subpackage Wpspeedtestpro/admin
  * @author     WP Speedtest Pro Team <support@wpspeedtestpro.com>
  */
+
+ function wpspeedtestpro_sanitize_options($options) {
+    return Wpspeedtestpro_Settings::sanitize_settings($options);
+}
+
+
 class Wpspeedtestpro_Settings {
 
     /**
@@ -137,25 +143,51 @@ class Wpspeedtestpro_Settings {
         register_setting(
             'wpspeedtestpro_settings_group',
             'wpspeedtestpro_options',
-            array(
-                'type' => 'array',
-                'sanitize_callback' => array($this, 'sanitize_settings')
-            )
+            'wpspeedtestpro_sanitize_options'
         );
 
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_region');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_provider');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_selected_package');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_allow_data_collection', array(
-            'type' => 'boolean',
-            'default' => true,
-            'sanitize_callback' => 'boolval'
-        ));
-        register_setting( 'wpspeedtestpro_settings_group', 'wpspeedtestpro_uptimerobot_api_key' );
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_pagespeed_api_key');
-        register_setting('wpspeedtestpro_settings_group', 'wpspeedtestpro_user_country');
-
- 
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_selected_region',
+            'sanitize_text_field'
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_selected_provider',
+            'absint'
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_selected_package',
+            'sanitize_text_field'
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_allow_data_collection', 
+            'boolval'
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_uptimerobot_api_key',
+            'sanitize_text_field'
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_pagespeed_api_key',
+            'sanitize_text_field'
+        );
+        
+        register_setting(
+            'wpspeedtestpro_settings_group', 
+            'wpspeedtestpro_user_country',
+            'sanitize_text_field'
+        );
 
         // Add settings section
         add_settings_section(
@@ -234,7 +266,7 @@ class Wpspeedtestpro_Settings {
         
     }
 
-    public function sanitize_settings($input) {
+    public static function sanitize_settings($input) {
         $sanitized_input = array();
         
         $errors = array();
@@ -336,7 +368,7 @@ class Wpspeedtestpro_Settings {
             foreach ($gcp_endpoints as $endpoint) {
                 $region_name = esc_attr($endpoint['region_name']);
                 $region = esc_attr($endpoint['region']);
-                echo '<option value="' . $region . '"' . selected($selected_region, $region, false) . '>';
+                echo '<option value="' . esc_attr($region) . '"' . selected($selected_region, $region, false) . '>';
                 echo esc_html($region_name);
                 echo '</option>';
             }
@@ -356,7 +388,7 @@ class Wpspeedtestpro_Settings {
             echo '<option value="">Select a provider</option>';
             foreach ($providers as $provider) {
                 $provider_id = esc_attr($provider['id']);
-                echo '<option value="' . $provider_id . '"' . selected($selected_provider_id, $provider_id, false) . '>';
+                echo '<option value="' . esc_attr($provider_id) . '"' . selected($selected_provider_id, $provider_id, false) . '>';
                 echo esc_html($provider['name']);
                 echo '</option>';
             }
@@ -379,7 +411,7 @@ class Wpspeedtestpro_Settings {
                 if ($provider['id'] == $selected_provider_id) {
                     foreach ($provider['packages'] as $package) {
                         $package_id = esc_attr($package['Package_ID']);
-                        echo '<option value="' . $package_id . '"' . selected($selected_package_id, $package_id, false) . '>';
+                        echo '<option value="' . esc_attr($package_id) . '"' . selected($selected_package_id, $package_id, false) . '>';
                         echo esc_html($package['type'] . ' - ' . $package['description']);
                         echo '</option>';
                     }
@@ -411,7 +443,7 @@ class Wpspeedtestpro_Settings {
             }
             return $gcp_endpoints;
         } catch (Exception $e) {
-            error_log('Error fetching GCP endpoints: ' . $e->getMessage());
+    
             // Return some default regions if API call fails
             return array(
                 array('region_name' => 'us-central1'),
@@ -431,7 +463,7 @@ class Wpspeedtestpro_Settings {
             }
             return wp_send_json_success($gcp_endpoints);
         } catch (Exception $e) {
-            error_log('Error fetching GCP endpoints: ' . $e->getMessage());
+    
             // Return some default regions if API call fails
             return wp_send_json_error(array(
                 array('region_name' => 'us-central1'),
@@ -450,7 +482,7 @@ class Wpspeedtestpro_Settings {
             }
             return $providers;
         } catch (Exception $e) {
-            error_log('Error fetching hosting providers: ' . $e->getMessage());
+ 
             // Return some default providers if API call fails
             return array(
                 array('name' => 'Provider A', 'packages' => array(array('type' => 'Basic'), array('type' => 'Pro'))),
@@ -462,7 +494,7 @@ class Wpspeedtestpro_Settings {
     public function ajax_get_provider_packages() {
         check_ajax_referer('wpspeedtestpro_ajax_nonce', 'nonce');
     
-        $provider_id = absint($_POST['provider']); // Convert to integer and sanitize
+        $provider_id = isset($_POST['provider']) ? absint($_POST['provider']) : 0; // Convert to integer and sanitize
         $providers = $this->core->api->get_hosting_providers();
     
         $packages = array();
@@ -815,9 +847,13 @@ class Wpspeedtestpro_Settings {
     }
 
     public function handle_settings_saved() {
+        if (!isset($_GET['page']) || !wp_verify_nonce(wp_create_nonce('wpspeedtestpro-settings-nonce'), 'wpspeedtestpro-settings-nonce')) {
+            return;
+        }
+        
         if (
             isset($_GET['settings-updated']) && 
-            sanitize_text_field($_GET['settings-updated']) === 'true'
+            sanitize_text_field(wp_unslash($_GET['settings-updated'])) === 'true'
         ) {
             add_settings_error(
                 'wpspeedtestpro_messages',

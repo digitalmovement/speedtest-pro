@@ -81,7 +81,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
 
     public function display_uptime_monitoring() {
         if (!$this->uptimerobot_check_api_key()) {
-            echo '<div class="notice notice-error"><p>Please add your UptimeRobot API Key <a href="' . admin_url('admin.php?page=wpspeedtestpro-settings') . '">settings page</a> before running tests.</p></div>';
+            echo '<div class="notice notice-error"><p>Please add your UptimeRobot API Key <a href="' . esc_html(admin_url('admin.php?page=wpspeedtestpro-settings')) . '">settings page</a> before running tests.</p></div>';
             return;
         }
 
@@ -99,7 +99,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
     }
 
     public function uptimerobot_setup_monitors() {
-        $this_site_url = parse_url(get_site_url(), PHP_URL_HOST);
+        $this_site_url = wp_parse_url(get_site_url(), PHP_URL_HOST);
 
         $ping_filename = $this->uptimerobot_create_ping_file();
         if (!$ping_filename) {
@@ -141,7 +141,7 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $string = '';
         for ($i = 0; $i < $length; $i++) {
-            $string .= $characters[rand(0, strlen($characters) - 1)];
+            $string .= $characters[wp_rand(0, strlen($characters) - 1)];
         }
         return $string;
     }
@@ -163,7 +163,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         ));
     
         if (is_wp_error($response)) {
-            error_log("WPSpeedTestPro: WP Error in create_monitor: " . $response->get_error_message());
             return array('success' => false, 'message' => 'WordPress error: ' . $response->get_error_message());
         }
     
@@ -173,7 +172,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $data = json_decode($response_body, true);
     
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("WPSpeedTestPro: JSON decode error: " . json_last_error_msg());
             return array('success' => false, 'message' => 'JSON decode error: ' . json_last_error_msg());
         }
     
@@ -207,7 +205,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         ));
     
         if (is_wp_error($response)) {
-            error_log('WPSpeedTestPro: Error in UptimeRobot API response: ' . $response->get_error_message());
             return false;
         }
     
@@ -216,7 +213,6 @@ class Wpspeedtestpro_Uptime_Monitoring {
         $data = json_decode($response_body, true);
     
         if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log('WPSpeedTestPro: JSON decoding error: ' . json_last_error_msg());
             return false;
         }
     

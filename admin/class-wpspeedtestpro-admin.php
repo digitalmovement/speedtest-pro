@@ -64,9 +64,10 @@ class Wpspeedtestpro_Admin {
     private $server_performance;
     private $uptime_monitoring;
     private $page_speed_testing;
-
+    private $sync_handler;
     private $server_information;
-   
+    private $dashboard;
+    private $wizard;
 
 
     public function __construct( $plugin_name, $version, $core ) {
@@ -124,15 +125,8 @@ class Wpspeedtestpro_Admin {
                $screen = get_current_screen();
                if ($screen && strpos($screen->id, $this->plugin_name) !== 0) {
                 wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-admin.css', array(), $this->version, 'all' );
-                wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css');
+                wp_enqueue_style('font-awesome',  plugin_dir_url( __FILE__ ) . 'assets/css/font-awesome-all.min.css', array(), $this->version, 'all');
 
-
-                   wp_enqueue_style(
-                       $this->plugin_name . '-dashboard',
-                       plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-dashboard.css',
-                       array(),
-                       $this->version
-                   );
                }
 
     }
@@ -156,7 +150,7 @@ class Wpspeedtestpro_Admin {
             wp_enqueue_script('jquery-ui-tabs');
             
             // Enqueue jQuery UI CSS
-            wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css');
+            wp_enqueue_style('jquery-ui-css',   plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css', array(), $this->version, 'all');
 
                 wp_localize_script(
                     $this->plugin_name . '-dashboard',
@@ -229,7 +223,7 @@ class Wpspeedtestpro_Admin {
         $db = $this->core->get_db();
         $data = array(
             'endpoints' => $api->get_gcp_endpoints(),
-            'latest_results' => $db->get_latest_results()
+            'latest_results' => $db->get_latest_latency_results()
         );
 
         $dashboard->display_dashboard();
@@ -332,7 +326,7 @@ class Wpspeedtestpro_Sync_Handler {
 
     private function generate_site_key() {
         $unique_parts = array(
-            parse_url(site_url(), PHP_URL_HOST), // Domain name
+            wp_parse_url(site_url(), PHP_URL_HOST), // Domain name
             defined('ABSPATH') ? ABSPATH : '', // WordPress installation path
             defined('DB_NAME') ? DB_NAME : '', // Database name
             php_uname(), // System information
@@ -367,7 +361,7 @@ class Wpspeedtestpro_Sync_Handler {
             'php_version' => phpversion(),
             'wp_version' => $wp_version,
             'mysql_version' => $this->get_mysql_version(),
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+            'server_software' => isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : 'unknown',
             'os' => PHP_OS,
             'max_execution_time' => ini_get('max_execution_time'),
             'max_input_vars' => ini_get('max_input_vars'),
@@ -391,6 +385,7 @@ class Wpspeedtestpro_Sync_Handler {
 
     private function get_mysql_version() {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         return $wpdb->get_var("SELECT VERSION()");
     }
 
@@ -514,7 +509,6 @@ class Wpspeedtestpro_Sync_Handler {
             }
 
         } catch (Exception $e) {
-            error_log('WPSpeedTestPro Sync Error: ' . $e->getMessage());
         }
     }
 }

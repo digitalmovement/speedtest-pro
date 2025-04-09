@@ -45,8 +45,8 @@
                     <canvas id="performance-trend-chart"></canvas>
                 </div>
                 <div class="action-buttons">
-                <button id="test-latency" class="button button-primary">
-                    <i class="fas fa-tachometer-alt"></i> Test Latency
+                <button id="test-performance" class="button button-primary">
+                    <i class="fas fa-server"></i> Test Performance
                 </button>
             </div>
             </div>
@@ -83,8 +83,8 @@
                 </div>
             </div>
             <div class="action-buttons">
-                <button id="test-performance" class="button button-primary">
-                    <i class="fas fa-server"></i> Test Performance
+                <button id="test-latency" class="button button-primary">
+                <i class="fas fa-tachometer-alt"></i> Test Latency
                 </button>
             </div>
         </div>
@@ -225,8 +225,8 @@
             <div class="advert-card" id="advert-1">
                 <div class="advert-image">
                     <a target="_blank" href="#" class="advert-link">
-                        <img src="" alt="Advertisement">
-                    </a>
+                    <div class="advertisement-container" aria-label="Advertisement"></div>
+                                    </a>
                 </div>
                 <div class="advert-content">
                     <h3 class="advert-title"></h3>
@@ -236,7 +236,9 @@
             </div>
             <div class="advert-card" id="advert-2">
                 <div class="advert-image">
-                    <img src="" alt="Advertisement">
+                    <a target="_blank" href="#" class="advert-link">
+                        <div class="advertisement-container" aria-label="Advertisement"></div>
+                    </a>
                 </div>
                 <div class="advert-content">
                     <h3 class="advert-title"></h3>

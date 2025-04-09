@@ -7,10 +7,10 @@ jQuery(document).ready(function($) {
     const $status = $('#test-status');
 
     const regionGroups = {
-        'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris'],
+        'Europe': ['Warsaw', 'Finland', 'Madrid', 'Belgium', 'Berlin', 'Turin', 'London', 'Frankfurt', 'Netherlands', 'Zurich', 'Milan', 'Paris', 'Stockholm'],
         'US': ['Montréal', 'Toronto', 'Iowa', 'South Carolina', 'North Virginia', 'Columbus', 'Dallas', 'Oregon', 'Los Angeles', 'Salt Lake City', 'Las Vegas'],
         'Asia': ['Taiwan', 'Hong Kong', 'Tokyo', 'Osaka', 'Seoul', 'Mumbai', 'Delhi', 'Singapore', 'Jakarta'],
-        'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv']
+        'Other': ['Johannesburg', 'São Paulo', 'Santiago', 'Sydney', 'Melbourne', 'Doha', 'Dammam', 'Tel Aviv', 'México']
     };
 
     
@@ -40,12 +40,14 @@ jQuery(document).ready(function($) {
         'Frankfurt': 'de',
         'London': 'gb',
         'Turin': 'it',
+        'México': 'mx',
         'Milan': 'it',
         'Tel Aviv': 'il',
         'Montréal': 'ca',
         'Toronto': 'ca',
         'São Paulo': 'br',
         'Santiago': 'cl',
+        'Stockholm': 'se',
         'Columbus': 'us',
         'North Virginia': 'us',
         'South Carolina': 'us',
@@ -335,16 +337,21 @@ jQuery(document).ready(function($) {
             }
         }
     }
-
     function createGraphContainer(regionName, groupName) {
         var containerId = 'graph-container-' + regionName.replace(/\s+/g, '-').toLowerCase();
         var container = $('<div>').attr('id', containerId).addClass('graph-container').css({
             width: '100%',
-            marginBottom: '40px'  // Add margin to the bottom of each graph container
+            marginBottom: '40px'
         });
-
+    
         var canvas = $('<canvas>').attr('id', 'graph-' + regionName.replace(/\s+/g, '-').toLowerCase());
         container.append(canvas);
+        
+        // Make sure jQuery UI tabs are initialized before adding content
+        if (!$('#tabs').hasClass('ui-tabs')) {
+            $("#tabs").tabs();
+        }
+        
         $('#graphs-' + groupName.toLowerCase()).append(container);
     }
 
@@ -364,6 +371,17 @@ jQuery(document).ready(function($) {
             regionData[result.region_name].latencies.push(parseFloat(result.latency));
             regionData[result.region_name].lastUpdated = result.test_time;
         });
+            // Force tabs initialization/refresh before creating chart containers
+        if ($("#tabs").tabs("instance") === undefined) {
+            $("#tabs").tabs();
+        } else {
+            $("#tabs").tabs("refresh");
+        }
+        
+        // Clear existing graph containers that might be in the wrong tabs
+        $('.graph-container').remove();
+
+        
 
         Object.keys(regionData).forEach(function(region) {
             var groupName = Object.keys(regionGroups).find(group => regionGroups[group].includes(region)) || 'Other';
@@ -397,16 +415,32 @@ jQuery(document).ready(function($) {
                 }
             };
 
-            // Function to get evenly spaced sample dates
+// Function to get evenly spaced sample dates
             function getSampleDates(dates, numSamples) {
+                if (!dates || dates.length === 0) {
+                    return [];
+                }
+                
                 var result = [];
+                
+                // If we have fewer dates than requested samples, return all dates
+                if (dates.length <= numSamples) {
+                    return dates;
+                }
+                
                 var step = Math.floor(dates.length / (numSamples - 1));
+                // Ensure step is at least 1
+                step = Math.max(1, step);
+                
                 for (var i = 0; i < dates.length; i += step) {
                     result.push(dates[Math.min(i, dates.length - 1)]);
                 }
+                
+                // Make sure the last date is included
                 if (result[result.length - 1] !== dates[dates.length - 1]) {
-                    result[result.length - 1] = dates[dates.length - 1];
+                    result.push(dates[dates.length - 1]);
                 }
+                
                 return result;
             }
 
@@ -698,7 +732,7 @@ jQuery(document).ready(function($) {
                 var flagSpan = $('<span>')
                     .addClass('flag-icon')
                     .css({
-                        'background-image': `url('https://flagcdn.com/w20/${countryMap[thisRegionName]}.png')`,
+                        'background-image': `url('https://flagcdn.com/28x21/${countryMap[thisRegionName]}.png')`,
                         'display': 'inline-block',
                         'width': '20px',
                         'height': '20px',
@@ -749,10 +783,15 @@ jQuery(document).ready(function($) {
         return date.toLocaleString();
     }
 
-
     function initializeTimeRange() {
         var storedTimeRange = getStoredTimeRange();
         $('#time-range').val(storedTimeRange);
+        
+        // Make sure tabs are initialized first
+        if (!$('#tabs').hasClass('ui-tabs')) {
+            $("#tabs").tabs();
+        }
+        
         updateResults(storedTimeRange);
     }
 
@@ -765,14 +804,24 @@ jQuery(document).ready(function($) {
 
 
     $(function() {
+        // Initialize tabs first
         $("#tabs").tabs();
+        
+        // Then proceed with the rest
+        checkContinuousTestingStatus();
+        checkTestStatus();
+        
+        // Modify the initializeTimeRange function to ensure proper order
+        var storedTimeRange = getStoredTimeRange();
+        $('#time-range').val(storedTimeRange);
+        
+        // Small delay to ensure tabs are fully initialized
+        setTimeout(function() {
+            updateResults(storedTimeRange);
+        }, 100);
+        
+        setInterval(function() {
+            updateResults(getStoredTimeRange());
+        }, 60000);
     });
-
-    // Initialize
-    checkContinuousTestingStatus();
-    checkTestStatus();
-    initializeTimeRange();
-    setInterval(function() {
-        updateResults(getStoredTimeRange());
-    }, 60000);
 });

@@ -100,14 +100,6 @@
         <div id="next-test-countdown"></div>
     </div>
     <div id="results-container">
-        <div>
-            <label for="time-range">Select Time Range:</label>
-            <select id="time-range" class="time-range-dropdown">
-                <option value="24_hours">Last 24 Hours</option>
-                <option value="7_days">Last 7 Days</option>
-                <option value="90_days">Last 90 Days</option>
-            </select>
-        </div>
         <h2>Latest Results</h2>
         <table id="latency-results" class="wp-list-table widefat fixed striped">
             <thead>
@@ -123,6 +115,14 @@
                 <!-- Results will be populated here -->
             </tbody>
         </table>
+    </div>
+    <div class="time-range-container">
+        <label for="time-range">Select Time Range:</label>
+        <select id="time-range" class="time-range-dropdown">
+            <option value="24_hours">Last 24 Hours</option>
+            <option value="7_days">Last 7 Days</option>
+            <option value="90_days">Last 90 Days</option>
+        </select>
     </div>
     <div id="tabs">
         <ul>

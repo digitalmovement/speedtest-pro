@@ -63,7 +63,7 @@ class Wpspeedtestpro_Deactivator {
             return;
         }
 
-        if (!isset($_POST['delete_data']) || !$_POST['delete_data']) {
+        if (!isset($_POST['delete_data']) || !sanitize_text_field(wp_unslash($_POST['delete_data']))) {
             wp_send_json_success();
             return;
         }
@@ -80,23 +80,24 @@ class Wpspeedtestpro_Deactivator {
         global $wpdb;
 
         // Start transaction
-        $wpdb->query('START TRANSACTION');
+        $wpdb->query('START TRANSACTION'); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
         try {
             // Delete all plugin tables
             $tables = array(
-                $wpdb->prefix . 'wpspeedtestpro_hosting_benchmarking_results',
                 $wpdb->prefix . 'wpspeedtestpro_benchmark_results',
                 $wpdb->prefix . 'wpspeedtestpro_pagespeed_results',
-                $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled'
+                $wpdb->prefix . 'wpspeedtestpro_pagespeed_scheduled',
+                $wpdb->prefix . 'wpspeedtestpro_latency_results'
             );
 
             foreach ($tables as $table) {
-                $wpdb->query("DROP TABLE IF EXISTS {$table}");
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+                $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $table)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
             }
 
             // Delete all plugin options
-            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'wpspeedtestpro_%'");
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'wpspeedtestpro_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
             // Clear any scheduled cron events
             wp_clear_scheduled_hook('wpspeedtestpro_hourly_test');
@@ -106,21 +107,46 @@ class Wpspeedtestpro_Deactivator {
             
 
             // Delete any transients
-            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wpspeedtestpro_%'");
-            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wpspeedtestpro_%'");
-            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_pagespeed_%'");
-            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_pagespeed_%'");
-    
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_wpspeedtestpro_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_wpspeedtestpro_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_pagespeed_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_pagespeed_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_latency_%'"); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            // Clear all plugin-related object cache entries
+            $cache_groups = ['', 'wpspeedtestpro', 'pagespeed'];
+            foreach ($cache_groups as $group) {
+                wp_cache_delete('wpspeedtestpro_latest_results', $group);
+                wp_cache_delete('wpspeedtestpro_latest_benchmark_results', $group);
+                wp_cache_delete('wpspeedtestpro_latest_results_by_region', $group);
+                wp_cache_delete('wpspeedtestpro_fastest_and_slowest_results', $group);
+                wp_cache_delete('wpspeedtestpro_unsynced_data', $group);
+                wp_cache_delete('wpspeedtestpro_latency_results', $group);
+                wp_cache_delete('wpspeedtestpro_latency_results_by_region', $group);
+                wp_cache_delete('wpspeedtestpro_fastest_and_slowest_latency_results', $group);
+
+                // Delete time range caches
+                $time_ranges = ['24_hours', '7_days', '90_days'];
+                foreach ($time_ranges as $range) {
+                    wp_cache_delete('wpspeedtestpro_benchmark_results_' . $range, $group);
+                    wp_cache_delete('wpspeedtestpro_latency_results_' . $range, $group);
+                }
+                
+                // Delete benchmark results with different limits
+                for ($i = 1; $i <= 100; $i++) {
+                    wp_cache_delete('wpspeedtestpro_benchmark_results_' . $i, $group);
+                }
+            }
+        
             // Commit transaction
-            $wpdb->query('COMMIT');
+            $wpdb->query('COMMIT'); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
             // Clean object cache if available
             wp_cache_flush();
 
         } catch (Exception $e) {
             // Rollback on error
-            $wpdb->query('ROLLBACK');
-            throw new Exception('Failed to delete plugin data: ' . $e->getMessage());
+            $wpdb->query('ROLLBACK'); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            throw new Exception('Failed to delete plugin data: ' . esc_html($e->getMessage()));
         }
     }
 
@@ -128,7 +154,7 @@ class Wpspeedtestpro_Deactivator {
         // Handle basic deactivation tasks
         wp_clear_scheduled_hook('pagespeed_check_scheduled_tests');
         wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
-
+        wp_clear_scheduled_hook('wpspeedtestpro_check_scheduled_pagespeed_tests');
         $timestamp = wp_next_scheduled('wpspeedtestpro_check_scheduled_pagespeed_tests');
         if ($timestamp) {
             wp_unschedule_event($timestamp, 'wpspeedtestpro_check_scheduled_pagespeed_tests');

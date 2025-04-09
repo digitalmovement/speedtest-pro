@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
         </button>
         <h2 style="margin-top: 0;">Understanding Server Performance Testing</h2>
         
-        <p style="margin-bottom: 15px;">Server performance testing helps identify bottlenecks and ensures optimal performance of your WordPress site. Our comprehensive testing suite measures several critical aspects:</p>
+        <p style="margin-bottom: 15px;">Server performance testing helps identify bottlenecks and ensures optimal performance of your site. Our comprehensive testing suite measures several critical aspects:</p>
         
         <div style="margin: 20px 0;">
             <div style="margin-bottom: 20px;">

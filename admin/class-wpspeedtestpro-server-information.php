@@ -33,7 +33,7 @@ class Wpspeedtestpro_Server_Information {
 
     public function enqueue_styles() {
         if (!$this->is_this_the_right_plugin_page()) {
-      //      return;
+            return;
         }
       //  wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css');
         wp_enqueue_style($this->plugin_name . '-server-information', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-server-information.css', array(), $this->version, 'all');
@@ -77,14 +77,14 @@ class Wpspeedtestpro_Server_Information {
         $info['hosting'] = array(
             'operating_system' => function_exists('php_uname') ? php_uname('s') . ' ' . esc_html(php_uname('r')) . ' ' . esc_html(php_uname('m')) : 'N/A',
             'server_hostname' => function_exists('php_uname') ? esc_html(php_uname('n')) : 'N/A',
-            'server_ip' => isset($_SERVER['SERVER_ADDR']) ? esc_html($_SERVER['SERVER_ADDR']) : 'N/A',
-            'server_protocol' => isset($_SERVER['SERVER_PROTOCOL']) ? esc_html($_SERVER['SERVER_PROTOCOL']) : 'N/A',
-            'server_admin' => isset($_SERVER['SERVER_ADMIN']) ? esc_html($_SERVER['SERVER_ADMIN']) : '[no address given]',
-            'server_port' => isset($_SERVER['SERVER_PORT']) ? absint($_SERVER['SERVER_PORT']) : 'N/A',
-            'web_server' => isset($_SERVER['SERVER_SOFTWARE']) ? esc_html($_SERVER['SERVER_SOFTWARE']) : 'N/A',
+            'server_ip' => isset($_SERVER['SERVER_ADDR']) ? esc_html(sanitize_text_field(wp_unslash($_SERVER['SERVER_ADDR']))) : 'N/A',
+            'server_protocol' => isset($_SERVER['SERVER_PROTOCOL']) ? esc_html(sanitize_text_field(wp_unslash($_SERVER['SERVER_PROTOCOL']))) : 'N/A',
+            'server_admin' => isset($_SERVER['SERVER_ADMIN']) ? esc_html(sanitize_text_field(wp_unslash($_SERVER['SERVER_ADMIN']))) : '[no address given]',
+            'server_port' => isset($_SERVER['SERVER_PORT']) ? absint(sanitize_text_field(wp_unslash($_SERVER['SERVER_PORT']))) : 'N/A',
+            'web_server' => isset($_SERVER['SERVER_SOFTWARE']) ? esc_html(sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE']))) : 'N/A',
             'php_version' => function_exists('phpversion')  ? phpversion() : 'N/A' ,
             'php_memory_limit' => ini_get('memory_limit'),
-            'cgi_version' => isset($_SERVER['GATEWAY_INTERFACE']) ? $_SERVER['GATEWAY_INTERFACE'] : 'N/A'
+            'cgi_version' => isset($_SERVER['GATEWAY_INTERFACE']) ? esc_html(sanitize_text_field(wp_unslash($_SERVER['GATEWAY_INTERFACE']))) : 'N/A'
         );
 
         // Database Information
@@ -96,8 +96,12 @@ class Wpspeedtestpro_Server_Information {
             $extension = null;
         }
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $server_version = $wpdb->get_var('SELECT VERSION()');
-        $client_version = mysqli_get_client_info() ? mysqli_get_client_info() : 'N/A';
+        $client_version = $wpdb->db_version() ? $wpdb->db_version() : 'N/A';
+        
+
+
 
         $info['database'] = array(
             'extension' => esc_html($extension),
@@ -146,37 +150,9 @@ class Wpspeedtestpro_Server_Information {
 
 class Wpspeedtestpro_Php_Info {
     
-    private function is_phpinfo_available() {
-        ob_start();
-        $exists = function_exists('phpinfo');
-        if ($exists) {
-            try {
-                phpinfo();
-                $output = ob_get_contents();
-                ob_end_clean();
-                return !empty($output);
-            } catch (Exception $e) {
-                ob_end_clean();
-                return false;
-            }
-        }
-        ob_end_clean();
-        return false;
-    }
 
     public function get_php_info() {
-        if ($this->is_phpinfo_available()) {
-            ob_start();
-            phpinfo();
-            $phpinfo = ob_get_clean();
-            
-            // Convert phpinfo HTML to be WordPress-friendly
-            $phpinfo = preg_replace('%^.*<body>(.*)</body>.*$%ms', '$1', $phpinfo);
-            $phpinfo = str_replace('<table>', '<table class="wp-list-table widefat fixed striped">', $phpinfo);
-            return $phpinfo;
-        } else {
             return $this->get_soft_php_info();
-        }
     }
 
     private function get_soft_php_info() {
