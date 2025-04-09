@@ -1155,7 +1155,7 @@ jQuery(document).ready(function($) {
                                 </div>
                             </div>
                         `);
-                        $('.test-status-container').prepend($pageSpeedItem);
+                        $('.test-status-container').append($pageSpeedItem);
                         tests.push('pagespeed');
                     }
                 }
