@@ -1,6 +1,6 @@
-=== WP Speedtest Pro ===
+=== Speedtest Pro ===
 Contributors: wpspeedtestproteam
-Donate link: https://wpspeedtestpro.com/
+Plugin URI: https://www.wpspeedtestpro.com/
 Tags: performance, speed test, benchmark, server performance, pagespeed
 Requires at least: 6.2
 Tested up to: 6.7
