@@ -200,7 +200,7 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function add_plugin_admin_menu() {
-        add_menu_page( 'WP Speedtest Pro', 'WP Speedtest Pro', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page'), 'dashicons-performance', 99 );
+        add_menu_page( 'Speedtest Pro', 'Speedtest Pro', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page'), 'dashicons-performance', 99 );
        
         add_submenu_page( $this->plugin_name, 'Dashboard', 'Dashboard', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page') );
         add_submenu_page( $this->plugin_name, 'Server Information','Server Information','manage_options',$this->plugin_name . '-server-information',array($this, 'display_plugin_server_information_page'));
