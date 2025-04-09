@@ -88,4 +88,4 @@ This plugin connects to the following external services:
 * SSL Labs - Used for SSL testing. [Privacy Policy](https://www.ssllabs.com/privacy/)
 
 
-Data sent to these services may include your website URL, performance metrics, and basic WordPress configuration information. No personal user data is collected or transmitted unless explicitly provided.
+Data sent to these services may include your website URL, performance metrics, and basic configuration information. No personal user data is collected or transmitted unless explicitly provided.
