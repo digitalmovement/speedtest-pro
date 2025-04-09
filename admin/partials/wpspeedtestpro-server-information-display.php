@@ -13,7 +13,7 @@
         <button type="button" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></button>
         <h2 style="margin-top: 0;">Understanding Your Server Configuration</h2>
         
-        <p>Server information provides crucial details about your hosting environment, helping you ensure optimal WordPress performance and troubleshoot potential issues.</p>
+        <p>Server information provides crucial details about your hosting environment, helping you ensure optimal performance and troubleshoot potential issues.</p>
         
         <div style="margin: 20px 0;">
             <div style="margin-bottom: 20px;">
@@ -65,7 +65,7 @@
             </div>
 
             <div style="margin-bottom: 15px;">
-                <h4 style="margin: 0 0 5px 0; color: #1d2327;">WordPress Environment</h4>
+                <h4 style="margin: 0 0 5px 0; color: #1d2327;">Site Environment</h4>
                 <div style="margin-left: 20px;">
                     <p style="margin: 5px 0; color: #555;">
                         <strong>Active Theme:</strong> Current theme and version

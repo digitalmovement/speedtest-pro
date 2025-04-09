@@ -273,6 +273,7 @@ class Wpspeedtestpro_DB {
                 GROUP BY region_name
             ";
         
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $results = $wpdb->get_results($wpdb->prepare("SELECT region_name,
                        MIN(latency) AS fastest_latency,
                        MAX(latency) AS slowest_latency
