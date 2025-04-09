@@ -142,13 +142,13 @@ class Wpspeedtestpro_PageSpeed {
         if (!$desktop_test['success'] || !$mobile_test['success']) {
             $error_message = sprintf(
                 /* translators: 1: Desktop test error message  */
-                __('Failed to initiate tests - %s', 'wpspeedtestpro'),
+                __('Failed to initiate tests - %s', 'speedtest-pro'),
                 isset($desktop_test['error']) ? sanitize_text_field($desktop_test['error']) : ''
             );
             
             // Check if the error message contains 429 (Too Many Requests)
             if (isset($desktop_test['error']) && strpos($desktop_test['error'], '429') !== false) {
-                $error_message .= ' - ' . __('Your website has been restricted by Google, please enter a PageSpeed Insight API key in the setting page.', 'wpspeedtestpro');
+                $error_message .= ' - ' . __('Your website has been restricted by Google, please enter a PageSpeed Insight API key in the setting page.', 'speedtest-pro');
             }
             
             wp_send_json_error($error_message);

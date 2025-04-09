@@ -20,7 +20,7 @@
  * Author:            Speedtest Pro Team
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       speedtestpro
+ * Text Domain:       speedtest-pro
  * Domain Path:       /languages
  *
  * This plugin uses Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com

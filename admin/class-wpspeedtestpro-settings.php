@@ -858,7 +858,7 @@ class Wpspeedtestpro_Settings {
             add_settings_error(
                 'wpspeedtestpro_messages',
                 'settings_updated',
-                __('Settings saved.', 'wpspeedtestpro'),
+                __('Settings saved.', 'speedtest-pro'),
                 'updated'
             );
         }
