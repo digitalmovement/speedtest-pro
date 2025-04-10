@@ -158,7 +158,7 @@ class Wpspeedtestpro {
 
 		$plugin_i18n = new Wpspeedtestpro_i18n();
 
-		//$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
 	}
 
