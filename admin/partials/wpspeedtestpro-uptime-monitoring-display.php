@@ -55,49 +55,49 @@
 
     <?php if (!$this->uptimerobot_check_api_key()): ?>
         <div class="notice notice-error">
-            <p><?php esc_attr_e('UptimeRobot API key is not set. Please configure it in the settings.', 'speedtestpro'); ?></p>
+            <p><?php esc_attr_e('UptimeRobot API key is not set. Please configure it in the settings.', 'speedtest-pro'); ?></p>
         </div>
     <?php else: ?>
         <?php if (!$this->ping_monitor_id || !$this->cron_monitor_id): ?>
             <div class="notice notice-warning">
-                <p><?php esc_attr_e('Uptime monitors are not set up. Click the button below to set them up.', 'speedtestpro'); ?></p>
+                <p><?php esc_attr_e('Uptime monitors are not set up. Click the button below to set them up.', 'speedtest-pro'); ?></p>
             </div>
-            <button id="setup-monitors" class="button button-primary"><?php esc_attr_e('Setup Monitors', 'speedtestpro'); ?></button>
+            <button id="setup-monitors" class="button button-primary"><?php esc_attr_e('Setup Monitors', 'speedtest-pro'); ?></button>
         <?php else: ?>
             <div id="uptime-monitors-data">
                 <div class="spinner is-active" style="float: none;"></div>
-                <p><?php esc_attr_e('Loading monitor data...', 'speedtestpro'); ?></p>
+                <p><?php esc_attr_e('Loading monitor data...', 'speedtest-pro'); ?></p>
             </div>
 
             <div class="uptime-monitors-graph">
-                <h3><?php esc_attr_e('Ping and Cron Response Times', 'speedtestpro'); ?></h3>
+                <h3><?php esc_attr_e('Ping and Cron Response Times', 'speedtest-pro'); ?></h3>
                 <canvas id="combined-monitor-graph"></canvas>
             </div>
 
             <div class="uptime-monitors-logs">
                 <div class="uptime-monitor-log">
-                    <h3><?php esc_attr_e('Ping Monitor Logs', 'speedtestpro'); ?></h3>
+                    <h3><?php esc_attr_e('Ping Monitor Logs', 'speedtest-pro'); ?></h3>
                     <table class="wp-list-table widefat fixed striped">
                         <thead>
                             <tr>
-                                <th><?php esc_attr_e('Date/Time', 'speedtestpro'); ?></th>
-                                <th><?php esc_attr_e('Type', 'speedtestpro'); ?></th>
-                                <th><?php esc_attr_e('Duration', 'speedtestpro'); ?></th>
-                                <th><?php esc_attr_e('Reason', 'speedtestpro'); ?></th>
+                                <th><?php esc_attr_e('Date/Time', 'speedtest-pro'); ?></th>
+                                <th><?php esc_attr_e('Type', 'speedtest-pro'); ?></th>
+                                <th><?php esc_attr_e('Duration', 'speedtest-pro'); ?></th>
+                                <th><?php esc_attr_e('Reason', 'speedtest-pro'); ?></th>
                             </tr>
                         </thead>
                         <tbody id="ping-monitor-logs"></tbody>
                     </table>
                 </div>
                 <div class="uptime-monitor-log">
-                    <h3><?php esc_attr_e('Cron Monitor Logs', 'speedtestpro'); ?></h3>
+                    <h3><?php esc_attr_e('Cron Monitor Logs', 'speedtest-pro'); ?></h3>
                     <table class="wp-list-table widefat fixed striped">
                         <thead>
                             <tr>
-                                <th><?php esc_attr_e('Date/Time', 'speedtestpro'); ?></th>
-                                <th><?php esc_attr_e('Type', 'speedtestpro'); ?></th>
-                                <th><?php esc_attr_e('Duration', 'speedtestpro'); ?></th>
-                                <th><?php esc_attr_e('Reason', 'speedtestpro'); ?></th>
+                                <th><?php esc_attr_e('Date/Time', 'speedtest-pro'); ?></th>
+                                <th><?php esc_attr_e('Type', 'speedtest-pro'); ?></th>
+                                <th><?php esc_attr_e('Duration', 'speedtest-pro'); ?></th>
+                                <th><?php esc_attr_e('Reason', 'speedtest-pro'); ?></th>
                             </tr>
                         </thead>
                         <tbody id="cron-monitor-logs"></tbody>
@@ -106,9 +106,9 @@
             </div>
 
             <div class="uptime-monitors-actions">
-                <button id="refresh-monitors" class="button"><?php esc_attr_e('Refresh Data', 'speedtestpro'); ?></button>
-                <button id="delete-monitors" class="button"><?php esc_attr_e('Delete Monitors', 'speedtestpro'); ?></button>
-                <button id="recreate-monitors" class="button"><?php esc_attr_e('Recreate Monitors', 'speedtestpro'); ?></button>
+                <button id="refresh-monitors" class="button"><?php esc_attr_e('Refresh Data', 'speedtest-pro'); ?></button>
+                <button id="delete-monitors" class="button"><?php esc_attr_e('Delete Monitors', 'speedtest-pro'); ?></button>
+                <button id="recreate-monitors" class="button"><?php esc_attr_e('Recreate Monitors', 'speedtest-pro'); ?></button>
             </div>
         <?php endif; ?>
     <?php endif; ?>

@@ -1,6 +1,6 @@
 === Speedtest Pro ===
-Contributors: wpspeedtestproteam
-Plugin URI: https://www.wpspeedtestpro.com/
+Contributors: speedtestproteam
+Plugin URI: https://wpspeedtestpro.com/
 Tags: performance, speed test, benchmark, server performance, pagespeed
 Requires at least: 6.2
 Tested up to: 6.7
@@ -8,11 +8,11 @@ Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WP Speedtest Pro analyzes your site's performance with comprehensive server benchmarks and speed testing tools.
+Speedtest Pro analyzes your site's performance with comprehensive server benchmarks and speed testing tools.
 
 == Description ==
 
-WP Speedtest Pro helps you benchmark your WordPress site using real-world performance data and Google PageSpeed Insights. With the new server performance benchmarking feature, you can now get detailed insights into your server's capabilities.
+Speedtest Pro helps you benchmark your WordPress site using real-world performance data and Google PageSpeed Insights. With the new server performance benchmarking feature, you can now get detailed insights into your server's capabilities.
 
 Key features include:
 
@@ -28,9 +28,9 @@ Whether you're a site owner looking to improve your website's speed or a develop
 
 == Installation ==
 
-1. Upload the `wpspeedtestpro` folder to the `/wp-content/plugins/` directory
+1. Upload the zip file to the folder to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Navigate to the 'WP Speedtest Pro' menu in your WordPress admin panel to start using the plugin
+3. Navigate to the 'Speedtest Pro' menu in your WordPress admin panel to start using the plugin
 4. You will need to obtain the following API keys:
    * UptimeRobot API Key - Get it from [UptimeRobot.com](https://uptimerobot.com/)
    * Google API Key - Get it from [Google Cloud Console](https://console.cloud.google.com/)
