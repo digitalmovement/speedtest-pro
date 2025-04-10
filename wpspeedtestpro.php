@@ -86,7 +86,6 @@ function run_wpspeedtestpro() {
 
 	$plugin = new Wpspeedtestpro();
 	$plugin->run();
-	//$admin = new Wpspeedtestpro_Admin( $plugin->get_plugin_name(), $plugin->get_version(), $plugin->get_core() );
-
 }
+
 run_wpspeedtestpro();
