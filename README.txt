@@ -1,5 +1,5 @@
 === Speedtest Pro ===
-Contributors: speedtestproteam
+Contributors: digitalmovementstudio
 Plugin URI: https://wpspeedtestpro.com/
 Tags: performance, speed test, benchmark, server performance, pagespeed
 Requires at least: 6.2
@@ -7,6 +7,8 @@ Tested up to: 6.7
 Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Author: Digital Movement Studio
+Author URI: https://digitalmovement.co.uk
 
 Speedtest Pro analyzes your site's performance with comprehensive server benchmarks and speed testing tools.
 
@@ -66,7 +68,7 @@ The tests are designed to be non-intrusive, but they do use some server resource
 
 == Upgrade Notice ==
 
-= 1.1.0 =
+= 1.1.1 =
 This update introduces powerful server performance benchmarking features. Upgrade to gain valuable insights into your server's capabilities and track performance over time.
 
 == Credits ==
