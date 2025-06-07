@@ -170,12 +170,3 @@
             </div>
         </div>
     </div>
-<style>
-    .graph-container {
-        height: 400px;
-        margin-bottom: 40px;
-    }
-    #tabs {
-        margin-top: 20px;
-    }
-</style>

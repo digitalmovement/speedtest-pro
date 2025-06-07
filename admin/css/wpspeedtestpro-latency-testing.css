@@ -167,3 +167,10 @@
 .time-range-container {
     margin-top: 40px;
 }
+.graph-container {
+    height: 400px;
+    margin-bottom: 40px;
+}
+#tabs {
+    margin-top: 20px;
+}
