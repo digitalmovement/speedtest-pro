@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 /**
  * Provide a admin area view for the plugin
  *
@@ -13,6 +13,7 @@
  */
 ?>
 <?php
+
 if (!current_user_can('manage_options')) {
     return;
 }

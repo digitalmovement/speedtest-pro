@@ -44,7 +44,7 @@ define( 'WPSPEEDTESTPRO_VERSION', '1.1.1' );
  * The code that runs during plugin activation.
  * This action is documented in includes/class-wpspeedtestpro-activator.php
  */
-function activate_wpspeedtestpro() {
+function wpspeedtestpro_activate() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wpspeedtestpro-activator.php';
 	Wpspeedtestpro_Activator::activate();
 }
@@ -53,13 +53,13 @@ function activate_wpspeedtestpro() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-wpspeedtestpro-deactivator.php
  */
-function deactivate_wpspeedtestpro() {
+function wpspeedtestpro_deactivate() {
     require_once plugin_dir_path(__FILE__) . 'includes/class-wpspeedtestpro-deactivator.php';
     Wpspeedtestpro_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_wpspeedtestpro' );
-register_deactivation_hook( __FILE__, 'deactivate_wpspeedtestpro' );
+register_activation_hook( __FILE__, 'wpspeedtestpro_activate' );
+register_deactivation_hook( __FILE__, 'wpspeedtestpro_deactivate' );
 
 function wpspeedtestpro_init() {
     require_once plugin_dir_path(__FILE__) . 'includes/class-wpspeedtestpro-deactivator.php';
@@ -83,10 +83,9 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wpspeedtestpro.php';
  *
  * @since    1.0.0
  */
-function run_wpspeedtestpro() {
-
+function wpspeedtestpro_run() {
 	$plugin = new Wpspeedtestpro();
 	$plugin->run();
 }
 
-run_wpspeedtestpro();
+wpspeedtestpro_run();

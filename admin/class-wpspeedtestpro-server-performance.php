@@ -62,7 +62,6 @@ class Wpspeedtestpro_Server_Performance {
 
     public function enqueue_styles() {
         if ($this->is_this_the_right_plugin_page()) {
-        //    wp_enqueue_style('jquery-ui-style', 'https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css', array(), null);
             wp_enqueue_style( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'css/wpspeedtestpro-server-performance.css', array(), $this->version, 'all' );
         }
     }
@@ -78,8 +77,6 @@ class Wpspeedtestpro_Server_Performance {
             wp_enqueue_script('jquery-ui-core');
             wp_enqueue_script('jquery-ui-tabs');
             wp_enqueue_script('jquery-ui-dialog');
-          //  wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js', array(), '3.7.0', true);
-           // wp_enqueue_script('chart-date-js', 'https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js', array(), '3.7.0', true);
             wp_enqueue_script( $this->plugin_name . '-server-performance', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-server-performance.js', array( 'jquery','jquery-ui-core','jquery-ui-tabs','jquery-ui-dialog' ), $this->version, false );
             
             $continuous_test_status = get_option('wpspeedtestpro_continuous_test_status', 'stopped');

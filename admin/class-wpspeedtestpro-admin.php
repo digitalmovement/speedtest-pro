@@ -200,16 +200,16 @@ class Wpspeedtestpro_Admin {
      * @since    1.0.0
      */
     public function add_plugin_admin_menu() {
-        add_menu_page( 'Speedtest Pro', 'Speedtest Pro', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page'), 'dashicons-performance', 99 );
+        add_menu_page( 'Speedtest Pro', 'Speedtest Pro', 'manage_options', 'wpspeedtestpro', array($this, 'display_plugin_dashboard_page'), 'dashicons-performance', 99 );
        
-        add_submenu_page( $this->plugin_name, 'Dashboard', 'Dashboard', 'manage_options', $this->plugin_name, array($this, 'display_plugin_dashboard_page') );
-        add_submenu_page( $this->plugin_name, 'Server Information','Server Information','manage_options',$this->plugin_name . '-server-information',array($this, 'display_plugin_server_information_page'));
-        add_submenu_page( $this->plugin_name, 'Server Performance', 'Server Performance', 'manage_options', $this->plugin_name . '-server-performance', array($this, 'display_plugin_server_performance_page') );
-        add_submenu_page( $this->plugin_name, 'Latency Testing', 'Latency Testing', 'manage_options', $this->plugin_name . '-latency-testing', array($this, 'display_plugin_latency_testing_page') );
-        add_submenu_page( $this->plugin_name, 'SSL Testing', 'SSL Testing', 'manage_options', $this->plugin_name . '-ssl-testing', array($this, 'display_plugin_ssl_testing_page') );
-        add_submenu_page( $this->plugin_name, 'Uptime Monitoring', 'Uptime Monitoring', 'manage_options', $this->plugin_name . '-uptime-monitoring', array($this, 'display_plugin_uptime_monitoring_page') );
-        add_submenu_page( $this->plugin_name, 'Page Speed Testing', 'Page Speed Testing', 'manage_options', $this->plugin_name . '-page-speed-testing', array($this, 'display_plugin_page_speed_testing_page') );
-        add_submenu_page( $this->plugin_name, 'Settings', 'Settings', 'manage_options', $this->plugin_name . '-settings', array($this, 'display_plugin_settings_page') );
+        add_submenu_page( $this->plugin_name, 'Dashboard', 'Dashboard', 'manage_options', 'wpspeedtestpro', array($this, 'display_plugin_dashboard_page') );
+        add_submenu_page( $this->plugin_name, 'Server Information','Server Information','manage_options','wpspeedtestpro-server-information',array($this, 'display_plugin_server_information_page'));
+        add_submenu_page( $this->plugin_name, 'Server Performance', 'Server Performance', 'manage_options', 'wpspeedtestpro-server-performance', array($this, 'display_plugin_server_performance_page') );
+        add_submenu_page( $this->plugin_name, 'Latency Testing', 'Latency Testing', 'manage_options', 'wpspeedtestpro-latency-testing', array($this, 'display_plugin_latency_testing_page') );
+        add_submenu_page( $this->plugin_name, 'SSL Testing', 'SSL Testing', 'manage_options', 'wpspeedtestpro-ssl-testing', array($this, 'display_plugin_ssl_testing_page') );
+        add_submenu_page( $this->plugin_name, 'Uptime Monitoring', 'Uptime Monitoring', 'manage_options', 'wpspeedtestpro-uptime-monitoring', array($this, 'display_plugin_uptime_monitoring_page') );
+        add_submenu_page( $this->plugin_name, 'Page Speed Testing', 'Page Speed Testing', 'manage_options', 'wpspeedtestpro-page-speed-testing', array($this, 'display_plugin_page_speed_testing_page') );
+        add_submenu_page( $this->plugin_name, 'Settings', 'Settings', 'manage_options', 'wpspeedtestpro-settings', array($this, 'display_plugin_settings_page') );
     }
 
     /**
