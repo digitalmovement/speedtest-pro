@@ -428,7 +428,7 @@ public function ajax_check_test_status() {
         );
 
         // Store test IDs in transient
-        set_transient('pagespeed_scheduled_test_' . $schedule_id, [
+        set_transient('wpspeedtestpro_pagespeed_scheduled_test_' . $schedule_id, [
             'desktop_id' => $desktop_test['test_id'],
             'mobile_id' => $mobile_test['test_id'],
             'url' => $scheduled_test->url,
@@ -460,7 +460,7 @@ public function ajax_check_test_status() {
             return;
         }
     
-        $test_data = get_transient('pagespeed_scheduled_test_' . $schedule_id);
+        $test_data = get_transient('wpspeedtestpro_pagespeed_scheduled_test_' . $schedule_id);
         
         if (!$test_data) {
             wp_send_json_error('No test found for this schedule');
@@ -469,7 +469,7 @@ public function ajax_check_test_status() {
     
         // Check if test has been running too long (2 minutes timeout)
         if (time() - $test_data['start_time'] > 120) {
-            delete_transient('pagespeed_scheduled_test_' . $schedule_id);
+            delete_transient('wpspeedtestpro_pagespeed_scheduled_test_' . $schedule_id);
             wp_send_json_error('Test timeout');
             return;
         }
@@ -499,7 +499,7 @@ public function ajax_check_test_status() {
             $this->save_results($test_data['url'], 'mobile', $mobile_result['data'], $mobile_result['raw_data']);
             
             // Clean up transient
-            delete_transient('pagespeed_scheduled_test_' . $schedule_id);
+            delete_transient('wpspeedtestpro_pagespeed_scheduled_test_' . $schedule_id);
             
             wp_send_json_success([
                 'status' => 'complete',
@@ -580,7 +580,7 @@ public function ajax_check_test_status() {
         ];
 
         // Store the result in a transient
-        set_transient('pagespeed_test_result_' . $result['id'], $result, 3600);
+        set_transient('wpspeedtestpro_pagespeed_test_result_' . $result['id'], $result, 3600);
 
         return [
             'success' => true,
@@ -737,7 +737,7 @@ public function ajax_check_test_status() {
     
         wp_send_json_success($response);
     }    private function check_test_result($test_id) {
-        $result = get_transient('pagespeed_test_result_' . $test_id);
+        $result = get_transient('wpspeedtestpro_pagespeed_test_result_' . $test_id);
         
         if (!$result) {
             return [
@@ -1435,80 +1435,9 @@ public function ajax_check_test_status() {
          * Add styles for the traffic light system
          */
         public function add_column_styles() {
-            ?>
-            <style>
-                .column-pagespeed_score {
-                    width: 140px;
-                }
-                .pagespeed-indicator {
-                    display: inline-block;
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 50%;
-                    margin-right: 5px;
-                    vertical-align: middle;
-                }
-                .pagespeed-score {
-                    display: inline-block;
-                    vertical-align: middle;
-                }
-                .pagespeed-indicator.no-test {
-                    background-color: #ccc;
-                }
-                .pagespeed-indicator.good {
-                    background-color: #0a0;
-                }
-                .pagespeed-indicator.average {
-                    background-color: #fa3;
-                }
-                .pagespeed-indicator.poor {
-                    background-color: #e33;
-                }
-                .pagespeed-device {
-                    display: inline-block;
-                    margin-right: 10px;
-                    white-space: nowrap;
-                }
-                .pagespeed-device i {
-                    width: 16px;
-                    margin-right: 4px;
-                    color: #666;
-                }
-                .pagespeed-score {
-                    font-weight: 500;
-                }
-                .quick-test-button {
-                    padding: 2px 8px;
-                    font-size: 11px;
-                    margin-top: 4px;
-                    display: block!important;
-                }
-                .pagespeed-test-status {
-                    color: #666;
-                    font-style: italic;
-/*                    display: inline-block; */
-                    margin-left: 5px;
-                    vertical-align: middle;
-                }
-                .pagespeed-test-status .spinner {
-                    float: none;
-                    margin: 0 4px 0 0;
-                }
-                .pagespeed-scores {
-                    white-space: nowrap;
-                }
-                .unpublished-notice {
-                color: #999;
-                font-style: italic;
-                font-size: 11px;
-                margin-left: 5px;
-                vertical-align: middle;
-                display: block;
-            }
-            
-            </style>
-            <?php
+            wp_enqueue_style($this->plugin_name . '-page-speed-testing-column', plugin_dir_url(__FILE__) . 'css/wpspeedtestpro-page-speed-testing-column.css', array(), $this->version, 'all');
         }
+
         /**
          * Populate PageSpeed column with traffic light indicators and quick test button
          */

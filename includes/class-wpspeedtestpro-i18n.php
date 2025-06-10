@@ -26,22 +26,17 @@
  */
 class Wpspeedtestpro_i18n {
 
-
 	/**
-	 * Load the plugin text domain for translation.
+	 * Initialize internationalization functionality.
 	 *
 	 * @since    1.0.0
+	 * @note     Since WordPress 4.6, plugins hosted on WordPress.org 
+	 *           automatically load translations. No manual loading required.
 	 */
 	public function load_plugin_textdomain() {
-
-		load_plugin_textdomain(
-			'speedtest-pro',
-			false,
-			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
-		);
-
+		// Since WordPress 4.6, plugins hosted on WordPress.org
+		// automatically load translations. No action needed.
+		// Translation files should be placed in /languages/ directory
+		// and follow the naming convention: speedtest-pro-{locale}.po/.mo
 	}
-
-
-
 }

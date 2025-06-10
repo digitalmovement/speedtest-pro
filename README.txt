@@ -84,10 +84,18 @@ This plugin uses the following third-party resources:
 
 This plugin connects to the following external services:
 
+* WP Speedtest Pro Configuration Service (assets.wpspeedtestpro.com) - Retrieves plugin configuration data including:
+  - Hosting provider database (wphostingproviders.json)
+  - SSL email templates (ssl_emails.json) 
+  - Performance benchmarks (performance-test-averages.json)
+  - Dashboard content (dashboard-advertisers.json)
+  [Privacy Policy](https://wpspeedtestpro.com/privacy-policy/) [Terms of Service](https://wpspeedtestpro.com/terms-of-service/)
+
+* WP Speedtest Pro Analytics (analytics.wpspeedtestpro.com/upload) - Used to collect anonymous usage statistics and performance data to improve the plugin and help the wider community to find the fastest hosting. This is our own service [Privacy Policy](https://wpspeedtestpro.com/privacy-policy/) [Terms of Service](https://wpspeedtestpro.com/terms-of-service/)
 * UptimeRobot API - Used for monitoring website uptime. [Privacy Policy](https://uptimerobot.com/privacy/)
 * Cloudflare - Used for performance testing from multiple global locations. [Privacy Policy](https://www.cloudflare.com/privacypolicy/)
-* Google Cloud Platform - Used for data processing and storage. [Privacy Policy](https://cloud.google.com/terms/cloud-privacy-notice)
-* GCPPing - Used for performance testing from multiple global locations. [Privacy Policy](https://www.gcpping.com/privacy/)
+* Google Cloud Platform - Used for data processing, page speed testing and storage. (www.googleapis.com) [Privacy Policy](https://cloud.google.com/terms/cloud-privacy-notice)
+* GCPPing - Used for performance testing from multiple global locations. (https://global.gcping.com/) [Privacy Policy](https://www.gcpping.com/privacy/)
 * SSL Labs - Used for SSL testing. [Privacy Policy](https://www.ssllabs.com/privacy/)
 
 
