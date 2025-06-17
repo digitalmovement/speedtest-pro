@@ -14,7 +14,7 @@ jQuery(document).ready(function($) {
     
         // Collect form data - use escapeHtml for user inputs
         const data = {
-            action: 'pagespeed_run_test',
+            action: 'wpspeedtestpro_pagespeed_run_test',
             nonce: wpspeedtestpro_ajax.nonce, // Use the value from wp_localize_script instead of directly accessing DOM
             url: escapeHtml($('#test-url').val()),
             device: escapeHtml($('#test-device').val()),
@@ -48,7 +48,7 @@ jQuery(document).ready(function($) {
         const days = parseInt($('#days-to-keep').val(), 10);
         
         $.post(ajaxurl, {
-            action: 'pagespeed_delete_old_results',
+            action: 'wpspeedtestpro_pagespeed_delete_old_results',
             nonce: wpspeedtestpro_ajax.nonce,
             days: days
         }, function(response) {
@@ -318,7 +318,7 @@ jQuery(document).ready(function($) {
         const $submit = $('#pagespeed-test-form button[type="submit"]');
         
         $.post(ajaxurl, {
-            action: 'pagespeed_check_test_status',
+            action: 'wpspeedtestpro_pagespeed_check_test_status',
             nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: url
         }, function(response) {
