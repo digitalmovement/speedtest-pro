@@ -24,17 +24,17 @@ class Wpspeedtestpro_PageSpeed {
 
     private function init() {
         // Admin AJAX handlers
-        add_action('wp_ajax_pagespeed_run_test', array($this, 'ajax_run_test'));
-        add_action('wp_ajax_pagespeed_get_test_status', array($this, 'ajax_get_test_status'));
-        add_action('wp_ajax_pagespeed_cancel_scheduled_test', array($this, 'ajax_cancel_scheduled_test'));
-        add_action('wp_ajax_pagespeed_delete_old_results', array($this, 'ajax_delete_old_results'));
-        add_action('wp_ajax_pagespeed_get_latest_result', array($this, 'ajax_get_latest_result'));
-        add_action('wp_ajax_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
-        add_action('wp_ajax_pagespeed_get_test_results', array($this, 'ajax_get_test_results'));
-        add_action('wp_ajax_pagespeed_check_test_status', array($this, 'ajax_check_test_status'));
-        add_action('wp_ajax_pagespeed_run_scheduled_test', array($this, 'ajax_run_scheduled_test'));
-        add_action('wp_ajax_pagespeed_check_scheduled_test_status', array($this, 'ajax_check_scheduled_test_status'));
-        add_action('wp_ajax_pagespeed_get_test_details', array($this, 'ajax_get_test_details'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_run_test', array($this, 'ajax_run_test'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_get_test_status', array($this, 'ajax_get_test_status'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_cancel_scheduled_test', array($this, 'ajax_cancel_scheduled_test'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_delete_old_results', array($this, 'ajax_delete_old_results'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_get_latest_result', array($this, 'ajax_get_latest_result'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_get_scheduled_tests', array($this, 'ajax_get_scheduled_tests'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_get_test_results', array($this, 'ajax_get_test_results'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_check_test_status', array($this, 'ajax_check_test_status'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_run_scheduled_test', array($this, 'ajax_run_scheduled_test'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_check_scheduled_test_status', array($this, 'ajax_check_scheduled_test_status'));
+        add_action('wp_ajax_wpspeedtestpro_pagespeed_get_test_details', array($this, 'ajax_get_test_details'));
 
         add_action('transition_post_status', array($this, 'handle_post_status_change'), 10, 3);
         add_filter('heartbeat_received', array($this, 'handle_heartbeat'), 10, 2);

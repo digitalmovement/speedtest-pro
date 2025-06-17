@@ -15,7 +15,7 @@ jQuery(document).ready(function($) {
 
     // Initialize dashboard
     function initDashboard() {
-        console.log('Initializing dashboard');
+        
         loadServerPerformance();
         loadLatencyData();
         loadSSLData();
@@ -835,7 +835,7 @@ jQuery(document).ready(function($) {
                 url: wpspeedtestpro_ajax.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'start_ssl_test',
+                    action: 'wpspeedtestpro_start_ssl_test',
                     nonce: wpspeedtestpro_ajax.nonce
                 },
                 success: function() {
@@ -872,7 +872,7 @@ jQuery(document).ready(function($) {
                 url: wpspeedtestpro_ajax.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'pagespeed_run_test',
+                    action: 'wpspeedtestpro_pagespeed_run_test',
                     nonce: wpspeedtestpro_ajax.nonce,
                     url: urlToTest,
                     device: 'both',

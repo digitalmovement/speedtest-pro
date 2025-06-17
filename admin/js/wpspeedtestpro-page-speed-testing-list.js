@@ -38,7 +38,7 @@ jQuery(document).ready(function($) {
 
         // Start the test
         $.post(wpspeedtestpro_list.ajax_url, {
-            action: 'pagespeed_run_test',
+            action: 'wpspeedtestpro_pagespeed_run_test',
             nonce: wpspeedtestpro_list.nonce,
             url: url,
             device: 'both',
@@ -62,7 +62,7 @@ jQuery(document).ready(function($) {
         const $status = $container.find('.pagespeed-test-status');
 
         $.post(wpspeedtestpro_list.ajax_url, {
-            action: 'pagespeed_check_test_status',
+            action: 'wpspeedtestpro_pagespeed_check_test_status',
             nonce: wpspeedtestpro_list.nonce,
             url: url
         }, function(response) {

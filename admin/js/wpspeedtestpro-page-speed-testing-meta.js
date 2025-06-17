@@ -70,7 +70,7 @@ jQuery(document).ready(function($) {
 
         // Start the test
         $.post(ajaxurl, {
-            action: 'pagespeed_run_test',
+            action: 'wpspeedtestpro_pagespeed_run_test',
             nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: url,
             device: 'both',
@@ -89,47 +89,7 @@ jQuery(document).ready(function($) {
     });
 
 
-    // origial code
-    /*
-    $('.pagespeed-meta-box .run-pagespeed-test').on('click', function(e) {
-        e.preventDefault();
-        
-        const $button = $(this);
-        const $metabox = $button.closest('.pagespeed-meta-box');
-        const $status = $metabox.find('.test-status');
-        const url = $button.data('url');
-        const postStatus = $button.data('post-status');
-
-        // Check if post is published
-        if (postStatus !== 'publish') {
-            alert('Please publish this post before running PageSpeed tests.');
-            return;
-        }
-
-        // Disable button and show loading state
-        $button.prop('disabled', true);
-        $status.show().html('<p>Running PageSpeed test...</p><div class="test-progress"></div>');
-
-        // Start the test
-        $.post(ajaxurl, {
-            action: 'pagespeed_run_test',
-            nonce: $('#pagespeed_test_nonce').val(),
-            url: url,
-            device: 'both',
-            frequency: 'once'
-        }, function(response) {
-            if (response.success && response.data.status === 'initiated') {
-                checkMetaBoxTestStatus(url, $metabox);
-            } else {
-                $status.html('<p class="error">Error: ' + (response.data || 'Failed to start test') + '</p>');
-                $button.prop('disabled', false);
-            }
-        }).fail(function() {
-            $status.html('<p class="error">Failed to communicate with server</p>');
-            $button.prop('disabled', false);
-        });
-    });
-*/
+  
     // Handler for viewing test details from metabox
     $(document).on('click', '.pagespeed-meta-box .view-details', function(e) {
         e.preventDefault();
@@ -142,7 +102,7 @@ jQuery(document).ready(function($) {
         const $button = $metabox.find('.run-pagespeed-test');
         
         $.post(ajaxurl, {
-            action: 'pagespeed_check_test_status',
+            action: 'wpspeedtestpro_pagespeed_check_test_status',
             nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             url: url
         }, function(response) {

@@ -964,7 +964,7 @@ jQuery(document).ready(function($) {
         function checkTestStatus(testType) {
             return new Promise((resolve, reject) => {
                 const checkStatus = () => {
-                    const action = testType === 'ssl' ? 'check_ssl_test_status' : 'pagespeed_check_test_status';
+                    const action = testType === 'ssl' ? 'wpspeedtestpro_check_ssl_test_status' : 'wpspeedtestpro_pagespeed_check_test_status';
                     
                     $.ajax({
                         url: ajaxurl,
@@ -1047,11 +1047,11 @@ jQuery(document).ready(function($) {
                         break;
                         
                     case 'ssl':
-                        ajaxData.action = 'start_ssl_test';
+                        ajaxData.action = 'wpspeedtestpro_start_ssl_test';
                         break;
                         
                     case 'pagespeed':
-                        ajaxData.action = 'pagespeed_run_test';
+                        ajaxData.action = 'wpspeedtestpro_pagespeed_run_test';
                         ajaxData.url = window.location.origin; // Homepage URL
                         ajaxData.device = 'both';
                         ajaxData.frequency = 'once';

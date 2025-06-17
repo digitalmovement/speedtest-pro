@@ -99,7 +99,7 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'pagespeed_get_test_details',
+                action: 'wpspeedtestpro_pagespeed_get_test_details',
                 nonce: wpspeedtestpro_ajax.nonce,
                 test_id: parseInt(testId, 10) // Ensure testId is a number
             },
@@ -360,7 +360,7 @@ jQuery(document).ready(function($) {
     // Function to cancel a scheduled test
     function cancelScheduledTest(id) {
         $.post(ajaxurl, {
-            action: 'pagespeed_cancel_scheduled_test',
+            action: 'wpspeedtestpro_pagespeed_cancel_scheduled_test',
             nonce: $('#wpspeedtestpro_ajax_nonce').val(),
             schedule_id: id
         }, function(response) {
@@ -384,7 +384,7 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'pagespeed_run_scheduled_test',
+                action: 'wpspeedtestpro_pagespeed_run_scheduled_test',
                 nonce: $('#wpspeedtestpro_ajax_nonce').val(),
                 schedule_id: id
             },
@@ -418,7 +418,7 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'pagespeed_check_scheduled_test_status',
+                action: 'wpspeedtestpro_pagespeed_check_scheduled_test_status',
                 nonce: $('#wpspeedtestpro_ajax_nonce').val(),
                 schedule_id: scheduleId
             },
@@ -532,7 +532,7 @@ jQuery(document).ready(function($) {
     // Load test history
     function loadTestHistory() {
         $.post(ajaxurl, {
-            action: 'pagespeed_get_test_results',
+            action: 'wpspeedtestpro_pagespeed_get_test_results',
             nonce: $('#wpspeedtestpro_ajax_nonce').val()
         }, function(response) {
             if (response.success) {
@@ -592,7 +592,7 @@ jQuery(document).ready(function($) {
             url: ajaxurl,
             type: 'POST',
             data: {
-                action: 'pagespeed_get_scheduled_tests',
+                action: 'wpspeedtestpro_pagespeed_get_scheduled_tests',
                 nonce: $('#wpspeedtestpro_ajax_nonce').val()
             },
             success: function(response) {
