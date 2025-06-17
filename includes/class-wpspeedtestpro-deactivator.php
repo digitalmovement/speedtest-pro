@@ -102,7 +102,7 @@ class Wpspeedtestpro_Deactivator {
             // Clear any scheduled cron events
             wp_clear_scheduled_hook('wpspeedtestpro_hourly_test');
             wp_clear_scheduled_hook('wpspeedtestpro_cron_hook');
-            wp_clear_scheduled_hook('pagespeed_run_scheduled_tests');
+            wp_clear_scheduled_hook('wpspeedtestpro_pagespeed_run_scheduled_tests');
             wp_clear_scheduled_hook('wpspeedtestpro_daily_pagespeed_check');
             
 
@@ -152,7 +152,7 @@ class Wpspeedtestpro_Deactivator {
 
     public static function deactivate() {
         // Handle basic deactivation tasks
-        wp_clear_scheduled_hook('pagespeed_check_scheduled_tests');
+        wp_clear_scheduled_hook('wpspeedtestpro_pagespeed_check_scheduled_tests');
         wp_clear_scheduled_hook('wpspeedtestpro_sync_data');
         wp_clear_scheduled_hook('wpspeedtestpro_check_scheduled_pagespeed_tests');
         $timestamp = wp_next_scheduled('wpspeedtestpro_check_scheduled_pagespeed_tests');
