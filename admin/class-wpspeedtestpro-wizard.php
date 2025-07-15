@@ -140,6 +140,9 @@ class Wpspeedtestpro_Wizard {
 
 
         try {
+            // Track data collection change
+            $old_data_collection = get_option('wpspeedtestpro_allow_data_collection', false);
+            
             // Save settings with error checking
             $update_results = array(
                 update_option('wpspeedtestpro_selected_region', $settings['gcp_region']),
@@ -148,6 +151,16 @@ class Wpspeedtestpro_Wizard {
                 update_option('wpspeedtestpro_selected_package', $settings['package_id']),
                 update_option('wpspeedtestpro_allow_data_collection', $allow_data_collection)
             );
+            
+            // Track data collection change manually since we're not using register_setting here
+            if ($old_data_collection !== $allow_data_collection) {
+                require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wpspeedtestpro-data-collection-notice.php';
+                if ($allow_data_collection) {
+                    Wpspeedtestpro_Data_Collection_Notice::clear_data_collection_disabled();
+                } else {
+                    Wpspeedtestpro_Data_Collection_Notice::set_data_collection_disabled();
+                }
+            }
     
             // Only update UptimeRobot API key if provided
             if (!empty($settings['uptimerobot_api_key'])) {

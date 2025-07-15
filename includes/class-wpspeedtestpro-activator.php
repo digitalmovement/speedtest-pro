@@ -49,6 +49,8 @@ class Wpspeedtestpro_Activator {
         // Set data collection to FALSE by default (opt-in)
         if (get_option('wpspeedtestpro_allow_data_collection') === false) {
             add_option('wpspeedtestpro_allow_data_collection', false);
+            // Set timestamp for when data collection was disabled
+            add_option('wpspeedtestpro_data_collection_disabled_time', time());
         }
 
         // Any other activation tasks can be added here

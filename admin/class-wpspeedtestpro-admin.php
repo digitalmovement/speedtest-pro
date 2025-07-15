@@ -349,7 +349,7 @@ class Wpspeedtestpro_Sync_Handler {
 
         // Schedule hourly sync if not already scheduled
         if (!wp_next_scheduled('wpspeedtestpro_sync_data')) {
-            wp_schedule_event(time(), 'hourly', 'wpspeedtestpro_sync_data');
+            wp_schedule_event(time(), 'daily', 'wpspeedtestpro_sync_data');
         }
 
     }

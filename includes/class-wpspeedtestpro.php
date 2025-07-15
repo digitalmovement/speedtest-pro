@@ -140,6 +140,11 @@ class Wpspeedtestpro {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-cron.php';
 
+		/**
+		 * The class responsible for data collection notifications.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-wpspeedtestpro-data-collection-notice.php';
+
 
 		$this->loader = new Wpspeedtestpro_Loader();
 
@@ -175,6 +180,9 @@ class Wpspeedtestpro {
 		$this->loader->add_action( 'admin_menu',  $plugin_admin, 'add_plugin_admin_menu' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+
+		// Initialize data collection notice
+		$data_collection_notice = new Wpspeedtestpro_Data_Collection_Notice();
 
 	}
 

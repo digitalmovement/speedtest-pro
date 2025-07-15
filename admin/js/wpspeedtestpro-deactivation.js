@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
                 <div class="wpspeedtestpro-modal-footer">
                     <label>
                         <input type="checkbox" id="wpspeedtestpro-delete-data" name="delete_data">
-                        <i class="deepred">Yes, delete ALL plugin data<i>
+                        <i class="deepred">Yes, delete ALL plugin data</i>
                     </label>
                     <div class="wpspeedtestpro-modal-buttons">
                         <button type="button" class="button button-secondary wpspeedtestpro-modal-cancel">Cancel</button>
@@ -32,7 +32,7 @@ jQuery(document).ready(function($) {
     $('body').append(modalHtml);
 
     // Get the deactivation link
-    const deactivateLink = $('tr[data-plugin="wpspeedtestpro/wpspeedtestpro.php"] .deactivate a');
+    const deactivateLink = $('tr[data-plugin="speedtest-pro/speedtest-pro.php"] .deactivate a');
     const originalLink = deactivateLink.attr('href');
 
     // Override the deactivation link click

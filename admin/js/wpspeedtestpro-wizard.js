@@ -1488,7 +1488,7 @@ jQuery(document).ready(function($) {
 
         $('.close-wizard').on('click', function() {
             if (confirm('Are you sure you want to exit the setup wizard? You can always access these settings later.')) {
-                $('#wpspeedtestpro-setup-wizard').remove();
+                dismissWizard();
             }
         });
 

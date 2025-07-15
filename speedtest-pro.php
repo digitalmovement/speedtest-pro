@@ -16,7 +16,7 @@
  * Plugin Name:       Speedtest Pro
  * Plugin URI:        https://wpspeedtestpro.com
  * Description:       An advanced plugin to test your WordPress Performance, including comprehensive server performance benchmarks.
- * Version:           1.1.1
+ * Version:           1.1.2
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       speedtest-pro
@@ -38,7 +38,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'WPSPEEDTESTPRO_VERSION', '1.1.1' );
+define( 'WPSPEEDTESTPRO_VERSION', '1.1.2' );
 
 /**
  * The code that runs during plugin activation.

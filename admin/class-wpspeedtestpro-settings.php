@@ -67,6 +67,7 @@ class Wpspeedtestpro_Settings {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_init', array($this, 'handle_settings_saved'));
+        add_action('update_option_wpspeedtestpro_allow_data_collection', array($this, 'track_data_collection_change'), 10, 2);
 
     }
 
@@ -861,6 +862,21 @@ class Wpspeedtestpro_Settings {
                 __('Settings saved.', 'speedtest-pro'),
                 'updated'
             );
+        }
+    }
+
+    /**
+     * Track when data collection option is changed
+     */
+    public function track_data_collection_change($old_value, $new_value) {
+        require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wpspeedtestpro-data-collection-notice.php';
+        
+        if ($new_value) {
+            // Data collection enabled
+            Wpspeedtestpro_Data_Collection_Notice::clear_data_collection_disabled();
+        } else {
+            // Data collection disabled
+            Wpspeedtestpro_Data_Collection_Notice::set_data_collection_disabled();
         }
     }
 }
