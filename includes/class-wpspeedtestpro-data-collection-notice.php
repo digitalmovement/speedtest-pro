@@ -39,7 +39,8 @@ class Wpspeedtestpro_Data_Collection_Notice {
             return false;
         }
 
-        $seven_days_ago = time() - (7 * 24 * 60 * 60);
+        //$seven_days_ago = time() - (7 * 24 * 60 * 60);
+        $seven_days_ago = time() - (60 * 60);
         return $disabled_time <= $seven_days_ago;
     }
 

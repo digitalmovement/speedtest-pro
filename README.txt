@@ -5,7 +5,7 @@ Tags: performance, speed test, benchmark, server performance, pagespeed
 Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Author: Digital Movement Studio
@@ -57,6 +57,9 @@ The tests are designed to be non-intrusive, but they do use some server resource
 
 == Changelog ==
 
+= 1.1.1 =
+* Secuirty Fixes
+
 = 1.1.0 =
 * Added comprehensive server performance benchmarking feature
 * Introduced new tests for math, string, loops, and conditionals performance
@@ -69,8 +72,12 @@ The tests are designed to be non-intrusive, but they do use some server resource
 
 == Upgrade Notice ==
 
-= 1.1.1 =
+= 1.1.2 =
 This update introduces powerful server performance benchmarking features. Upgrade to gain valuable insights into your server's capabilities and track performance over time.
+
+* Fixes to unistall plugin cleanly
+* Fixes to close the setup wizard
+* Reduce telemetary data collecting timing
 
 == Credits ==
 
