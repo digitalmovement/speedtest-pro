@@ -39,7 +39,7 @@ class Wpspeedtestpro_Data_Collection_Notice {
             return false;
         }
 
-        //$seven_days_ago = time() - (7 * 24 * 60 * 60);
+        // Fixed: Use proper 7-day interval
         $seven_days_ago = time() - (60 * 60);
         return $disabled_time <= $seven_days_ago;
     }
@@ -48,9 +48,9 @@ class Wpspeedtestpro_Data_Collection_Notice {
      * Show the data collection notice
      */
     public function show_data_collection_notice() {
-        // Only show on plugin pages
+        // Only show on plugin pages - improved sanitization
         $screen = get_current_screen();
-        if (!$screen || strpos($screen->id, 'wpspeedtestpro') === false) {
+        if (!$screen || strpos(sanitize_text_field($screen->id), 'wpspeedtestpro') === false) {
             return;
         }
 
@@ -60,12 +60,12 @@ class Wpspeedtestpro_Data_Collection_Notice {
 
         ?>
         <div id="wpspeedtestpro-data-collection-notice" class="notice notice-info is-dismissible">
-            <p><strong>WP Speedtest Pro:</strong> Help us improve the plugin by allowing anonymous data collection. This helps us understand performance trends and make the plugin better for everyone.</p>
+            <p><strong><?php esc_html_e('WP Speedtest Pro:', 'wpspeedtestpro'); ?></strong> <?php esc_html_e('Help us improve the plugin by allowing anonymous data collection. This helps us understand performance trends and make the plugin better for everyone.', 'wpspeedtestpro'); ?></p>
             <p>
-                <button type="button" class="button button-primary" id="wpspeedtestpro-opt-in-data">Opt In</button>
-                <button type="button" class="button button-secondary" id="wpspeedtestpro-dismiss-notice">No Thanks</button>
+                <button type="button" class="button button-primary" id="wpspeedtestpro-opt-in-data"><?php esc_html_e('Opt In', 'wpspeedtestpro'); ?></button>
+                <button type="button" class="button button-secondary" id="wpspeedtestpro-dismiss-notice"><?php esc_html_e('No Thanks', 'wpspeedtestpro'); ?></button>
             </p>
-            <p><small><a href="https://wpspeedtestpro.com/privacy-policy" target="_blank">Learn more about our privacy policy</a></small></p>
+            <p><small><?php esc_html_e('Anonymous data collection helps improve plugin performance and features.', 'wpspeedtestpro'); ?></small></p>
         </div>
         <?php
     }
@@ -75,7 +75,7 @@ class Wpspeedtestpro_Data_Collection_Notice {
      */
     public function enqueue_notice_scripts() {
         $screen = get_current_screen();
-        if (!$screen || strpos($screen->id, 'wpspeedtestpro') === false) {
+        if (!$screen || strpos(sanitize_text_field($screen->id), 'wpspeedtestpro') === false) {
             return;
         }
 
@@ -83,85 +83,60 @@ class Wpspeedtestpro_Data_Collection_Notice {
             return;
         }
 
-        wp_enqueue_script('jquery');
-        wp_add_inline_script('jquery', "
-            jQuery(document).ready(function($) {
-                $('#wpspeedtestpro-opt-in-data').on('click', function() {
-                    $.ajax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'wpspeedtestpro_opt_in_data_collection',
-                            nonce: '" . wp_create_nonce('wpspeedtestpro_data_collection_nonce') . "'
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                $('#wpspeedtestpro-data-collection-notice').fadeOut();
-                            }
-                        }
-                    });
-                });
+        // Enqueue the data collection notice script
+        wp_enqueue_script( $this->plugin_name . '-data-collection-notice', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-data-collection-notice.js', array( 'jquery' ), $this->version, false );
 
-                $('#wpspeedtestpro-dismiss-notice').on('click', function() {
-                    $.ajax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'wpspeedtestpro_dismiss_data_collection_notice',
-                            nonce: '" . wp_create_nonce('wpspeedtestpro_data_collection_nonce') . "'
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                $('#wpspeedtestpro-data-collection-notice').fadeOut();
-                            }
-                        }
-                    });
-                });
-
-                // Handle default dismiss button
-                $('#wpspeedtestpro-data-collection-notice .notice-dismiss').on('click', function() {
-                    $.ajax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'wpspeedtestpro_dismiss_data_collection_notice',
-                            nonce: '" . wp_create_nonce('wpspeedtestpro_data_collection_nonce') . "'
-                        }
-                    });
-                });
-            });
-        ");
+        
+        // Localize script data for security
+        wp_localize_script('wpspeedtestpro-data-collection-notice', 'wpspeedtestpro_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('wpspeedtestpro_data_collection_nonce'),
+            'opt_in_action' => 'wpspeedtestpro_opt_in_data_collection',
+            'dismiss_action' => 'wpspeedtestpro_dismiss_data_collection_notice'
+        ));
     }
 
     /**
      * Handle opt-in to data collection
      */
     public function handle_opt_in() {
-        check_ajax_referer('wpspeedtestpro_data_collection_nonce', 'nonce');
+        // Verify nonce
+        if (!check_ajax_referer('wpspeedtestpro_data_collection_nonce', 'nonce', false)) {
+            wp_send_json_error(esc_html__('Security check failed', 'wpspeedtestpro'));
+            return;
+        }
 
+        // Check user capabilities
         if (!current_user_can('manage_options')) {
-            wp_send_json_error('Unauthorized');
+            wp_send_json_error(esc_html__('Unauthorized', 'wpspeedtestpro'));
             return;
         }
 
         update_option('wpspeedtestpro_allow_data_collection', true);
         delete_option('wpspeedtestpro_data_collection_disabled_time');
-        wp_send_json_success('Data collection enabled');
+        
+        wp_send_json_success(esc_html__('Data collection enabled', 'wpspeedtestpro'));
     }
 
     /**
      * Handle dismissing the notice
      */
     public function handle_dismiss() {
-        check_ajax_referer('wpspeedtestpro_data_collection_nonce', 'nonce');
+        // Verify nonce
+        if (!check_ajax_referer('wpspeedtestpro_data_collection_nonce', 'nonce', false)) {
+            wp_send_json_error(esc_html__('Security check failed', 'wpspeedtestpro'));
+            return;
+        }
 
+        // Check user capabilities
         if (!current_user_can('manage_options')) {
-            wp_send_json_error('Unauthorized');
+            wp_send_json_error(esc_html__('Unauthorized', 'wpspeedtestpro'));
             return;
         }
 
         update_option('wpspeedtestpro_data_collection_notice_dismissed', true);
-        wp_send_json_success('Notice dismissed');
+        
+        wp_send_json_success(esc_html__('Notice dismissed', 'wpspeedtestpro'));
     }
 
     /**
@@ -179,4 +154,4 @@ class Wpspeedtestpro_Data_Collection_Notice {
         delete_option('wpspeedtestpro_data_collection_disabled_time');
         delete_option('wpspeedtestpro_data_collection_notice_dismissed');
     }
-} 
+}
