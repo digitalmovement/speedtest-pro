@@ -4,11 +4,11 @@ jQuery(document).ready(function($) {
     // Handle opt-in button click
     $('#wpspeedtestpro-opt-in-data').on('click', function() {
         $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
+            url: wpspeedtestpro_notice_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: wpspeedtestpro_ajax.opt_in_action,
-                nonce: wpspeedtestpro_ajax.nonce
+                action: wpspeedtestpro_notice_ajax.opt_in_action,
+                nonce: wpspeedtestpro_notice_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -25,11 +25,11 @@ jQuery(document).ready(function($) {
     // Handle dismiss button click
     $('#wpspeedtestpro-dismiss-notice').on('click', function() {
         $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
+            url: wpspeedtestpro_notice_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: wpspeedtestpro_ajax.dismiss_action,
-                nonce: wpspeedtestpro_ajax.nonce
+                action: wpspeedtestpro_notice_ajax.dismiss_action,
+                nonce: wpspeedtestpro_notice_ajax.nonce
             },
             success: function(response) {
                 if (response.success) {
@@ -46,11 +46,11 @@ jQuery(document).ready(function($) {
     // Handle default dismiss button (X)
     $('#wpspeedtestpro-data-collection-notice .notice-dismiss').on('click', function() {
         $.ajax({
-            url: wpspeedtestpro_ajax.ajax_url,
+            url: wpspeedtestpro_notice_ajax.ajax_url,
             type: 'POST',
             data: {
-                action: wpspeedtestpro_ajax.dismiss_action,
-                nonce: wpspeedtestpro_ajax.nonce
+                action: wpspeedtestpro_notice_ajax.dismiss_action,
+                nonce: wpspeedtestpro_notice_ajax.nonce
             }
         });
     });

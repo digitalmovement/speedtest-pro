@@ -88,7 +88,7 @@ class Wpspeedtestpro_Data_Collection_Notice {
 
         
         // Localize script data for security
-        wp_localize_script('wpspeedtestpro-data-collection-notice', 'wpspeedtestpro_ajax', array(
+        wp_localize_script('wpspeedtestpro-data-collection-notice', 'wpspeedtestpro_notice_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('wpspeedtestpro_data_collection_nonce'),
             'opt_in_action' => 'wpspeedtestpro_opt_in_data_collection',
