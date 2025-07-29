@@ -84,7 +84,7 @@ class Wpspeedtestpro_Data_Collection_Notice {
         }
 
         // Enqueue the data collection notice script
-        wp_enqueue_script( $this->plugin_name . '-data-collection-notice', plugin_dir_url( __FILE__ ) . 'js/wpspeedtestpro-data-collection-notice.js', array( 'jquery' ), $this->version, false );
+        wp_enqueue_script( $this->plugin_name . '-data-collection-notice', plugin_dir_url( __FILE__ ) . '../admin/js/wpspeedtestpro-data-collection-notice.js', array( 'jquery' ), $this->version, false );
 
         
         // Localize script data for security
